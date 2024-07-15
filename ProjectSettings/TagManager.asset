@@ -3,7 +3,13 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - TargetObject
+  - LU
+  - RU
+  - RT
+  - STOP
+  - RT2
   layers:
   - Default
   - TransparentFX
