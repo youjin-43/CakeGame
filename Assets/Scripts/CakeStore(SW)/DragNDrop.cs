@@ -21,8 +21,8 @@ public class DragNDrop : MonoBehaviour
 
     public GameObject Enterance; // Enterance 오브젝트
     public GameObject Counter; // Counter 오브젝트
-    public int counterPositionX = 2;
-    public int counterPositionY = 3;
+    public float counterPositionX = 2.5f;
+    public float counterPositionY = 2.0f;
 
     private int targetZ = 0; // 초기 targetZ 값
 
@@ -141,7 +141,7 @@ public class DragNDrop : MonoBehaviour
             CreateTargetTile();
         }
         Vector3 cellSize = tilemap.cellSize;
-        Vector3 offset = new Vector3(-cellSize.x /2, -cellSize.y / 2, 0);
+        Vector3 offset = new Vector3(-cellSize.x / 2, -cellSize.y / 2, 0);
         Vector3 tilePosition = tilemap.CellToWorld(cellPos) + tilemap.tileAnchor + offset;
         targetTile.transform.position = tilePosition;
     }
@@ -159,22 +159,24 @@ public class DragNDrop : MonoBehaviour
             tilemap.SetTile(cellPos, selectedTile);
             Debug.Log("Tile placed at: " + cellPos);
             if (canMoveTileEnter && selectedTile == enter)
-            {   
+            {
                 Vector3 cellSize = tilemap.cellSize;
-                Vector3 offset = new Vector3(0, -cellSize.y, 0);
+                Vector3 offset = new Vector3(0, -cellSize.y, 0); // 예시로 계산된 오프셋
                 Vector3 enterancePosition = tilemap.CellToWorld(cellPos) + tilemap.tileAnchor + offset;
                 Enterance.transform.position = enterancePosition;
-                Vector3 offset2 = new Vector3(-counterPositionX*cellSize.x, counterPositionY*cellSize.y, 0);
+
+                Vector3 offset2 = new Vector3(-counterPositionX * cellSize.x, counterPositionY * cellSize.y, 0); // 예시로 계산된 오프셋
                 Vector3 counterPosition = tilemap.CellToWorld(cellPos) + tilemap.tileAnchor + offset2;
                 Counter.transform.position = counterPosition;
                 Debug.Log("Enterance moved to: " + enterancePosition);
+
             }
         }
         else
         {
             tilemap.SetTile(selectedTilePosition, selectedTile);
             Debug.Log("Target position not allowed or occupied, reverting to original position.");
-            
+
         }
         isDragging = false;
     }

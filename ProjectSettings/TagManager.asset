@@ -15,6 +15,9 @@ TagManager:
   - MainCorner
   - Counter
   - Enterance
+  - Corner1
+  - Corner2
+  - Corner3
   layers:
   - Default
   - TransparentFX

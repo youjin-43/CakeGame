@@ -15,7 +15,7 @@ public class CustomerSpawn : MonoBehaviour
     public int awareness = 5000;
 
     // 소환 시도 간격 (초)
-    public float spawnAttemptInterval = 1.0f;
+    public float spawnAttemptInterval = 00.1f;
 
     // Prefab을 생성할 회전값을 저장할 변수 (필요시)
     public Quaternion spawnRotation = Quaternion.identity;
@@ -60,7 +60,7 @@ public class CustomerSpawn : MonoBehaviour
             yield return new WaitForSeconds(spawnAttemptInterval);
 
             // 인지도에 기반한 소환 확률 계산 (0에서 10000 사이의 값을 0에서 1 사이의 값으로 변환)
-            float spawnProbability = awareness / 10000.0f;
+            float spawnProbability = awareness / 1000000.0f;
 
             // 랜덤 값을 생성하여 소환 확률과 비교
             if (Random.value < spawnProbability)

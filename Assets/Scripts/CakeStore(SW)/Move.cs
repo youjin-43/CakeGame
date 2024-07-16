@@ -3,10 +3,13 @@ using UnityEngine;
 
 public class Move : MonoBehaviour
 {
-    public float moveSpeed = 2f; // NPC의 이동 속도
+    public float defaultMoveSpeed = 2f; // 기본 이동 속도
+    public float moveTime = 0.5f;
+    private float moveSpeed; // 실제 이동 속도
     private Vector2 moveDirection; // NPC의 이동 방향
     private bool isMovingToTarget = false; // 타겟 위치로 이동 중인지 여부
     private Animator animator;
+    private float minDistance = 0.1f; // 최소 이동 거리
 
     public Direction initialDirection = Direction.RightDown; // 외부에서 설정 가능한 초기 방향
 
@@ -30,23 +33,24 @@ public class Move : MonoBehaviour
 
     private void MoveNPC()
     {
-        Vector3 movement = new Vector3(moveDirection.x, moveDirection.y, 0) * moveSpeed * Time.deltaTime;
+        Vector3 movement = new Vector3(moveDirection.x, moveDirection.y, 0) * defaultMoveSpeed * Time.deltaTime;
         transform.Translate(movement);
     }
 
     void OnTriggerEnter2D(Collider2D collision)
     {
+        if (isMovingToTarget) return; // 이미 이동 중인 경우 새로운 충돌 처리하지 않음
+
         Direction? direction = null;
         bool shouldDestroy = false;
 
-        // 충돌한 오브젝트의 태그에 따라 방향 설정
         switch (collision.gameObject.tag)
         {
             case "MainCorner":
-                direction = (Direction)Random.Range(0, 2);
+                direction = GetRandomDirection(new Direction[] { Direction.RightUp, Direction.LeftUp });
                 break;
             case "Enterance":
-                direction = (Direction)Random.Range(0, 3);
+                direction = GetRandomDirection(new Direction[] { Direction.RightUp, Direction.LeftUp, Direction.LeftDown });
                 break;
             case "LeftExit":
                 direction = Direction.RightDown;
@@ -59,6 +63,15 @@ public class Move : MonoBehaviour
             case "Counter":
                 direction = Direction.Stop;
                 break;
+            case "Corner1":
+                direction = GetRandomDirection(new Direction[] { Direction.RightUp, Direction.LeftUp, Direction.RightDown });
+                break;
+            case "Corner2":
+                direction = GetRandomDirection(new Direction[] { Direction.RightUp, Direction.LeftUp, Direction.LeftDown });
+                break;
+            case "Corner3":
+                direction = GetRandomDirection(new Direction[] { Direction.LeftDown, Direction.RightDown });
+                break;
         }
 
         if (shouldDestroy)
@@ -67,7 +80,8 @@ public class Move : MonoBehaviour
         }
         else if (direction.HasValue)
         {
-            StartCoroutine(MoveToTarget(collision.transform.position, direction.Value));
+            Vector3 targetPosition = collision.transform.position; // 타겟 위치 저장
+            StartCoroutine(MoveToTarget(targetPosition, direction.Value));
         }
     }
 
@@ -76,14 +90,26 @@ public class Move : MonoBehaviour
         SetAnimation(direction);
         isMovingToTarget = true;
 
-        while ((transform.position - targetPosition).sqrMagnitude > 0.01f)
+        Vector3 startPosition = transform.position;
+        Vector3 directionToTarget = (targetPosition - startPosition).normalized;
+        float targetDistance = Vector3.Distance(startPosition, targetPosition);
+
+        // 이동 속도 계산: 1초 이내에 타겟에 도달하도록 설정
+        moveSpeed = targetDistance / moveTime; // 1초 동안 이동할 수 있는 속도 설정
+
+        float elapsedTime = 0f;
+        while (elapsedTime < 1f && targetDistance > minDistance)
         {
-            transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
+            Vector3 movement = directionToTarget * moveSpeed * Time.deltaTime;
+            transform.Translate(movement);
+
+            elapsedTime += Time.deltaTime;
+            targetDistance = Vector3.Distance(transform.position, targetPosition);
             yield return null;
         }
 
+        // 이동 완료 후 설정
         SetMoveDirection(direction);
-
         if (direction == Direction.Stop)
         {
             yield return new WaitForSeconds(2f);
@@ -92,9 +118,10 @@ public class Move : MonoBehaviour
         }
 
         isMovingToTarget = false;
+        moveSpeed = defaultMoveSpeed; // 이동 속도 초기화
     }
 
-    public void SetAnimation(Direction direction)
+    private void SetAnimation(Direction direction)
     {
         int state = direction switch
         {
@@ -106,7 +133,7 @@ public class Move : MonoBehaviour
         animator.SetInteger("State", state);
     }
 
-    public void SetMoveDirection(Direction direction)
+    private void SetMoveDirection(Direction direction)
     {
         moveDirection = direction switch
         {
@@ -117,5 +144,10 @@ public class Move : MonoBehaviour
             Direction.Stop => Vector2.zero,
             _ => moveDirection
         };
+    }
+
+    private Direction GetRandomDirection(Direction[] allowedDirections)
+    {
+        return allowedDirections[Random.Range(0, allowedDirections.Length)];
     }
 }
