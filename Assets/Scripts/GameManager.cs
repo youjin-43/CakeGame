@@ -30,31 +30,42 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    enum Seasons
+    {
+        spring,
+        summer,
+        fall,
+        winter
+    }
 
-    [Header("Data")] 
+    [Header("Data")]
+    [SerializeField] private Seasons season;
+    [SerializeField] private int date;
     [SerializeField] public int money;
     [SerializeField] private int popularity;
 
 
     [Header("About Running")]
     [SerializeField] private float runTime; // 가게 runTime시간
-    [SerializeField] private bool isRunning; //가게가 운영중인지 표시하는 변수
+    [SerializeField] public bool isRunning; //가게가 운영중인지 표시하는 변수
 
     [Header("About UI")]
     public GameObject runningOverBoard; //가게 운영이 끝났을때 활성화 할 오브젝트 
-    public Text runningTimeText;//현재 시간을 표시할 텍스트 컴포넌트 
+    public Text runningTimeText;//현재 시간을 표시할 텍스트 컴포넌트
+    public Text seasonText;
+    public Text dateText;
     public Text moneyText;//현재 돈을 표시할 텍스트 컴포넌트
     public Text popularityText;//현재 돈을 표시할 텍스트 컴포넌트
 
     void Start()
     {
         //이전 데이터 가져오기
+        season = (Seasons)PlayerPrefs.GetInt("season");
+        date = PlayerPrefs.GetInt("date");
         money = PlayerPrefs.GetInt("money"); //주어진 키로 저장된 값이 없으면 기본값을 반환
         popularity = PlayerPrefs.GetInt("popularity");
 
-        //데이터 표시 
-        moneyText.text = "Money : " + money;
-        popularityText.text = "Popularity : " + popularity;
+
 
         //가게 운영 시작 -> start는 게임 처음 실행될때 실행되는거라 가게 운영 시작하는 기능은 따로 빼야할 듯
         StartRunning();
@@ -76,6 +87,14 @@ public class GameManager : MonoBehaviour
             
         }
 
+        //혹시 개발 과정에서 필요할까 싶어 
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            money = 0;
+            PlayerPrefs.SetInt("money", money); //이걸 endRunning 함수에 넣어야 하나 고민중
+            moneyText.text = "Money : " + money;
+        }
+
         //가게가 운영되는 동안 운영 시간 표시 
         if (isRunning)
         {
@@ -86,14 +105,13 @@ public class GameManager : MonoBehaviour
             {
                 EndRunning();
             }
-
-            //돈, 인지도 갱신
-            
-
         }
         else
         {
-
+            if (Input.GetKeyDown(KeyCode.N))
+            {
+                StartRunning();
+            }
         }
     }
 
@@ -101,8 +119,19 @@ public class GameManager : MonoBehaviour
     //가게 운영 시작하는 함수 
     private void StartRunning()
     {
+        runningOverBoard.SetActive(false); // 정산 화면 끄기
+
+        date++;
         runTime = 0;
+
+        //데이터 표시
+        seasonText.text = season.ToString();
+        dateText.text = date.ToString();
+        moneyText.text = "Money : " + money;
+        popularityText.text = "Popularity : " + popularity;
+
         isRunning = true;
+
     }
 
     //가게 운영이 끝났을때 호출 할 함수
@@ -111,10 +140,15 @@ public class GameManager : MonoBehaviour
         isRunning = false; //운영 끝! 
         runningOverBoard.SetActive(true); // 정산 화면 뜨기
 
-        //정산 결과 저장
+        //정산 결과 저장 -> 돈, 인지도 등 데이터 갱신
+        PlayerPrefs.SetInt("date", date);
+        PlayerPrefs.SetInt("season", (int)season);
+
         //PlayerPrefs.SetFloat(string key, float value); //float 값을 저장할때 : 키와 키와 대응하는 값을 입력값으로 받음
         //PlayerPrefs.GetFloat(string key); float 값을 불러올 때
         //int 와 string도 가능
+
+        //PlayerPrefs.SetFloat("money", money);
 
 
     }
@@ -124,5 +158,7 @@ public class GameManager : MonoBehaviour
         Debug.Log("getmoeny 함수 실행");
         money += 100;
         moneyText.text = "Money : " + money;
+
+        PlayerPrefs.SetInt("money", money); //이걸 endRunning 함수에 넣어야 하나 고민중 
     }
 }
