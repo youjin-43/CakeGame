@@ -10,6 +10,7 @@ TagManager:
   - RT
   - STOP
   - RT2
+  - want
   layers:
   - Default
   - TransparentFX

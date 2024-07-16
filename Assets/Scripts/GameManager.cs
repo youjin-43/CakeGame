@@ -32,7 +32,7 @@ public class GameManager : MonoBehaviour
 
 
     [Header("Data")] 
-    [SerializeField] private int money;
+    [SerializeField] public int money;
     [SerializeField] private int popularity;
 
 
@@ -88,6 +88,7 @@ public class GameManager : MonoBehaviour
             }
 
             //돈, 인지도 갱신
+            
 
         }
         else
@@ -116,5 +117,12 @@ public class GameManager : MonoBehaviour
         //int 와 string도 가능
 
 
+    }
+
+    public void getMoney()
+    {
+        Debug.Log("getmoeny 함수 실행");
+        money += 100;
+        moneyText.text = "Money : " + money;
     }
 }
