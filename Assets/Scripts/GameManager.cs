@@ -9,7 +9,26 @@ using UnityEngine.SceneManagement;//씬 관련 라이브러리
 
 public class GameManager : MonoBehaviour
 {
-    //싱글턴으로 만들어야 하는디... 우선 ㄱ
+    //싱글턴으로
+    public static GameManager instance; // 싱글톤을 할당할 전역 변수
+
+    // 게임 시작과 동시에 싱글톤을 구성
+    void Awake()
+    {
+        // 싱글톤 변수 instance가 비어있는가?
+        if (instance == null)
+        {
+            // instance가 비어있다면(null) 그곳에 자기 자신을 할당
+            instance = this;
+        }
+        else
+        {
+            // instance에 이미 다른 GameManager 오브젝트가 할당되어 있는 경우 씬에 두개 이상의 GameManager 오브젝트가 존재한다는 의미.
+            // 싱글톤 오브젝트는 하나만 존재해야 하므로 자신의 게임 오브젝트를 파괴
+            Debug.LogWarning("씬에 두개 이상의 게임 매니저가 존재합니다!");
+            Destroy(gameObject);
+        }
+    }
 
 
     [Header("Data")] 
@@ -44,24 +63,36 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+        //우선 임시로 R 누르면 넘어가도록 해놓음 
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("CakeStorePractice")){
+                SceneManager.LoadScene("Farm");
+            }
+            else
+            {
+                SceneManager.LoadScene("CakeStorePractice");
+            }
+            
+        }
+
         //가게가 운영되는 동안 운영 시간 표시 
         if (isRunning)
         {
             runTime += Time.deltaTime;
             runningTimeText.text = "Time :" + (int)runTime;
 
-            if (runTime>=10.0f) // 우선 10으로 해놓음 
+            if (runTime>=5.0f) // 우선 5로 해놓음 
             {
                 EndRunning();
             }
+
+            //돈, 인지도 갱신
+
         }
         else
         {
-            //우선 임시로 R 누르면 넘어가도록 해놓음 
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                SceneManager.LoadScene("Farm");
-            }
+
         }
     }
 
