@@ -10,16 +10,21 @@ public class DragNDrop : MonoBehaviour
     public List<Vector3Int> allowedPositions; // 타일을 옮길 수 있는 특정 위치들
     public Vector3Int minRange; // 타일을 둘 수 있는 범위 최소값
     public Vector3Int maxRange; // 타일을 둘 수 있는 범위 최대값
-    public GameObject Enterance; // Enterance 오브젝트
 
     private Vector3Int selectedTilePosition;
     private TileBase selectedTile;
     private bool isDragging = false;
     private bool canMoveTiles = false; // 일반 타일 움직임 활성화 상태
     private bool canMoveTileEnter = false; // 'enter' 타일 움직임 활성화 상태
+    private GameObject previewTile;
     private GameObject targetTile; // 반투명 타일 미리 보기
 
-    private int targetZ = 4; // 초기 targetZ 값
+    public GameObject Enterance; // Enterance 오브젝트
+    public GameObject Counter; // Counter 오브젝트
+    public int counterPositionX = 2;
+    public int counterPositionY = 3;
+
+    private int targetZ = 0; // 초기 targetZ 값
 
     void Update()
     {
@@ -135,7 +140,9 @@ public class DragNDrop : MonoBehaviour
         {
             CreateTargetTile();
         }
-        Vector3 tilePosition = tilemap.CellToWorld(cellPos) + tilemap.tileAnchor;
+        Vector3 cellSize = tilemap.cellSize;
+        Vector3 offset = new Vector3(-cellSize.x /2, -cellSize.y / 2, 0);
+        Vector3 tilePosition = tilemap.CellToWorld(cellPos) + tilemap.tileAnchor + offset;
         targetTile.transform.position = tilePosition;
     }
 
@@ -151,12 +158,15 @@ public class DragNDrop : MonoBehaviour
         {
             tilemap.SetTile(cellPos, selectedTile);
             Debug.Log("Tile placed at: " + cellPos);
-
-            // 'enter' 타일을 옮길 때 Enterance 오브젝트를 이동
             if (canMoveTileEnter && selectedTile == enter)
-            {
-                Vector3 enterancePosition = tilemap.CellToWorld(cellPos) + tilemap.tileAnchor;
+            {   
+                Vector3 cellSize = tilemap.cellSize;
+                Vector3 offset = new Vector3(0, -cellSize.y, 0);
+                Vector3 enterancePosition = tilemap.CellToWorld(cellPos) + tilemap.tileAnchor + offset;
                 Enterance.transform.position = enterancePosition;
+                Vector3 offset2 = new Vector3(-counterPositionX*cellSize.x, counterPositionY*cellSize.y, 0);
+                Vector3 counterPosition = tilemap.CellToWorld(cellPos) + tilemap.tileAnchor + offset2;
+                Counter.transform.position = counterPosition;
                 Debug.Log("Enterance moved to: " + enterancePosition);
             }
         }
@@ -164,6 +174,7 @@ public class DragNDrop : MonoBehaviour
         {
             tilemap.SetTile(selectedTilePosition, selectedTile);
             Debug.Log("Target position not allowed or occupied, reverting to original position.");
+            
         }
         isDragging = false;
     }
@@ -180,6 +191,11 @@ public class DragNDrop : MonoBehaviour
     void ResetDragging()
     {
         tilemap.SetTile(selectedTilePosition, selectedTile);
+        if (previewTile != null)
+        {
+            Destroy(previewTile);
+            previewTile = null;
+        }
         if (targetTile != null)
         {
             Destroy(targetTile);
