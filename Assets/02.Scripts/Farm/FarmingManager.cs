@@ -76,23 +76,23 @@ public class FarmingManager : MonoBehaviour
             farmingData[pos].buttons = new Button[3]; // [0]: plow 버튼, [1]: plant 버튼, [2]: harvest 버튼
 
             // 각 타일마다 세 개의 버튼을 가지고 시작하도록..
-            for (int i=0; i<buttonPrefabs.Length; i++)
+            for (int i = 0; i < buttonPrefabs.Length; i++)
             {
                 // 클로저 문제를 피하기 위해서 값을 변수에 저장해놓고 이 변수를 사용함..
                 int index = i;
                 Vector3Int tilePos = pos;
                 farmingData[pos].buttons[i] = CreateButton(index, tilePos).GetComponent<Button>();
 
-                if (index==0)
+                if (index == 0)
                 {
                     // 버튼에 함수를 저장해놓음(tilePos 도 같이 저장해놓기)
                     farmingData[tilePos].buttons[index].onClick.AddListener(() => PlowTile(tilePos));
-                } 
-                else if (index==1)
+                }
+                else if (index == 1)
                 {
                     farmingData[tilePos].buttons[index].onClick.AddListener(() => PlantTile(tilePos));
-                } 
-                else if (index==2)
+                }
+                else if (index == 2)
                 {
                     farmingData[tilePos].buttons[index].onClick.AddListener(() => HarvestTile(tilePos));
                 }
@@ -130,7 +130,7 @@ public class FarmingManager : MonoBehaviour
             clickPosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
             // 게임 월드 위치를 타일 맵의 타일 셀 위치로 변환
             cellPosition = farmTilemap.WorldToCell(clickPosition);
-            
+
 
             foreach (Vector3Int pos in farmingData.Keys)
             {
@@ -141,7 +141,7 @@ public class FarmingManager : MonoBehaviour
                     if (farmingData[cellPosition].plowEnableState)
                     {
                         farmingData[cellPosition].stateButton.gameObject.SetActive(true);
-                    } 
+                    }
                     else
                     {
                         // 씨앗이 안 심어져 있을 때 또는 씨앗이 다 자랐을 때 버튼 뜰 수 있도록
@@ -158,14 +158,6 @@ public class FarmingManager : MonoBehaviour
                             growTimeText.text = "남은시간\n" + (int)(farmingData[cellPosition].seed.growTime - farmingData[cellPosition].seed.currentTime);
                         }
                     }
-
-                    // 현재 선택한 타일의 버튼은 활성화 되도록..
-                    //farmingData[cellPosition].stateButton.gameObject.SetActive(true);
-                    // 아래 방법처럼 하면 오류남. 이유는 뭐지??
-                    // --> GameObject 는 컴포넌트가 아니라서 오류가 나는 것이었다... 이번 기회에 알게 됐다.
-                    // --> 그냥 gameObject 로 바로 게임 오브젝트에 접근할 수 있었다.
-                    // --> 기본적인걸 까먹고 있었다.. 이번엔 잘 기억하자..
-                    //farmingData[cellPosition].stateButton.GetComponent<GameObject>().SetActive(true);
                 }
             }
 
@@ -226,7 +218,7 @@ public class FarmingManager : MonoBehaviour
 
         return button;
     }
-    
+
     public void PlowTile(Vector3Int pos)
     {
         // 밭을 가는 함수
@@ -244,7 +236,7 @@ public class FarmingManager : MonoBehaviour
     public void PlantTile(Vector3Int pos)
     {
         // 씨앗을 심는 함수
-        // 다음에 이 함수의 매개변수로 씨앗 인덱스로 보내줘서 GetSeed 함수의 매개변수로 보낼 것.
+        // 다음에 이 함수의 매개변수로 씨앗 인덱스를 보내줘서 GetSeed 함수의 매개변수로 보낼 것.
         farmingData[pos].seed = seedContainer.GetSeed(0).GetComponent<Seed>();
 
         farmTilemap.SetTile(pos, plantTile); // 타일 모습을 씨앗 심은 상태로 바꿔주기
@@ -259,11 +251,11 @@ public class FarmingManager : MonoBehaviour
     public void HarvestTile(Vector3Int pos)
     {
         // 과일을 수확하는 함수
-        // 다음엠 이 함수의 매개변수로 씨앗 인덱스 보내줘서 GetFruit 함수의 매개변수로 보낼 것.
+        // 생각해보니까 씨앗 인덱스 여기로 안 보내줘도 pos 보내줬으니까, pos 가 가지는 씨앗 인스턴스의 씨앗 인덱스 이용하면 될 듯.
 
         farmingData[pos].plowEnableState = true;
         farmingData[pos].currentState = "None"; // 과일을 수확한 상태니까 None 으로 바꿔주기
-        
+
         fruitContainer.GetFruit(farmingData[pos].seed.seedIdx); // 씨앗의 인덱스와 같은 과일 생성
 
         farmingData[pos].stateButton.gameObject.SetActive(false); // 버튼 한 번 눌렀으니까 꺼지도록..
@@ -272,5 +264,11 @@ public class FarmingManager : MonoBehaviour
         farmingData[pos].seed = null; // 수확 완료 했으니까 타일의 seed 변수를 다시 null 로 설정해주기..
 
         farmTilemap.SetTile(pos, grassTile); // 타일 모습을 초기 상태의로 바꿔주기
+    }
+
+
+    public void BuySeed(int count, int idx)
+    {
+        seedContainer.seedCount[idx] += count; // 씨앗의 개수를 저장하고 있는 배열의 인덱스 요소에 구매한 씨앗의 개수만큼 더해주기
     }
 }

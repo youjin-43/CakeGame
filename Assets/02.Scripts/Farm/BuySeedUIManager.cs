@@ -23,25 +23,22 @@ public class BuySeedUIManager : MonoBehaviour
     {
         // 현재 씨앗 구매 판넬에 존재하는 슬롯들을 가져와서 저장함.
         // 자식만 가져와야 하기 때문에 (자손은 가져오면 안 됨) GetComponentsInChildren 못 씀.
-        for (int i=0; i< slotContainer.transform.childCount; i++)
+        for (int i = 0; i < slotContainer.transform.childCount; i++)
         {
             Transform child = slotContainer.transform.GetChild(i);
             BuySeedSlots.Add(child.GetComponent<Button>());
         }
 
-
-        //BuySeedSlots = BuySeedPanel.GetComponentsInChildren<Button>().Skip(1).ToArray();
-        
         // 현재 게임 상 존재하는 씨앗 구매 버튼 정보 설정
-        for (int i=0; i<BuySeedSlots.Count; i++)
+        for (int i = 0; i < BuySeedSlots.Count; i++)
         {
-            SlotManager slot = BuySeedSlots[i].GetComponent<SlotManager>();
+            BuySeedSlotManager slot = BuySeedSlots[i].GetComponent<BuySeedSlotManager>();
             Seed slotSeedInfo = seedInfo.prefabs[i].GetComponent<Seed>();
 
-            // 각 버튼의 초기값 설정
             slot.seedImage.sprite = seedImages[i];
             slot.seedName.text = slotSeedInfo.seedName;
             slot.totalPrice.text = "가격: " + slotSeedInfo.seedPrice;
+            slot.seedIdx = slotSeedInfo.seedIdx;
             slot.seedCountText.text = "1";
         }
     }
@@ -53,9 +50,9 @@ public class BuySeedUIManager : MonoBehaviour
             BuySeedPanel.SetActive(true);
 
 
-        for (int i=0; i<BuySeedSlots.Count; i++)
+        for (int i = 0; i < BuySeedSlots.Count; i++)
         {
-            SlotManager slot = BuySeedSlots[i].GetComponent<SlotManager>();
+            BuySeedSlotManager slot = BuySeedSlots[i].GetComponent<BuySeedSlotManager>();
             Seed slotSeedInfo = seedInfo.prefabs[i].GetComponent<Seed>();
 
             // BuySlot 이 활성화 되어 있는 슬롯의 정보만 계속해서 변경해줄 것
@@ -72,7 +69,7 @@ public class BuySeedUIManager : MonoBehaviour
     {
         for (int i = 0; i < BuySeedSlots.Count; i++)
         {
-            SlotManager slot = BuySeedSlots[i].GetComponent<SlotManager>();
+            BuySeedSlotManager slot = BuySeedSlots[i].GetComponent<BuySeedSlotManager>();
             slot.ResetData(); // 슬롯 데이터 한번 리셋해주기(껐다 켜졌는데 상태 그대로면 이상하니까)
             slot.BuySlot.SetActive(false);
         }
@@ -83,7 +80,7 @@ public class BuySeedUIManager : MonoBehaviour
         CloseBuySlot(); // 슬롯 버튼 눌렀을 때, 다른 슬롯의 구매 슬롯이 켜져있으면 다 끄고 시작..
     }
 
-    
+
     public void ExitButton()
     {
         BuySeedPanel.SetActive(false); // 구매 창 없어지도록..
