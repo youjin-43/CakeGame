@@ -21,7 +21,7 @@ public class SlotManager : MonoBehaviour
     public void minusSeedCount()
     {
         if (seedCount <= minCount) {
-            // ÇöÀç ±¸¸ÅÇÏ·Á°í ÇÏ´Â ¾¾¾Ñ °³¼ö°¡ ¾¾¾Ñ ±¸¸Å ÃÖ¼Ò °³¼öº¸´Ù ÀÛ¾ÆÁö´Â ¼ø°£ ÃÖ´ñ°ªÀ¸·Î ³Ñ¾î°¡µµ·Ï
+            // í˜„ì¬ êµ¬ë§¤í•˜ë ¤ê³  í•˜ëŠ” ì”¨ì•— ê°œìˆ˜ê°€ ì”¨ì•— êµ¬ë§¤ ìµœì†Œ ê°œìˆ˜ë³´ë‹¤ ì‘ì•„ì§€ëŠ” ìˆœê°„ ìµœëŒ“ê°’ìœ¼ë¡œ ë„˜ì–´ê°€ë„ë¡
             seedCount = maxCount;
             return; 
         } 
@@ -31,7 +31,7 @@ public class SlotManager : MonoBehaviour
 
     public void plusSeedCount()
     {
-        // ÇöÀç ±¸¸ÅÇÏ·Á°í ÇÏ´Â ¾¾¾Ñ °³¼ö°¡ ¾¾¾Ñ ±¸¸Å ÃÖ´ë °³¼öº¸´Ù Ä¿Áö´Â ¼ø°£ ÃÖ¼Ú°ªÀ¸·Î ³Ñ¾î°¡µµ·Ï
+        // í˜„ì¬ êµ¬ë§¤í•˜ë ¤ê³  í•˜ëŠ” ì”¨ì•— ê°œìˆ˜ê°€ ì”¨ì•— êµ¬ë§¤ ìµœëŒ€ ê°œìˆ˜ë³´ë‹¤ ì»¤ì§€ëŠ” ìˆœê°„ ìµœì†Ÿê°’ìœ¼ë¡œ ë„˜ì–´ê°€ë„ë¡
         if (seedCount >= maxCount) {
             seedCount = minCount;
             return;
@@ -42,7 +42,7 @@ public class SlotManager : MonoBehaviour
 
     private void Update()
     {
-        // UI °¡ ¾Æ´Ñ ºÎºĞÀ» Å¬¸¯ÇÏ¸é ±×³É ²¨Áöµµ·Ï..
+        // UI ê°€ ì•„ë‹Œ ë¶€ë¶„ì„ í´ë¦­í•˜ë©´ ê·¸ëƒ¥ êº¼ì§€ë„ë¡..
         if (IsPointerOverUIObject()) return; 
         else
         {

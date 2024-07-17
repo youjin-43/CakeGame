@@ -10,51 +10,51 @@ using UnityEngine.UI;
 using static UnityEditor.PlayerSettings;
 
 
-// Å¸ÀÏÀÌ °¡Áö´Â ³ó»ç µ¥ÀÌÅÍ
+// íƒ€ì¼ì´ ê°€ì§€ëŠ” ë†ì‚¬ ë°ì´í„°
 class FarmingData
 {
-    public Seed seed; // Å¸ÀÏÀÌ °¡Áö´Â ¾¾¾Ñ Á¤º¸
-    //public bool seedOnTile; // Å¸ÀÏ À§¿¡ ¾¾¾ÑÀÌ ÀÖ´ÂÁö ¿©ºÎ È®ÀÎ¿ë(¾¾¾ÑÀÌ ÀÖÀ¸¸é ¹çÀ» °¥ ¼ö ¾øÀ½)
-    public bool plowEnableState; // ¹çÀ» °¥ ¼ö ÀÖ´Â »óÅÂÀÎÁö ¿©ºÎ È®ÀÎ¿ë(¹çÀÌ ¾È °¥¸° »óÅÂ)
-    public bool plantEnableState; // ¾¾¾ÑÀ» ½ÉÀ» ¼ö ÀÖ´Â »óÅÂÀÎÁö ¿©ºÎ È®ÀÎ¿ë
-    public bool harvestEnableState; // ÀÛ¹°ÀÌ ´Ù ÀÚ¶õ »óÅÂÀÎÁö ¿©ºÎ È®ÀÎ¿ë
-    public Button stateButton; // Å¸ÀÏÀ» ´©¸£¸é Å¸ÀÏ À§¿¡ ¶ßµµ·Ï ÇÏ´Â ¹öÆ°
-    public Button[] buttons; // [0]: plow ¹öÆ°, [1]: plant ¹öÆ°, [2]: harvest ¹öÆ°
+    public Seed seed; // íƒ€ì¼ì´ ê°€ì§€ëŠ” ì”¨ì•— ì •ë³´
+    //public bool seedOnTile; // íƒ€ì¼ ìœ„ì— ì”¨ì•—ì´ ìˆëŠ”ì§€ ì—¬ë¶€ í™•ì¸ìš©(ì”¨ì•—ì´ ìˆìœ¼ë©´ ë°­ì„ ê°ˆ ìˆ˜ ì—†ìŒ)
+    public bool plowEnableState; // ë°­ì„ ê°ˆ ìˆ˜ ìˆëŠ” ìƒíƒœì¸ì§€ ì—¬ë¶€ í™•ì¸ìš©(ë°­ì´ ì•ˆ ê°ˆë¦° ìƒíƒœ)
+    public bool plantEnableState; // ì”¨ì•—ì„ ì‹¬ì„ ìˆ˜ ìˆëŠ” ìƒíƒœì¸ì§€ ì—¬ë¶€ í™•ì¸ìš©
+    public bool harvestEnableState; // ì‘ë¬¼ì´ ë‹¤ ìë€ ìƒíƒœì¸ì§€ ì—¬ë¶€ í™•ì¸ìš©
+    public Button stateButton; // íƒ€ì¼ì„ ëˆ„ë¥´ë©´ íƒ€ì¼ ìœ„ì— ëœ¨ë„ë¡ í•˜ëŠ” ë²„íŠ¼
+    public Button[] buttons; // [0]: plow ë²„íŠ¼, [1]: plant ë²„íŠ¼, [2]: harvest ë²„íŠ¼
 
-    public string currentState = "None"; // ÇöÀç »óÅÂ(ÃÊ±â¿¡´Â ¾Æ¹«°Íµµ ¾È ÇÑ »óÅÂ´Ï±î None À¸·Î.. -> plow: ¹ç °¥¸° »óÅÂ, plant: ¾¾¾Ñ ½ÉÀº »óÅÂ, harvest: ´Ù ÀÚ¶õ »óÅÂ)
+    public string currentState = "None"; // í˜„ì¬ ìƒíƒœ(ì´ˆê¸°ì—ëŠ” ì•„ë¬´ê²ƒë„ ì•ˆ í•œ ìƒíƒœë‹ˆê¹Œ None ìœ¼ë¡œ.. -> plow: ë°­ ê°ˆë¦° ìƒíƒœ, plant: ì”¨ì•— ì‹¬ì€ ìƒíƒœ, harvest: ë‹¤ ìë€ ìƒíƒœ)
 }
 
 
 public class FarmingManager : MonoBehaviour
 {
     [Header("Game Data")]
-    public Camera mainCamera; // ¸¶¿ì½º ÁÂÇ¥¸¦ °ÔÀÓ ¿ùµå ÁÂÇ¥·Î º¯È¯ÇÏ±â À§ÇØ ÇÊ¿äÇÑ º¯¼ö(Ä«¸Ş¶ó ¿ÀºêÁ§Æ® ÇÒ´çÇØÁÙ °Í)
-    public SeedContainer seedContainer; // ÇöÀç °¡Áø ¾¾¾ÑÀ» °¡Á®¿À±â À§ÇØ ÇÊ¿äÇÑ º¯¼ö(¾¾¾Ñ ÄÁÅ×ÀÌ³Ê °ÔÀÓ ¿ÀºêÁ§Æ® ÇÒ´çÇØÁÙ °Í)
-    public FruitContainer fruitContainer; // ¼öÈ®ÇÑ °úÀÏÀ» ÀúÀåÇÏ±â À§ÇØ ÇÊ¿äÇÑ º¯¼ö(°úÀÏ ÄÁÅ×ÀÌ³Ê °ÔÀÓ ¿ÀºêÁ§Æ® ÇÒ´çÇØÁÙ °Í)
+    public Camera mainCamera; // ë§ˆìš°ìŠ¤ ì¢Œí‘œë¥¼ ê²Œì„ ì›”ë“œ ì¢Œí‘œë¡œ ë³€í™˜í•˜ê¸° ìœ„í•´ í•„ìš”í•œ ë³€ìˆ˜(ì¹´ë©”ë¼ ì˜¤ë¸Œì íŠ¸ í• ë‹¹í•´ì¤„ ê²ƒ)
+    public SeedContainer seedContainer; // í˜„ì¬ ê°€ì§„ ì”¨ì•—ì„ ê°€ì ¸ì˜¤ê¸° ìœ„í•´ í•„ìš”í•œ ë³€ìˆ˜(ì”¨ì•— ì»¨í…Œì´ë„ˆ ê²Œì„ ì˜¤ë¸Œì íŠ¸ í• ë‹¹í•´ì¤„ ê²ƒ)
+    public FruitContainer fruitContainer; // ìˆ˜í™•í•œ ê³¼ì¼ì„ ì €ì¥í•˜ê¸° ìœ„í•´ í•„ìš”í•œ ë³€ìˆ˜(ê³¼ì¼ ì»¨í…Œì´ë„ˆ ê²Œì„ ì˜¤ë¸Œì íŠ¸ í• ë‹¹í•´ì¤„ ê²ƒ)
 
     [Header("Tile")]
-    public TileBase grassTile; // ¹ç °¥±â Àü »óÅÂ
-    public TileBase farmTile; // ¹ç °£ ÈÄ »óÅÂ
-    public TileBase plantTile; // ¾¾¾Ñ ½ÉÀº ÈÄ »óÅÂ
-    public TileBase harvestTile; // °úÀÏ ´Ù ÀÚ¶õ »óÅÂ
-    public Vector3Int prevSelectTile; // ÀÌÀü Å¬¸¯µÈ Å¸ÀÏ
+    public TileBase grassTile; // ë°­ ê°ˆê¸° ì „ ìƒíƒœ
+    public TileBase farmTile; // ë°­ ê°„ í›„ ìƒíƒœ
+    public TileBase plantTile; // ì”¨ì•— ì‹¬ì€ í›„ ìƒíƒœ
+    public TileBase harvestTile; // ê³¼ì¼ ë‹¤ ìë€ ìƒíƒœ
+    public Vector3Int prevSelectTile; // ì´ì „ í´ë¦­ëœ íƒ€ì¼
 
     [Header("Tilemap")]
-    public Tilemap farmEnableZoneTilemap; // ³ó»ç °¡´É ºÎÁö¸¦ ³ªÅ¸³»´Â Å¸ÀÏ¸Ê
-    public Tilemap farmTilemap; // ÁøÂ¥·Î ÇöÀç Å¸ÀÏÀÇ »óÅÂ¿¡ µû¶ó Å¸ÀÏÀÌ º¯°æµÇ´Â Å¸ÀÏ¸Ê
+    public Tilemap farmEnableZoneTilemap; // ë†ì‚¬ ê°€ëŠ¥ ë¶€ì§€ë¥¼ ë‚˜íƒ€ë‚´ëŠ” íƒ€ì¼ë§µ
+    public Tilemap farmTilemap; // ì§„ì§œë¡œ í˜„ì¬ íƒ€ì¼ì˜ ìƒíƒœì— ë”°ë¼ íƒ€ì¼ì´ ë³€ê²½ë˜ëŠ” íƒ€ì¼ë§µ
 
     [Header("Farm interaction Button")]
-    // ¹öÆ°À» ÇÁ¸®ÆÕÀ¸·Î ¸¸µé¾î ³õÀº ´ÙÀ½ µ¿ÀûÀ¸·Î »ı¼ºÇØ¼­ ¾µ °Í.
-    public GameObject[] buttonPrefabs; // [0]: plow ¹öÆ°, [1]: plant ¹öÆ°, [2]: harvest ¹öÆ°
-    public Canvas buttonParent; // ¹öÆ° »ı¼ºÇÒ ¶§ ºÎ¸ğ ÁöÁ¤ÇÏ±â À§ÇÑ º¯¼ö
+    // ë²„íŠ¼ì„ í”„ë¦¬íŒ¹ìœ¼ë¡œ ë§Œë“¤ì–´ ë†“ì€ ë‹¤ìŒ ë™ì ìœ¼ë¡œ ìƒì„±í•´ì„œ ì“¸ ê²ƒ.
+    public GameObject[] buttonPrefabs; // [0]: plow ë²„íŠ¼, [1]: plant ë²„íŠ¼, [2]: harvest ë²„íŠ¼
+    public Canvas buttonParent; // ë²„íŠ¼ ìƒì„±í•  ë•Œ ë¶€ëª¨ ì§€ì •í•˜ê¸° ìœ„í•œ ë³€ìˆ˜
 
     [Header("Farm interaction Panel")]
-    public GameObject growTimePanel; // ´Ù ÀÚ¶ó±â±îÁö ³²Àº ½Ã°£ º¸¿©ÁÖ´Â ÆÇ³Ú
-    public Text growTimeText; // ´Ù ÀÚ¶ó±â±îÁö ³²Àº ½Ã°£
+    public GameObject growTimePanel; // ë‹¤ ìë¼ê¸°ê¹Œì§€ ë‚¨ì€ ì‹œê°„ ë³´ì—¬ì£¼ëŠ” íŒë„¬
+    public Text growTimeText; // ë‹¤ ìë¼ê¸°ê¹Œì§€ ë‚¨ì€ ì‹œê°„
 
     [Header("Farming Data")]
-    public Vector2 clickPosition; // ÇöÀç ¸¶¿ì½º À§Ä¡¸¦ °ÔÀÓ ¿ùµå À§Ä¡·Î ¹Ù²ã¼­ ÀúÀå
-    public Vector3Int cellPosition; // °ÔÀÓ ¿ùµå À§Ä¡¸¦ Å¸ÀÏ ¸ÊÀÇ Å¸ÀÏ ¼¿ À§Ä¡·Î º¯È¯
+    public Vector2 clickPosition; // í˜„ì¬ ë§ˆìš°ìŠ¤ ìœ„ì¹˜ë¥¼ ê²Œì„ ì›”ë“œ ìœ„ì¹˜ë¡œ ë°”ê¿”ì„œ ì €ì¥
+    public Vector3Int cellPosition; // ê²Œì„ ì›”ë“œ ìœ„ì¹˜ë¥¼ íƒ€ì¼ ë§µì˜ íƒ€ì¼ ì…€ ìœ„ì¹˜ë¡œ ë³€í™˜
     Dictionary<Vector3Int, FarmingData> farmingData;
 
 
@@ -66,26 +66,26 @@ public class FarmingManager : MonoBehaviour
 
     private void Start()
     {
-        // ³ó»ç °¡´É ±¸¿ª¸¸ farmingData ¿¡ ÀúÀåÇÒ °ÍÀÓ.
+        // ë†ì‚¬ ê°€ëŠ¥ êµ¬ì—­ë§Œ farmingData ì— ì €ì¥í•  ê²ƒì„.
         foreach (Vector3Int pos in farmEnableZoneTilemap.cellBounds.allPositionsWithin)
         {
             if (!farmEnableZoneTilemap.HasTile(pos)) continue;
 
-            // À¯´ÏÆ¼¿¡¼­´Â new ¸¦ ¾²·Á¸é class °¡ MonoBehaviour ¸¦ »ó¼Ó ¹ŞÀ¸¸é ¾È µÊ.
+            // ìœ ë‹ˆí‹°ì—ì„œëŠ” new ë¥¼ ì“°ë ¤ë©´ class ê°€ MonoBehaviour ë¥¼ ìƒì† ë°›ìœ¼ë©´ ì•ˆ ë¨.
             farmingData[pos] = new FarmingData();
-            farmingData[pos].buttons = new Button[3]; // [0]: plow ¹öÆ°, [1]: plant ¹öÆ°, [2]: harvest ¹öÆ°
+            farmingData[pos].buttons = new Button[3]; // [0]: plow ë²„íŠ¼, [1]: plant ë²„íŠ¼, [2]: harvest ë²„íŠ¼
 
-            // °¢ Å¸ÀÏ¸¶´Ù ¼¼ °³ÀÇ ¹öÆ°À» °¡Áö°í ½ÃÀÛÇÏµµ·Ï..
+            // ê° íƒ€ì¼ë§ˆë‹¤ ì„¸ ê°œì˜ ë²„íŠ¼ì„ ê°€ì§€ê³  ì‹œì‘í•˜ë„ë¡..
             for (int i=0; i<buttonPrefabs.Length; i++)
             {
-                // Å¬·ÎÀú ¹®Á¦¸¦ ÇÇÇÏ±â À§ÇØ¼­ °ªÀ» º¯¼ö¿¡ ÀúÀåÇØ³õ°í ÀÌ º¯¼ö¸¦ »ç¿ëÇÔ..
+                // í´ë¡œì € ë¬¸ì œë¥¼ í”¼í•˜ê¸° ìœ„í•´ì„œ ê°’ì„ ë³€ìˆ˜ì— ì €ì¥í•´ë†“ê³  ì´ ë³€ìˆ˜ë¥¼ ì‚¬ìš©í•¨..
                 int index = i;
                 Vector3Int tilePos = pos;
                 farmingData[pos].buttons[i] = CreateButton(index, tilePos).GetComponent<Button>();
 
                 if (index==0)
                 {
-                    // ¹öÆ°¿¡ ÇÔ¼ö¸¦ ÀúÀåÇØ³õÀ½(tilePos µµ °°ÀÌ ÀúÀåÇØ³õ±â)
+                    // ë²„íŠ¼ì— í•¨ìˆ˜ë¥¼ ì €ì¥í•´ë†“ìŒ(tilePos ë„ ê°™ì´ ì €ì¥í•´ë†“ê¸°)
                     farmingData[tilePos].buttons[index].onClick.AddListener(() => PlowTile(tilePos));
                 } 
                 else if (index==1)
@@ -98,7 +98,7 @@ public class FarmingManager : MonoBehaviour
                 }
             }
 
-            // ¸Ç Ã³À½¿¡´Â plow ¹öÆ°À» ÀúÀåÇÏ°í ÀÖµµ·Ï
+            // ë§¨ ì²˜ìŒì—ëŠ” plow ë²„íŠ¼ì„ ì €ì¥í•˜ê³  ìˆë„ë¡
             farmingData[pos].stateButton = farmingData[pos].buttons[0];
 
             prevSelectTile = pos;
@@ -107,17 +107,17 @@ public class FarmingManager : MonoBehaviour
 
     void Update()
     {
-        // ¹öÆ° ´­·¶À» ¶§ µÚ¿¡ ÀÖ´Â Å¸ÀÏ ¸ø ´©¸£µµ·Ï ÇÏ±â À§ÇÑ ±¸¹®..
+        // ë²„íŠ¼ ëˆŒë €ì„ ë•Œ ë’¤ì— ìˆëŠ” íƒ€ì¼ ëª» ëˆ„ë¥´ë„ë¡ í•˜ê¸° ìœ„í•œ êµ¬ë¬¸..
         if (IsPointerOverUIObject()) return;
 
-        // ¶¥À» ¿ŞÂÊ ¸¶¿ì½ºÅ°·Î ´©¸£¸é..
+        // ë•…ì„ ì™¼ìª½ ë§ˆìš°ìŠ¤í‚¤ë¡œ ëˆ„ë¥´ë©´..
         if (Input.GetMouseButtonDown(0))
         {
-            growTimePanel.SetActive(false); // ´©¸£¸é ÀÌÀü¿¡ ÄÑÁø ÆÇ³Ú ²¨Áöµµ·Ï..
+            growTimePanel.SetActive(false); // ëˆ„ë¥´ë©´ ì´ì „ì— ì¼œì§„ íŒë„¬ êº¼ì§€ë„ë¡..
 
-            // ¶¥¿¡ ¾Æ¹«°Íµµ ¾È ÇÑ »óÅÂ´Â plow ¹öÆ°À» °®°í, °¥¸° »óÅÂ´Â ¹öÆ°À¸·Î plant ¹öÆ°À» °®´Â´Ù.
-            // ´Ù¸¥ ¶¥À» Å¬¸¯ÇÏ¸é Àü¿¡ Å¬¸¯ÇÑ ¶¥ÀÇ ¹öÆ°Àº ¾È º¸¿©¾ß ÇÏ¹Ç·Î SetActive ·Î ¾Èº¸ÀÌ°Ô Á¶Á¤ÇÑ´Ù..
-            // ¼öÈ®ÇÏ±â ¹öÆ°Àº °úÀÏÀÌ ´Ù ÀÚ¶ó¸é °è¼Ó º¸¿©¾ßÇÔ..
+            // ë•…ì— ì•„ë¬´ê²ƒë„ ì•ˆ í•œ ìƒíƒœëŠ” plow ë²„íŠ¼ì„ ê°–ê³ , ê°ˆë¦° ìƒíƒœëŠ” ë²„íŠ¼ìœ¼ë¡œ plant ë²„íŠ¼ì„ ê°–ëŠ”ë‹¤.
+            // ë‹¤ë¥¸ ë•…ì„ í´ë¦­í•˜ë©´ ì „ì— í´ë¦­í•œ ë•…ì˜ ë²„íŠ¼ì€ ì•ˆ ë³´ì—¬ì•¼ í•˜ë¯€ë¡œ SetActive ë¡œ ì•ˆë³´ì´ê²Œ ì¡°ì •í•œë‹¤..
+            // ìˆ˜í™•í•˜ê¸° ë²„íŠ¼ì€ ê³¼ì¼ì´ ë‹¤ ìë¼ë©´ ê³„ì† ë³´ì—¬ì•¼í•¨..
             if (farmEnableZoneTilemap.HasTile(prevSelectTile))
             {
                 if (farmingData[prevSelectTile].currentState == "None" || farmingData[prevSelectTile].currentState == "plow")
@@ -126,59 +126,59 @@ public class FarmingManager : MonoBehaviour
                 }
             }
 
-            // ÇöÀç ¸¶¿ì½º À§Ä¡¸¦ °ÔÀÓ ¿ùµå À§Ä¡·Î ¹Ù²ã¼­ ÀúÀå
+            // í˜„ì¬ ë§ˆìš°ìŠ¤ ìœ„ì¹˜ë¥¼ ê²Œì„ ì›”ë“œ ìœ„ì¹˜ë¡œ ë°”ê¿”ì„œ ì €ì¥
             clickPosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-            // °ÔÀÓ ¿ùµå À§Ä¡¸¦ Å¸ÀÏ ¸ÊÀÇ Å¸ÀÏ ¼¿ À§Ä¡·Î º¯È¯
+            // ê²Œì„ ì›”ë“œ ìœ„ì¹˜ë¥¼ íƒ€ì¼ ë§µì˜ íƒ€ì¼ ì…€ ìœ„ì¹˜ë¡œ ë³€í™˜
             cellPosition = farmTilemap.WorldToCell(clickPosition);
             
 
             foreach (Vector3Int pos in farmingData.Keys)
             {
-                // ÀúÀåÇØ³õÀº Å¸ÀÏ Áß¿¡ ÇöÀç ¸¶¿ì½º·Î Å¬¸¯ÇÑ À§Ä¡¶û °°Àº Å¸ÀÏÀÌ ÀÖÀ¸¸é
+                // ì €ì¥í•´ë†“ì€ íƒ€ì¼ ì¤‘ì— í˜„ì¬ ë§ˆìš°ìŠ¤ë¡œ í´ë¦­í•œ ìœ„ì¹˜ë‘ ê°™ì€ íƒ€ì¼ì´ ìˆìœ¼ë©´
                 if (pos == cellPosition)
                 {
-                    // ¹çÀÌ ¾È °¥¸° »óÅÂ¸é ´­·¶À» ¶§ ¹öÆ° ¶ã ¼ö ÀÖµµ·Ï
+                    // ë°­ì´ ì•ˆ ê°ˆë¦° ìƒíƒœë©´ ëˆŒë €ì„ ë•Œ ë²„íŠ¼ ëœ° ìˆ˜ ìˆë„ë¡
                     if (farmingData[cellPosition].plowEnableState)
                     {
                         farmingData[cellPosition].stateButton.gameObject.SetActive(true);
                     } 
                     else
                     {
-                        // ¾¾¾ÑÀÌ ¾È ½É¾îÁ® ÀÖÀ» ¶§ ¶Ç´Â ¾¾¾ÑÀÌ ´Ù ÀÚ¶úÀ» ¶§ ¹öÆ° ¶ã ¼ö ÀÖµµ·Ï
+                        // ì”¨ì•—ì´ ì•ˆ ì‹¬ì–´ì ¸ ìˆì„ ë•Œ ë˜ëŠ” ì”¨ì•—ì´ ë‹¤ ìëì„ ë•Œ ë²„íŠ¼ ëœ° ìˆ˜ ìˆë„ë¡
                         if (farmingData[cellPosition].seed == null || (farmingData[cellPosition].seed.isGrown))
                         {
                             farmingData[cellPosition].stateButton.gameObject.SetActive(true);
                         }
-                        // ¾¾¾ÑÀÌ ÀÚ¶ó´Â ÁßÀÌ¸é ³²Àº ½Ã°£ ³ªÅ¸³»´Â ÆÇ³Ú ¶ßµµ·Ï
+                        // ì”¨ì•—ì´ ìë¼ëŠ” ì¤‘ì´ë©´ ë‚¨ì€ ì‹œê°„ ë‚˜íƒ€ë‚´ëŠ” íŒë„¬ ëœ¨ë„ë¡
                         else if (!farmingData[cellPosition].seed.isGrown)
                         {
-                            // ÆÇ³Ú À§Ä¡¸¦ ÇöÀç Å¬¸¯ÇÑ Å¸ÀÏ À§Ä¡·Î..
+                            // íŒë„¬ ìœ„ì¹˜ë¥¼ í˜„ì¬ í´ë¦­í•œ íƒ€ì¼ ìœ„ì¹˜ë¡œ..
                             growTimePanel.transform.position = mainCamera.WorldToScreenPoint(farmTilemap.CellToWorld(cellPosition)) + new Vector3(0, 50, 0);
                             growTimePanel.SetActive(true);
-                            growTimeText.text = "³²Àº½Ã°£\n" + (int)(farmingData[cellPosition].seed.growTime - farmingData[cellPosition].seed.currentTime);
+                            growTimeText.text = "ë‚¨ì€ì‹œê°„\n" + (int)(farmingData[cellPosition].seed.growTime - farmingData[cellPosition].seed.currentTime);
                         }
                     }
 
-                    // ÇöÀç ¼±ÅÃÇÑ Å¸ÀÏÀÇ ¹öÆ°Àº È°¼ºÈ­ µÇµµ·Ï..
+                    // í˜„ì¬ ì„ íƒí•œ íƒ€ì¼ì˜ ë²„íŠ¼ì€ í™œì„±í™” ë˜ë„ë¡..
                     //farmingData[cellPosition].stateButton.gameObject.SetActive(true);
-                    // ¾Æ·¡ ¹æ¹ıÃ³·³ ÇÏ¸é ¿À·ù³². ÀÌÀ¯´Â ¹¹Áö??
-                    // --> GameObject ´Â ÄÄÆ÷³ÍÆ®°¡ ¾Æ´Ï¶ó¼­ ¿À·ù°¡ ³ª´Â °ÍÀÌ¾ú´Ù... ÀÌ¹ø ±âÈ¸¿¡ ¾Ë°Ô µÆ´Ù.
-                    // --> ±×³É gameObject ·Î ¹Ù·Î °ÔÀÓ ¿ÀºêÁ§Æ®¿¡ Á¢±ÙÇÒ ¼ö ÀÖ¾ú´Ù.
-                    // --> ±âº»ÀûÀÎ°É ±î¸Ô°í ÀÖ¾ú´Ù.. ÀÌ¹ø¿£ Àß ±â¾ïÇÏÀÚ..
+                    // ì•„ë˜ ë°©ë²•ì²˜ëŸ¼ í•˜ë©´ ì˜¤ë¥˜ë‚¨. ì´ìœ ëŠ” ë­ì§€??
+                    // --> GameObject ëŠ” ì»´í¬ë„ŒíŠ¸ê°€ ì•„ë‹ˆë¼ì„œ ì˜¤ë¥˜ê°€ ë‚˜ëŠ” ê²ƒì´ì—ˆë‹¤... ì´ë²ˆ ê¸°íšŒì— ì•Œê²Œ ëë‹¤.
+                    // --> ê·¸ëƒ¥ gameObject ë¡œ ë°”ë¡œ ê²Œì„ ì˜¤ë¸Œì íŠ¸ì— ì ‘ê·¼í•  ìˆ˜ ìˆì—ˆë‹¤.
+                    // --> ê¸°ë³¸ì ì¸ê±¸ ê¹Œë¨¹ê³  ìˆì—ˆë‹¤.. ì´ë²ˆì—” ì˜ ê¸°ì–µí•˜ì..
                     //farmingData[cellPosition].stateButton.GetComponent<GameObject>().SetActive(true);
                 }
             }
 
-            prevSelectTile = cellPosition; // Áö±İ ´©¸¥ Å¸ÀÏÀ» ÀÌÀü¿¡ ´©¸¥ Å¸ÀÏ À§Ä¡¸¦ ÀúÀåÇÏ´Â º¯¼ö¿¡ ÀúÀå.. 
+            prevSelectTile = cellPosition; // ì§€ê¸ˆ ëˆ„ë¥¸ íƒ€ì¼ì„ ì´ì „ì— ëˆ„ë¥¸ íƒ€ì¼ ìœ„ì¹˜ë¥¼ ì €ì¥í•˜ëŠ” ë³€ìˆ˜ì— ì €ì¥.. 
         }
 
-        // ÀÚ¶ó´Âµ¥ ³²Àº ½Ã°£ÀÌ °è¼Ó ¾÷µ¥ÀÌÆ® µÇ¾î¾ß ÇÏ¹Ç·Î..
+        // ìë¼ëŠ”ë° ë‚¨ì€ ì‹œê°„ì´ ê³„ì† ì—…ë°ì´íŠ¸ ë˜ì–´ì•¼ í•˜ë¯€ë¡œ..
         if (farmEnableZoneTilemap.HasTile(cellPosition) && farmingData[cellPosition].seed != null)
         {
             if (!farmingData[cellPosition].seed.isGrown)
-                growTimeText.text = "³²Àº½Ã°£\n" + (int)(farmingData[cellPosition].seed.growTime - farmingData[cellPosition].seed.currentTime);
+                growTimeText.text = "ë‚¨ì€ì‹œê°„\n" + (int)(farmingData[cellPosition].seed.growTime - farmingData[cellPosition].seed.currentTime);
             else
-                growTimePanel.SetActive(false); // ´Ù ÀÚ¶ó¸é ³²Àº½Ã°£ ³ªÅ¸³»´Â ÆÇ³Ú ²¨Áöµµ·Ï..
+                growTimePanel.SetActive(false); // ë‹¤ ìë¼ë©´ ë‚¨ì€ì‹œê°„ ë‚˜íƒ€ë‚´ëŠ” íŒë„¬ êº¼ì§€ë„ë¡..
         }
 
 
@@ -189,9 +189,9 @@ public class FarmingManager : MonoBehaviour
             {
                 if (farmingData[pos].seed.isGrown)
                 {
-                    farmTilemap.SetTile(pos, harvestTile); // Å¸ÀÏÀ» °úÀÏÀÌ ´Ù ÀÚ¶õ »óÅÂ·Î º¯°æ
-                    farmingData[pos].harvestEnableState = true; // ÀÛ¹° ¼öÈ®ÇÒ ¼ö ÀÖ´Â »óÅÂ
-                    farmingData[pos].stateButton.gameObject.SetActive(true); // ¼öÈ®ÇÏ±â ¹öÆ°Àº Ç×»ó ¶°ÀÖ¾î¾ß ÇÔ
+                    farmTilemap.SetTile(pos, harvestTile); // íƒ€ì¼ì„ ê³¼ì¼ì´ ë‹¤ ìë€ ìƒíƒœë¡œ ë³€ê²½
+                    farmingData[pos].harvestEnableState = true; // ì‘ë¬¼ ìˆ˜í™•í•  ìˆ˜ ìˆëŠ” ìƒíƒœ
+                    farmingData[pos].stateButton.gameObject.SetActive(true); // ìˆ˜í™•í•˜ê¸° ë²„íŠ¼ì€ í•­ìƒ ë– ìˆì–´ì•¼ í•¨
                     farmingData[pos].currentState = "harvest";
                 }
             }
@@ -211,16 +211,16 @@ public class FarmingManager : MonoBehaviour
 
     public GameObject CreateButton(int buttonNumber, Vector3Int pos)
     {
-        // Å¸ÀÏ ¸Ê ÃÊ±â ¼³Á¤ÇÒ ¶§ ¾²´Â ÇÔ¼ö
-        // Å¸ÀÏ¸¶´Ù ¹öÆ°À» ¹Ì¸® ¸¸µé¾î³õ°í »ç¿ëÇÒ °ÍÀÓ
+        // íƒ€ì¼ ë§µ ì´ˆê¸° ì„¤ì •í•  ë•Œ ì“°ëŠ” í•¨ìˆ˜
+        // íƒ€ì¼ë§ˆë‹¤ ë²„íŠ¼ì„ ë¯¸ë¦¬ ë§Œë“¤ì–´ë†“ê³  ì‚¬ìš©í•  ê²ƒì„
 
         GameObject button = Instantiate(buttonPrefabs[buttonNumber], buttonParent.transform);
 
-        // ¼¿ ÁÂÇ¥¸¦ ¿ùµå ÁÂÇ¥·Î ¹Ù²ã¼­ ÀúÀå
+        // ì…€ ì¢Œí‘œë¥¼ ì›”ë“œ ì¢Œí‘œë¡œ ë°”ê¿”ì„œ ì €ì¥
         Vector3 worldPos = farmTilemap.CellToWorld(pos);
-        // ¿ùµå ÁÂÇ¥¸¦ ½ºÅ©¸° ÁÂÇ¥·Î ¹Ù²ã¼­ ÀúÀå
+        // ì›”ë“œ ì¢Œí‘œë¥¼ ìŠ¤í¬ë¦° ì¢Œí‘œë¡œ ë°”ê¿”ì„œ ì €ì¥
         Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
-        // ¹öÆ°ÀÇ ÁÂÇ¥ ¼³Á¤
+        // ë²„íŠ¼ì˜ ì¢Œí‘œ ì„¤ì •
         button.transform.position = screenPos;
         button.transform.position += new Vector3(0, 50, 0);
 
@@ -229,48 +229,48 @@ public class FarmingManager : MonoBehaviour
     
     public void PlowTile(Vector3Int pos)
     {
-        // ¹çÀ» °¡´Â ÇÔ¼ö
+        // ë°­ì„ ê°€ëŠ” í•¨ìˆ˜
 
-        farmTilemap.SetTile(pos, farmTile); // Å¸ÀÏ ¸ğ½ÀÀº ¹ç °£ »óÅÂ·Î ¹Ù²ãÁÖ±â
-        farmingData[pos].plowEnableState = false; // °¥¾ÒÀ¸´Ï±î ÀÌÁ¦ °¥ ¼ö ¾ø´Â »óÅÂ¸¦ ³ªÅ¸³»±â À§ÇØ false ·Î °ª º¯°æ
-        farmingData[pos].plantEnableState = true; // ¾¾¾ÑÀ» ½ÉÀ» ¼ö ÀÖ´Â »óÅÂ¸¦ ³ªÅ¸³»±â À§ÇØ true ·Î °ª º¯°æ
-        farmingData[pos].currentState = "plow"; // °¥¸° »óÅÂ´Ï±î plow ·Î ¹Ù²ãÁÖ±â
+        farmTilemap.SetTile(pos, farmTile); // íƒ€ì¼ ëª¨ìŠµì€ ë°­ ê°„ ìƒíƒœë¡œ ë°”ê¿”ì£¼ê¸°
+        farmingData[pos].plowEnableState = false; // ê°ˆì•˜ìœ¼ë‹ˆê¹Œ ì´ì œ ê°ˆ ìˆ˜ ì—†ëŠ” ìƒíƒœë¥¼ ë‚˜íƒ€ë‚´ê¸° ìœ„í•´ false ë¡œ ê°’ ë³€ê²½
+        farmingData[pos].plantEnableState = true; // ì”¨ì•—ì„ ì‹¬ì„ ìˆ˜ ìˆëŠ” ìƒíƒœë¥¼ ë‚˜íƒ€ë‚´ê¸° ìœ„í•´ true ë¡œ ê°’ ë³€ê²½
+        farmingData[pos].currentState = "plow"; // ê°ˆë¦° ìƒíƒœë‹ˆê¹Œ plow ë¡œ ë°”ê¿”ì£¼ê¸°
 
-        farmingData[pos].stateButton.gameObject.SetActive(false); // ¹öÆ° ÇÑ ¹ø ´­·¶À¸´Ï±î ²¨Áöµµ·Ï..
+        farmingData[pos].stateButton.gameObject.SetActive(false); // ë²„íŠ¼ í•œ ë²ˆ ëˆŒë €ìœ¼ë‹ˆê¹Œ êº¼ì§€ë„ë¡..
 
-        farmingData[pos].stateButton = farmingData[pos].buttons[1]; // plant ¹öÆ°À¸·Î º¯°æ..
+        farmingData[pos].stateButton = farmingData[pos].buttons[1]; // plant ë²„íŠ¼ìœ¼ë¡œ ë³€ê²½..
     }
 
     public void PlantTile(Vector3Int pos)
     {
-        // ¾¾¾ÑÀ» ½É´Â ÇÔ¼ö
-        // ´ÙÀ½¿¡ ÀÌ ÇÔ¼öÀÇ ¸Å°³º¯¼ö·Î ¾¾¾Ñ ÀÎµ¦½º·Î º¸³»Áà¼­ GetSeed ÇÔ¼öÀÇ ¸Å°³º¯¼ö·Î º¸³¾ °Í.
+        // ì”¨ì•—ì„ ì‹¬ëŠ” í•¨ìˆ˜
+        // ë‹¤ìŒì— ì´ í•¨ìˆ˜ì˜ ë§¤ê°œë³€ìˆ˜ë¡œ ì”¨ì•— ì¸ë±ìŠ¤ë¡œ ë³´ë‚´ì¤˜ì„œ GetSeed í•¨ìˆ˜ì˜ ë§¤ê°œë³€ìˆ˜ë¡œ ë³´ë‚¼ ê²ƒ.
         farmingData[pos].seed = seedContainer.GetSeed(0).GetComponent<Seed>();
 
-        farmTilemap.SetTile(pos, plantTile); // Å¸ÀÏ ¸ğ½ÀÀ» ¾¾¾Ñ ½ÉÀº »óÅÂ·Î ¹Ù²ãÁÖ±â
-        farmingData[pos].plantEnableState = true; // ¾¾¾ÑÀ» ½ÉÀ» ¼ö ¾ø´Â »óÅÂ¸¦ ³ªÅ¸³»±â À§ÇØ false ·Î º¯°æ
-        farmingData[pos].currentState = "plant"; // ¾¾¾Ñ ½ÉÀº »óÅÂ´Ï±î plant ·Î ¹Ù²ãÁÖ±â
+        farmTilemap.SetTile(pos, plantTile); // íƒ€ì¼ ëª¨ìŠµì„ ì”¨ì•— ì‹¬ì€ ìƒíƒœë¡œ ë°”ê¿”ì£¼ê¸°
+        farmingData[pos].plantEnableState = true; // ì”¨ì•—ì„ ì‹¬ì„ ìˆ˜ ì—†ëŠ” ìƒíƒœë¥¼ ë‚˜íƒ€ë‚´ê¸° ìœ„í•´ false ë¡œ ë³€ê²½
+        farmingData[pos].currentState = "plant"; // ì”¨ì•— ì‹¬ì€ ìƒíƒœë‹ˆê¹Œ plant ë¡œ ë°”ê¿”ì£¼ê¸°
 
-        farmingData[pos].stateButton.gameObject.SetActive(false); // ¹öÆ° ÇÑ ¹ø ´­·¶À¸´Ï±î ²¨Áöµµ·Ï..
+        farmingData[pos].stateButton.gameObject.SetActive(false); // ë²„íŠ¼ í•œ ë²ˆ ëˆŒë €ìœ¼ë‹ˆê¹Œ êº¼ì§€ë„ë¡..
 
-        farmingData[pos].stateButton = farmingData[pos].buttons[2]; // harvest ¹öÆ°À» °¡Áö°í ÀÖµµ·Ï..
+        farmingData[pos].stateButton = farmingData[pos].buttons[2]; // harvest ë²„íŠ¼ì„ ê°€ì§€ê³  ìˆë„ë¡..
     }
 
     public void HarvestTile(Vector3Int pos)
     {
-        // °úÀÏÀ» ¼öÈ®ÇÏ´Â ÇÔ¼ö
-        // ´ÙÀ½¿¥ ÀÌ ÇÔ¼öÀÇ ¸Å°³º¯¼ö·Î ¾¾¾Ñ ÀÎµ¦½º º¸³»Áà¼­ GetFruit ÇÔ¼öÀÇ ¸Å°³º¯¼ö·Î º¸³¾ °Í.
+        // ê³¼ì¼ì„ ìˆ˜í™•í•˜ëŠ” í•¨ìˆ˜
+        // ë‹¤ìŒì—  ì´ í•¨ìˆ˜ì˜ ë§¤ê°œë³€ìˆ˜ë¡œ ì”¨ì•— ì¸ë±ìŠ¤ ë³´ë‚´ì¤˜ì„œ GetFruit í•¨ìˆ˜ì˜ ë§¤ê°œë³€ìˆ˜ë¡œ ë³´ë‚¼ ê²ƒ.
 
         farmingData[pos].plowEnableState = true;
-        farmingData[pos].currentState = "None"; // °úÀÏÀ» ¼öÈ®ÇÑ »óÅÂ´Ï±î None À¸·Î ¹Ù²ãÁÖ±â
+        farmingData[pos].currentState = "None"; // ê³¼ì¼ì„ ìˆ˜í™•í•œ ìƒíƒœë‹ˆê¹Œ None ìœ¼ë¡œ ë°”ê¿”ì£¼ê¸°
         
-        fruitContainer.GetFruit(farmingData[pos].seed.seedIdx); // ¾¾¾ÑÀÇ ÀÎµ¦½º¿Í °°Àº °úÀÏ »ı¼º
+        fruitContainer.GetFruit(farmingData[pos].seed.seedIdx); // ì”¨ì•—ì˜ ì¸ë±ìŠ¤ì™€ ê°™ì€ ê³¼ì¼ ìƒì„±
 
-        farmingData[pos].stateButton.gameObject.SetActive(false); // ¹öÆ° ÇÑ ¹ø ´­·¶À¸´Ï±î ²¨Áöµµ·Ï..
-        farmingData[pos].stateButton = farmingData[pos].buttons[0]; // plow ¹öÆ°À» °¡Áö°í ÀÖµµ·Ï..
+        farmingData[pos].stateButton.gameObject.SetActive(false); // ë²„íŠ¼ í•œ ë²ˆ ëˆŒë €ìœ¼ë‹ˆê¹Œ êº¼ì§€ë„ë¡..
+        farmingData[pos].stateButton = farmingData[pos].buttons[0]; // plow ë²„íŠ¼ì„ ê°€ì§€ê³  ìˆë„ë¡..
 
-        farmingData[pos].seed = null; // ¼öÈ® ¿Ï·á ÇßÀ¸´Ï±î Å¸ÀÏÀÇ seed º¯¼ö¸¦ ´Ù½Ã null ·Î ¼³Á¤ÇØÁÖ±â..
+        farmingData[pos].seed = null; // ìˆ˜í™• ì™„ë£Œ í–ˆìœ¼ë‹ˆê¹Œ íƒ€ì¼ì˜ seed ë³€ìˆ˜ë¥¼ ë‹¤ì‹œ null ë¡œ ì„¤ì •í•´ì£¼ê¸°..
 
-        farmTilemap.SetTile(pos, grassTile); // Å¸ÀÏ ¸ğ½ÀÀ» ÃÊ±â »óÅÂÀÇ·Î ¹Ù²ãÁÖ±â
+        farmTilemap.SetTile(pos, grassTile); // íƒ€ì¼ ëª¨ìŠµì„ ì´ˆê¸° ìƒíƒœì˜ë¡œ ë°”ê¿”ì£¼ê¸°
     }
 }

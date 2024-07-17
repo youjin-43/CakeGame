@@ -4,31 +4,31 @@ using UnityEngine;
 
 public class Seed : MonoBehaviour
 {
-    // ¾¾¾ÑÀº ´Ù ÇÁ¸®ÆÕÀ¸·Î ¸¸µé¾î ³õÀ» °Í
-    // ¸¸µé¾î³õÀº ÇÁ¸®ÆÕÀº SeedContainer ¿¡ ÀúÀåÇÒ °Í..
+    // ì”¨ì•—ì€ ë‹¤ í”„ë¦¬íŒ¹ìœ¼ë¡œ ë§Œë“¤ì–´ ë†“ì„ ê²ƒ
+    // ë§Œë“¤ì–´ë†“ì€ í”„ë¦¬íŒ¹ì€ SeedContainer ì— ì €ì¥í•  ê²ƒ..
 
     public string seedName;
     public float seedPrice;
-    public float growTime; // ¼ºÀåÇÏ´Âµ¥ °É¸®´Â ½Ã°£
-    public float currentTime; // ½ÉÀº ÈÄºÎÅÍ ÇöÀç±îÁö ½Ã°£
+    public float growTime; // ì„±ì¥í•˜ëŠ”ë° ê±¸ë¦¬ëŠ” ì‹œê°„
+    public float currentTime; // ì‹¬ì€ í›„ë¶€í„° í˜„ì¬ê¹Œì§€ ì‹œê°„
 
-    public bool isGrown = false; // ´Ù ÀÚ¶ú´ÂÁö ¿©ºÎ È®ÀÎ¿ë º¯¼ö
+    public bool isGrown = false; // ë‹¤ ìëëŠ”ì§€ ì—¬ë¶€ í™•ì¸ìš© ë³€ìˆ˜
 
-    public int seedIdx; // ¾¾¾Ñ ÀÎµ¦½º
+    public int seedIdx; // ì”¨ì•— ì¸ë±ìŠ¤
 
 
     private void OnEnable()
     {
         isGrown = false;
         currentTime = 0;
-        Debug.Log("¾¾¾ÑÀ» ½É¾ú´Ù!");
+        Debug.Log("ì”¨ì•—ì„ ì‹¬ì—ˆë‹¤!");
     }
 
     private void Update()
     {
         if (currentTime >= growTime) {
             isGrown = true;
-            Debug.Log("´Ù ÀÚ¶ú´Ù!");
+            Debug.Log("ë‹¤ ìëë‹¤!");
             transform.gameObject.SetActive(!isGrown);
         }
         currentTime += Time.deltaTime;
