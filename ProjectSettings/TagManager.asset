@@ -10,7 +10,14 @@ TagManager:
   - RT
   - STOP
   - RT2
-  - want
+  - RightExit
+  - LeftExit
+  - MainCorner
+  - Counter
+  - Enterance
+  - Corner1
+  - Corner2
+  - Corner3
   layers:
   - Default
   - TransparentFX
