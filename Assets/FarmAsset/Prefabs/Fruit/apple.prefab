@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &254669021995578774
+--- !u!1 &8452563506119180469
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,45 +8,43 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3953028305851332777}
-  - component: {fileID: 1205082230510101347}
+  - component: {fileID: 2953448147143994658}
+  - component: {fileID: 5893364999055588}
   m_Layer: 0
-  m_Name: seed
+  m_Name: apple
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3953028305851332777
+--- !u!4 &2953448147143994658
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 254669021995578774}
+  m_GameObject: {fileID: 8452563506119180469}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.4117283, y: -0.37196124, z: -9.944803}
+  m_LocalPosition: {x: 542.1917, y: 306.022, z: 4.460689}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1205082230510101347
+--- !u!114 &5893364999055588
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 254669021995578774}
+  m_GameObject: {fileID: 8452563506119180469}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a8fb6139007646c48bdc535029ad8405, type: 3}
+  m_Script: {fileID: 11500000, guid: e662db861e0936b429ee8115e1e4d37e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  seedName: "\uC528\uC557"
-  seedPrice: 100
-  growTime: 10
-  currentTime: 0
-  isGrown: 0
-  seedIdx: 0
+  fruitName: "\uC0AC\uACFC"
+  fruitPrice: 1000
+  isEnabled: 0
+  fruitIdx: 0
