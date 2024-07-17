@@ -6,11 +6,15 @@ public class FruitContainer : MonoBehaviour
 {
     public GameObject[] prefabs; // 과일 프리팹을 저장하기 위한 배열
     public List<GameObject>[] pools; // 과일이 생성되면 저장할 공간
+    public int[] fruitCount; // 게임 상에서 어떤 과일이 몇 개 있는지 저장할 배열
 
     public int totalFruitCount;
 
     private void Awake()
     {
+        // [0]:사과, [1]:바나나, [2]:체리, [3]:오렌지, [4]:딸기
+        fruitCount = new int[prefabs.Length]; // 프리팹의 개수만큼 배열 크기 지정
+
         totalFruitCount = 0;
         pools = new List<GameObject>[prefabs.Length]; // 프리팹의 개수만큼 리스트 배열 생성
 

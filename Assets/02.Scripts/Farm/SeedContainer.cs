@@ -10,6 +10,7 @@ public class SeedContainer : MonoBehaviour
 
     private void Awake()
     {
+        // [0]:사과, [1]:바나나, [2]:체리, [3]:오렌지, [4]:딸기
         seedCount = new int[prefabs.Length]; // 프리팹의 개수만큼 배열 크기 지정
 
         pools = new List<GameObject>[prefabs.Length]; // 프리팹의 개수만큼 리스트 배열 생성

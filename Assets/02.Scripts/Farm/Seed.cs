@@ -8,7 +8,7 @@ public class Seed : MonoBehaviour
     // 만들어놓은 프리팹은 SeedContainer 에 저장할 것..
 
     public string seedName;
-    public float seedPrice;
+    public int seedPrice;
     public float growTime; // 성장하는데 걸리는 시간
     public float currentTime; // 심은 후부터 현재까지 시간
 

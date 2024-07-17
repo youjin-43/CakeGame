@@ -46,7 +46,7 @@ public class FarmingManager : MonoBehaviour
     [Header("Farm interaction Button")]
     // 버튼을 프리팹으로 만들어 놓은 다음 동적으로 생성해서 쓸 것.
     public GameObject[] buttonPrefabs; // [0]: plow 버튼, [1]: plant 버튼, [2]: harvest 버튼
-    public Canvas buttonParent; // 버튼 생성할 때 부모 지정하기 위한 변수
+    public GameObject buttonParent; // 버튼 생성할 때 부모 지정하기 위한 변수
 
     [Header("Farm interaction Panel")]
     public GameObject growTimePanel; // 다 자라기까지 남은 시간 보여주는 판넬
@@ -56,6 +56,11 @@ public class FarmingManager : MonoBehaviour
     public Vector2 clickPosition; // 현재 마우스 위치를 게임 월드 위치로 바꿔서 저장
     public Vector3Int cellPosition; // 게임 월드 위치를 타일 맵의 타일 셀 위치로 변환
     Dictionary<Vector3Int, FarmingData> farmingData;
+
+    [Header("PlantSeed Information")]
+    public GameObject plantSeedPanel; // 씨앗 선택창
+    public int selectedSeedIdx; // 현재 심을 씨앗 종류
+    public bool clickedSelectedSeedButton = false; // 이 값이 true 가 되면 씨앗 심기 함수 호출하도록(씨앗 심기 함수에서는 이 값을 다시 false 로 돌림).. 
 
 
     private void Awake()
@@ -90,7 +95,8 @@ public class FarmingManager : MonoBehaviour
                 }
                 else if (index == 1)
                 {
-                    farmingData[tilePos].buttons[index].onClick.AddListener(() => PlantTile(tilePos));
+                    //farmingData[tilePos].buttons[index].onClick.AddListener(() => PlantTile(tilePos));
+                    farmingData[tilePos].buttons[index].onClick.AddListener(() => OpenPlantSeedPanel(tilePos)); // 씨앗 선택창 화면에 띄우는 함수 연결시키기
                 }
                 else if (index == 2)
                 {
@@ -188,7 +194,14 @@ public class FarmingManager : MonoBehaviour
                 }
             }
         }
-    }
+
+        // 씨앗 선택창에서 버튼 클릭하면 진입하도록..
+        if (clickedSelectedSeedButton)
+        {
+            // 씨앗 심는 함수 호출
+            PlantTile(cellPosition, selectedSeedIdx);
+        }
+    } 
 
     private bool IsPointerOverUIObject()
     {
@@ -233,19 +246,28 @@ public class FarmingManager : MonoBehaviour
         farmingData[pos].stateButton = farmingData[pos].buttons[1]; // plant 버튼으로 변경..
     }
 
-    public void PlantTile(Vector3Int pos)
+    public void OpenPlantSeedPanel(Vector3Int pos)
+    {
+        // 심기 버튼이랑 연결해줘야함.
+        farmingData[pos].stateButton.gameObject.SetActive(false); // 버튼 한 번 눌렀으니까 꺼지도록..
+
+        plantSeedPanel.SetActive(true); // 심기 버튼 눌렀을 때 씨앗 선택창 뜨도록 하기 위함
+    }
+
+    public void PlantTile(Vector3Int pos, int seedIdx)
     {
         // 씨앗을 심는 함수
-        // 다음에 이 함수의 매개변수로 씨앗 인덱스를 보내줘서 GetSeed 함수의 매개변수로 보낼 것.
-        farmingData[pos].seed = seedContainer.GetSeed(0).GetComponent<Seed>();
+        // 이 함수는 씨앗 선택창에서 씨앗 버튼 눌렀을 때 호출되도록..
+
+        farmingData[pos].seed = seedContainer.GetSeed(seedIdx).GetComponent<Seed>();
 
         farmTilemap.SetTile(pos, plantTile); // 타일 모습을 씨앗 심은 상태로 바꿔주기
         farmingData[pos].plantEnableState = true; // 씨앗을 심을 수 없는 상태를 나타내기 위해 false 로 변경
         farmingData[pos].currentState = "plant"; // 씨앗 심은 상태니까 plant 로 바꿔주기
 
-        farmingData[pos].stateButton.gameObject.SetActive(false); // 버튼 한 번 눌렀으니까 꺼지도록..
-
         farmingData[pos].stateButton = farmingData[pos].buttons[2]; // harvest 버튼을 가지고 있도록..
+
+        clickedSelectedSeedButton = false; // 한 번 심고 난 다음에 바로 변수값 false 로 바꿔주기
     }
 
     public void HarvestTile(Vector3Int pos)
@@ -257,6 +279,7 @@ public class FarmingManager : MonoBehaviour
         farmingData[pos].currentState = "None"; // 과일을 수확한 상태니까 None 으로 바꿔주기
 
         fruitContainer.GetFruit(farmingData[pos].seed.seedIdx); // 씨앗의 인덱스와 같은 과일 생성
+        fruitContainer.fruitCount[farmingData[pos].seed.seedIdx]++; // 씨앗의 인덱스와 같은 과일의 수 증가시키기
 
         farmingData[pos].stateButton.gameObject.SetActive(false); // 버튼 한 번 눌렀으니까 꺼지도록..
         farmingData[pos].stateButton = farmingData[pos].buttons[0]; // plow 버튼을 가지고 있도록..
@@ -269,6 +292,13 @@ public class FarmingManager : MonoBehaviour
 
     public void BuySeed(int count, int idx)
     {
+        // 돈이 부족하면 씨앗 못사!
+        if (GameManager.instance.money < seedContainer.prefabs[idx].GetComponent<Seed>().seedPrice * count) {
+            Debug.Log("돈 없어!!!");
+            return; 
+        }
+
         seedContainer.seedCount[idx] += count; // 씨앗의 개수를 저장하고 있는 배열의 인덱스 요소에 구매한 씨앗의 개수만큼 더해주기
+        GameManager.instance.money -= seedContainer.prefabs[idx].GetComponent<Seed>().seedPrice * count; // 가진 돈에서 차감!
     }
 }
