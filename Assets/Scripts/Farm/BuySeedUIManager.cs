@@ -7,9 +7,9 @@ using UnityEngine.UI;
 public class BuySeedUIManager : MonoBehaviour
 {
     [Header("Seed Info")]
-    public FarmingManager farmingManager; // ±¸¸ÅÇÏ±â ¹öÆ°ÀÌ¶û farmingManager ¿¡¼­ SeedContainer ÀÇ GetSeed ÇÔ¼ö¶û ¿¬µ¿ÇÏ±â À§ÇØ¼­..
+    public FarmingManager farmingManager; // êµ¬ë§¤í•˜ê¸° ë²„íŠ¼ì´ë‘ farmingManager ì—ì„œ SeedContainer ì˜ GetSeed í•¨ìˆ˜ë‘ ì—°ë™í•˜ê¸° ìœ„í•´ì„œ..
     public SeedContainer seedInfo;
-    public Sprite[] seedImages; // ½ºÇÁ¶óÀÌÆ®´Â ¹Ì¸® ¹è¿­¿¡ ³Ö¾î³ö¾ß »ç¿ëÇÒ ¼ö ÀÖÀ½..
+    public Sprite[] seedImages; // ìŠ¤í”„ë¼ì´íŠ¸ëŠ” ë¯¸ë¦¬ ë°°ì—´ì— ë„£ì–´ë†”ì•¼ ì‚¬ìš©í•  ìˆ˜ ìˆìŒ..
 
     [Header("Buy Seed UI")]
     public GameObject BuySeedPanel;
@@ -21,8 +21,8 @@ public class BuySeedUIManager : MonoBehaviour
 
     private void Awake()
     {
-        // ÇöÀç ¾¾¾Ñ ±¸¸Å ÆÇ³Ú¿¡ Á¸ÀçÇÏ´Â ½½·ÔµéÀ» °¡Á®¿Í¼­ ÀúÀåÇÔ.
-        // ÀÚ½Ä¸¸ °¡Á®¿Í¾ß ÇÏ±â ¶§¹®¿¡ (ÀÚ¼ÕÀº °¡Á®¿À¸é ¾È µÊ) GetComponentsInChildren ¸ø ¾¸.
+        // í˜„ì¬ ì”¨ì•— êµ¬ë§¤ íŒë„¬ì— ì¡´ì¬í•˜ëŠ” ìŠ¬ë¡¯ë“¤ì„ ê°€ì ¸ì™€ì„œ ì €ì¥í•¨.
+        // ìì‹ë§Œ ê°€ì ¸ì™€ì•¼ í•˜ê¸° ë•Œë¬¸ì— (ìì†ì€ ê°€ì ¸ì˜¤ë©´ ì•ˆ ë¨) GetComponentsInChildren ëª» ì”€.
         for (int i=0; i< slotContainer.transform.childCount; i++)
         {
             Transform child = slotContainer.transform.GetChild(i);
@@ -32,23 +32,23 @@ public class BuySeedUIManager : MonoBehaviour
 
         //BuySeedSlots = BuySeedPanel.GetComponentsInChildren<Button>().Skip(1).ToArray();
         
-        // ÇöÀç °ÔÀÓ »ó Á¸ÀçÇÏ´Â ¾¾¾Ñ ±¸¸Å ¹öÆ° Á¤º¸ ¼³Á¤
+        // í˜„ì¬ ê²Œì„ ìƒ ì¡´ì¬í•˜ëŠ” ì”¨ì•— êµ¬ë§¤ ë²„íŠ¼ ì •ë³´ ì„¤ì •
         for (int i=0; i<BuySeedSlots.Count; i++)
         {
             SlotManager slot = BuySeedSlots[i].GetComponent<SlotManager>();
             Seed slotSeedInfo = seedInfo.prefabs[i].GetComponent<Seed>();
 
-            // °¢ ¹öÆ°ÀÇ ÃÊ±â°ª ¼³Á¤
+            // ê° ë²„íŠ¼ì˜ ì´ˆê¸°ê°’ ì„¤ì •
             slot.seedImage.sprite = seedImages[i];
             slot.seedName.text = slotSeedInfo.seedName;
-            slot.totalPrice.text = "°¡°İ: " + slotSeedInfo.seedPrice;
+            slot.totalPrice.text = "ê°€ê²©: " + slotSeedInfo.seedPrice;
             slot.seedCountText.text = "1";
         }
     }
 
     private void Update()
     {
-        // ÀÓ½Ã·Î W Å° ´©¸£¸é ±¸¸ÅÃ¢ ÄÑÁöµµ·Ï..
+        // ì„ì‹œë¡œ W í‚¤ ëˆ„ë¥´ë©´ êµ¬ë§¤ì°½ ì¼œì§€ë„ë¡..
         if (Input.GetKeyDown(KeyCode.W))
             BuySeedPanel.SetActive(true);
 
@@ -58,12 +58,12 @@ public class BuySeedUIManager : MonoBehaviour
             SlotManager slot = BuySeedSlots[i].GetComponent<SlotManager>();
             Seed slotSeedInfo = seedInfo.prefabs[i].GetComponent<Seed>();
 
-            // BuySlot ÀÌ È°¼ºÈ­ µÇ¾î ÀÖ´Â ½½·ÔÀÇ Á¤º¸¸¸ °è¼ÓÇØ¼­ º¯°æÇØÁÙ °Í
+            // BuySlot ì´ í™œì„±í™” ë˜ì–´ ìˆëŠ” ìŠ¬ë¡¯ì˜ ì •ë³´ë§Œ ê³„ì†í•´ì„œ ë³€ê²½í•´ì¤„ ê²ƒ
             if (slot.BuySlot.activeSelf)
             {
-                // ¼±ÅÃµÈ °úÀÏ °³¼ö¶û ÃÑ °¡°İ¸¸ °è¼ÓÇØ¼­ ¾÷µ¥ÀÌÆ® ÇØÁÖ¸é µÊ.
+                // ì„ íƒëœ ê³¼ì¼ ê°œìˆ˜ë‘ ì´ ê°€ê²©ë§Œ ê³„ì†í•´ì„œ ì—…ë°ì´íŠ¸ í•´ì£¼ë©´ ë¨.
                 slot.seedCountText.text = slot.seedCount + "";
-                slot.totalPrice.text = "°¡°İ: " + (int)(slot.seedCount * slotSeedInfo.seedPrice);
+                slot.totalPrice.text = "ê°€ê²©: " + (int)(slot.seedCount * slotSeedInfo.seedPrice);
             }
         }
     }
@@ -73,21 +73,21 @@ public class BuySeedUIManager : MonoBehaviour
         for (int i = 0; i < BuySeedSlots.Count; i++)
         {
             SlotManager slot = BuySeedSlots[i].GetComponent<SlotManager>();
-            slot.ResetData(); // ½½·Ô µ¥ÀÌÅÍ ÇÑ¹ø ¸®¼ÂÇØÁÖ±â(²°´Ù ÄÑÁ³´Âµ¥ »óÅÂ ±×´ë·Î¸é ÀÌ»óÇÏ´Ï±î)
+            slot.ResetData(); // ìŠ¬ë¡¯ ë°ì´í„° í•œë²ˆ ë¦¬ì…‹í•´ì£¼ê¸°(ê»ë‹¤ ì¼œì¡ŒëŠ”ë° ìƒíƒœ ê·¸ëŒ€ë¡œë©´ ì´ìƒí•˜ë‹ˆê¹Œ)
             slot.BuySlot.SetActive(false);
         }
     }
 
     public void SlotClick()
     {
-        CloseBuySlot(); // ½½·Ô ¹öÆ° ´­·¶À» ¶§, ´Ù¸¥ ½½·ÔÀÇ ±¸¸Å ½½·ÔÀÌ ÄÑÁ®ÀÖÀ¸¸é ´Ù ²ô°í ½ÃÀÛ..
+        CloseBuySlot(); // ìŠ¬ë¡¯ ë²„íŠ¼ ëˆŒë €ì„ ë•Œ, ë‹¤ë¥¸ ìŠ¬ë¡¯ì˜ êµ¬ë§¤ ìŠ¬ë¡¯ì´ ì¼œì ¸ìˆìœ¼ë©´ ë‹¤ ë„ê³  ì‹œì‘..
     }
 
     
     public void ExitButton()
     {
-        BuySeedPanel.SetActive(false); // ±¸¸Å Ã¢ ¾ø¾îÁöµµ·Ï..
+        BuySeedPanel.SetActive(false); // êµ¬ë§¤ ì°½ ì—†ì–´ì§€ë„ë¡..
 
-        CloseBuySlot(); // ³ª°¡±â ¹öÆ° ´©¸£¸é ÄÑÁ®ÀÖ´ø ±¸¸Å ½½·Ô ¾ø¾îÁöµµ·Ï..
+        CloseBuySlot(); // ë‚˜ê°€ê¸° ë²„íŠ¼ ëˆ„ë¥´ë©´ ì¼œì ¸ìˆë˜ êµ¬ë§¤ ìŠ¬ë¡¯ ì—†ì–´ì§€ë„ë¡..
     }
 }

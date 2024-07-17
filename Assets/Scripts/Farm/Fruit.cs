@@ -4,17 +4,17 @@ using UnityEngine;
 
 public class Fruit : MonoBehaviour
 {
-    // °úÀÏÀº ´Ù ÇÁ¸®ÆÕÀ¸·Î ¸¸µé¾î ³õÀ» °Í
-    // ¸¸µé¾î³õÀº ÇÁ¸®ÆÕÀº FruitContainer ¿¡ ÀúÀåÇÒ °Í..
+    // ê³¼ì¼ì€ ë‹¤ í”„ë¦¬íŒ¹ìœ¼ë¡œ ë§Œë“¤ì–´ ë†“ì„ ê²ƒ
+    // ë§Œë“¤ì–´ë†“ì€ í”„ë¦¬íŒ¹ì€ FruitContainer ì— ì €ì¥í•  ê²ƒ..
 
     public string fruitName;
     public float fruitPrice;
     public bool isEnabled = false;
 
-    public int fruitIdx = 0; // °úÀÏ ÀÎµ¦½º
+    public int fruitIdx = 0; // ê³¼ì¼ ì¸ë±ìŠ¤
 
     private void OnEnable()
     {
-        Debug.Log("°úÀÏÀ» ¾ò¾ú´Ù!");
+        Debug.Log("ê³¼ì¼ì„ ì–»ì—ˆë‹¤!");
     }
 }
