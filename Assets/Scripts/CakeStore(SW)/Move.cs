@@ -3,12 +3,14 @@ using UnityEngine;
 
 public class Move : MonoBehaviour
 {
-    public float defaultMoveSpeed = 2f; // 기본 이동 속도
-    public float moveTime = 0.5f;
-    private float moveSpeed; // 실제 이동 속도
-    private Vector2 moveDirection; // NPC의 이동 방향
-    private bool isMovingToTarget = false; // 타겟 위치로 이동 중인지 여부
+    private Customer customer;
     private Animator animator;
+
+    [SerializeField] private float defaultMoveSpeed = 2f; // 기본 이동 속도
+    private float moveTime = 0.5f;
+    [SerializeField] private float moveSpeed; // 실제 이동 속도
+    [SerializeField] private Vector2 moveDirection; // NPC의 이동 방향
+    [SerializeField] private bool isMovingToTarget = false; // 타겟 위치로 이동 중인지 여부
     private float minDistance = 0.1f; // 최소 이동 거리
 
     public Direction initialDirection = Direction.RightDown; // 외부에서 설정 가능한 초기 방향
@@ -17,7 +19,9 @@ public class Move : MonoBehaviour
 
     void Start()
     {
+        customer = GetComponent<Customer>();
         animator = GetComponent<Animator>();
+
         // 초기 이동 방향 설정 (외부에서 설정된 값 사용)
         SetMoveDirection(initialDirection);
         SetAnimation(initialDirection);
@@ -29,6 +33,13 @@ public class Move : MonoBehaviour
         {
             MoveNPC();
         }
+    }
+    public void EndWaitingMove()
+    {
+        Debug.Log("EndWaitingMove 실행");
+        SetMoveDirection(Direction.RightDown);
+        SetAnimation(Direction.RightDown);
+        isMovingToTarget = false;
     }
 
     private void MoveNPC()
@@ -112,12 +123,17 @@ public class Move : MonoBehaviour
         SetMoveDirection(direction);
         if (direction == Direction.Stop)
         {
-            yield return new WaitForSeconds(2f);
-            SetMoveDirection(Direction.RightDown); // 오른쪽 아래로 이동 방향 설정
-            SetAnimation(Direction.RightDown); // 기본 애니메이션 설정
-        }
+            yield return null;
+            customer.ChangeStatetoWating();
+            SetAnimation(Direction.Stop);
 
-        isMovingToTarget = false;
+            //SetMoveDirection(Direction.RightDown); // 오른쪽 아래로 이동 방향 설정
+            //SetAnimation(Direction.RightDown); // 기본 애니메이션 설정
+        }
+        else
+        {
+            isMovingToTarget = false;
+        }
         moveSpeed = defaultMoveSpeed; // 이동 속도 초기화
     }
 
@@ -133,7 +149,7 @@ public class Move : MonoBehaviour
         animator.SetInteger("State", state);
     }
 
-    private void SetMoveDirection(Direction direction)
+    public void SetMoveDirection(Direction direction)
     {
         moveDirection = direction switch
         {
