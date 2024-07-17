@@ -48,10 +48,13 @@ public class FarmingManager : MonoBehaviour
     public GameObject[] buttonPrefabs; // [0]: plow 버튼, [1]: plant 버튼, [2]: harvest 버튼
     public Canvas buttonParent; // 버튼 생성할 때 부모 지정하기 위한 변수
 
+    [Header("Farm interaction Panel")]
+    public GameObject growTimePanel; // 다 자라기까지 남은 시간 보여주는 판넬
+    public Text growTimeText; // 다 자라기까지 남은 시간
+
     [Header("Farming Data")]
     public Vector2 clickPosition; // 현재 마우스 위치를 게임 월드 위치로 바꿔서 저장
     public Vector3Int cellPosition; // 게임 월드 위치를 타일 맵의 타일 셀 위치로 변환
-
     Dictionary<Vector3Int, FarmingData> farmingData;
 
 
@@ -110,6 +113,8 @@ public class FarmingManager : MonoBehaviour
         // 땅을 왼쪽 마우스키로 누르면..
         if (Input.GetMouseButtonDown(0))
         {
+            growTimePanel.SetActive(false); // 누르면 이전에 켜진 판넬 꺼지도록..
+
             // 땅에 아무것도 안 한 상태는 plow 버튼을 갖고, 갈린 상태는 버튼으로 plant 버튼을 갖는다.
             // 다른 땅을 클릭하면 전에 클릭한 땅의 버튼은 안 보여야 하므로 SetActive 로 안보이게 조정한다..
             // 수확하기 버튼은 과일이 다 자라면 계속 보여야함..
@@ -144,6 +149,14 @@ public class FarmingManager : MonoBehaviour
                         {
                             farmingData[cellPosition].stateButton.gameObject.SetActive(true);
                         }
+                        // 씨앗이 자라는 중이면 남은 시간 나타내는 판넬 뜨도록
+                        else if (!farmingData[cellPosition].seed.isGrown)
+                        {
+                            // 판넬 위치를 현재 클릭한 타일 위치로..
+                            growTimePanel.transform.position = mainCamera.WorldToScreenPoint(farmTilemap.CellToWorld(cellPosition)) + new Vector3(0, 50, 0);
+                            growTimePanel.SetActive(true);
+                            growTimeText.text = "남은시간\n" + (int)(farmingData[cellPosition].seed.growTime - farmingData[cellPosition].seed.currentTime);
+                        }
                     }
 
                     // 현재 선택한 타일의 버튼은 활성화 되도록..
@@ -158,6 +171,16 @@ public class FarmingManager : MonoBehaviour
 
             prevSelectTile = cellPosition; // 지금 누른 타일을 이전에 누른 타일 위치를 저장하는 변수에 저장.. 
         }
+
+        // 자라는데 남은 시간이 계속 업데이트 되어야 하므로..
+        if (farmEnableZoneTilemap.HasTile(cellPosition) && farmingData[cellPosition].seed != null)
+        {
+            if (!farmingData[cellPosition].seed.isGrown)
+                growTimeText.text = "남은시간\n" + (int)(farmingData[cellPosition].seed.growTime - farmingData[cellPosition].seed.currentTime);
+            else
+                growTimePanel.SetActive(false); // 다 자라면 남은시간 나타내는 판넬 꺼지도록..
+        }
+
 
 
         foreach (Vector3Int pos in farmingData.Keys)
