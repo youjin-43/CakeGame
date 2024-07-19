@@ -1213,7 +1213,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &276346256
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2776,7 +2776,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 300}
+  m_SizeDelta: {x: 135, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &531923435
 MonoBehaviour:
@@ -4261,7 +4261,7 @@ Tilemap:
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_Color: {r: 0.26981127, g: 0.3872672, b: 1, a: 0}
   m_Origin: {x: -4, y: -4, z: 0}
   m_Size: {x: 10, y: 10, z: 1}
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
@@ -4527,6 +4527,7 @@ MonoBehaviour:
   - {fileID: 7685889625154526621, guid: e13d08ef7e0a2aa428d8c69ca1c8ce49, type: 3}
   - {fileID: 8361192728063746215, guid: 82f3f526276e4514d9323b9b2119a07c, type: 3}
   - {fileID: 8907756179967278646, guid: dea46990b7cd01e4180c5ca53292c290, type: 3}
+  fruitCount: 
   totalFruitCount: 0
 --- !u!4 &634117041
 Transform:
@@ -7521,10 +7522,10 @@ RectTransform:
   - {fileID: 856308222}
   m_Father: {fileID: 531923434}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 95, y: -95}
+  m_SizeDelta: {x: 150, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1306447111
 MonoBehaviour:
@@ -8994,10 +8995,10 @@ RectTransform:
   - {fileID: 677296525}
   m_Father: {fileID: 531923434}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 551, y: -95}
+  m_SizeDelta: {x: 150, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1645539968
 MonoBehaviour:
@@ -13545,6 +13546,7 @@ MonoBehaviour:
   mainCamera: {fileID: 1736282740}
   seedContainer: {fileID: 56286054}
   fruitContainer: {fileID: 634117040}
+  borderTile: {fileID: 11400000, guid: 92e4018791d59b04cbd51a00fb77b2e6, type: 2}
   grassTile: {fileID: 11400000, guid: cc324a4af448af249845e4128c10f469, type: 2}
   farmTile: {fileID: 11400000, guid: 6aade89ff7c292f42aff2496c1c680a5, type: 2}
   plantTile: {fileID: 11400000, guid: 079abaa19233cf445a18bafeda1af627, type: 2}
@@ -13561,6 +13563,8 @@ MonoBehaviour:
   growTimeText: {fileID: 1228241479}
   clickPosition: {x: 0, y: 0}
   cellPosition: {x: 0, y: 0, z: 0}
+  FarmLevel: 0
+  expansionSize: 1
   plantSeedPanel: {fileID: 276346255}
   selectedSeedIdx: 0
   clickedSelectedSeedButton: 0
@@ -13945,6 +13949,62 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1965667563}
   m_CullTransparentMesh: 1
+--- !u!1 &1984134014
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1984134016}
+  - component: {fileID: 1984134015}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1984134015
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1984134014}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 093aee162c9ca434aaa9dc5a92fc990c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  season: 0
+  date: 0
+  money: 0
+  popularity: 0
+  runTime: 0
+  isRunning: 0
+  runningOverBoard: {fileID: 0}
+  runningTimeText: {fileID: 0}
+  seasonText: {fileID: 0}
+  dateText: {fileID: 0}
+  moneyText: {fileID: 0}
+  popularityText: {fileID: 0}
+--- !u!4 &1984134016
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1984134014}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 832.14557, y: 288.16107, z: -2.9038253}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1993015715
 GameObject:
   m_ObjectHideFlags: 0
@@ -14073,10 +14133,10 @@ RectTransform:
   - {fileID: 1582425455}
   m_Father: {fileID: 531923434}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 703, y: -95}
+  m_SizeDelta: {x: 150, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2037729627
 MonoBehaviour:
@@ -14230,10 +14290,10 @@ RectTransform:
   - {fileID: 459322166}
   m_Father: {fileID: 531923434}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 247, y: -95}
+  m_SizeDelta: {x: 150, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2040062814
 MonoBehaviour:
@@ -14387,10 +14447,10 @@ RectTransform:
   - {fileID: 1071363434}
   m_Father: {fileID: 531923434}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 399, y: -95}
+  m_SizeDelta: {x: 150, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2045911457
 MonoBehaviour:
@@ -15126,6 +15186,7 @@ SceneRoots:
   - {fileID: 1736282741}
   - {fileID: 2047575962}
   - {fileID: 707102387}
+  - {fileID: 1984134016}
   - {fileID: 1817601061}
   - {fileID: 259496559}
   - {fileID: 634117041}
