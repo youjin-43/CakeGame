@@ -33,6 +33,7 @@ public class FarmingManager : MonoBehaviour
     public FruitContainer fruitContainer; // 수확한 과일을 저장하기 위해 필요한 변수(과일 컨테이너 게임 오브젝트 할당해줄 것)
 
     [Header("Tile")]
+    public TileBase borderTile; // 제한 구역 상태
     public TileBase grassTile; // 밭 갈기 전 상태
     public TileBase farmTile; // 밭 간 후 상태
     public TileBase plantTile; // 씨앗 심은 후 상태
@@ -56,6 +57,8 @@ public class FarmingManager : MonoBehaviour
     public Vector2 clickPosition; // 현재 마우스 위치를 게임 월드 위치로 바꿔서 저장
     public Vector3Int cellPosition; // 게임 월드 위치를 타일 맵의 타일 셀 위치로 변환
     Dictionary<Vector3Int, FarmingData> farmingData;
+    public int FarmLevel = 0; // 농장 레벨. 농장 레벨 업그레이드 함수 호출하면 증가하도록..
+    public int expansionSize = 1; // 농장 한 번 업그레이트 할 때 얼마나 확장될 건지.. 일단 임시로 1로 해놨다.. 나중에 변경할 것.
 
     [Header("PlantSeed Information")]
     public GameObject plantSeedPanel; // 씨앗 선택창
@@ -76,38 +79,7 @@ public class FarmingManager : MonoBehaviour
         {
             if (!farmEnableZoneTilemap.HasTile(pos)) continue;
 
-            // 유니티에서는 new 를 쓰려면 class 가 MonoBehaviour 를 상속 받으면 안 됨.
-            farmingData[pos] = new FarmingData();
-            farmingData[pos].buttons = new Button[3]; // [0]: plow 버튼, [1]: plant 버튼, [2]: harvest 버튼
-
-            // 각 타일마다 세 개의 버튼을 가지고 시작하도록..
-            for (int i = 0; i < buttonPrefabs.Length; i++)
-            {
-                // 클로저 문제를 피하기 위해서 값을 변수에 저장해놓고 이 변수를 사용함..
-                int index = i;
-                Vector3Int tilePos = pos;
-                farmingData[pos].buttons[i] = CreateButton(index, tilePos).GetComponent<Button>();
-
-                if (index == 0)
-                {
-                    // 버튼에 함수를 저장해놓음(tilePos 도 같이 저장해놓기)
-                    farmingData[tilePos].buttons[index].onClick.AddListener(() => PlowTile(tilePos));
-                }
-                else if (index == 1)
-                {
-                    //farmingData[tilePos].buttons[index].onClick.AddListener(() => PlantTile(tilePos));
-                    farmingData[tilePos].buttons[index].onClick.AddListener(() => OpenPlantSeedPanel(tilePos)); // 씨앗 선택창 화면에 띄우는 함수 연결시키기
-                }
-                else if (index == 2)
-                {
-                    farmingData[tilePos].buttons[index].onClick.AddListener(() => HarvestTile(tilePos));
-                }
-            }
-
-            // 맨 처음에는 plow 버튼을 저장하고 있도록
-            farmingData[pos].stateButton = farmingData[pos].buttons[0];
-
-            prevSelectTile = pos;
+            SetFarmingData(pos); // FarmingData 타입 인스턴스의 정보를 세팅해주는 함수.
         }
     }
 
@@ -136,6 +108,7 @@ public class FarmingManager : MonoBehaviour
             clickPosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
             // 게임 월드 위치를 타일 맵의 타일 셀 위치로 변환
             cellPosition = farmTilemap.WorldToCell(clickPosition);
+            Debug.Log(cellPosition);
 
 
             foreach (Vector3Int pos in farmingData.Keys)
@@ -200,6 +173,13 @@ public class FarmingManager : MonoBehaviour
         {
             // 씨앗 심는 함수 호출
             PlantTile(cellPosition, selectedSeedIdx);
+        }
+
+
+        // 마우스 오른쪽키 누르면 농장 크기 업그레이드. 일단 임시로..
+        if (Input.GetMouseButtonDown(1))
+        {
+            UpgradeFarmSize();
         }
     } 
 
@@ -300,5 +280,112 @@ public class FarmingManager : MonoBehaviour
 
         seedContainer.seedCount[idx] += count; // 씨앗의 개수를 저장하고 있는 배열의 인덱스 요소에 구매한 씨앗의 개수만큼 더해주기
         GameManager.instance.money -= seedContainer.prefabs[idx].GetComponent<Seed>().seedPrice * count; // 가진 돈에서 차감!
+    }
+
+    public void SetFarmingData(Vector3Int pos) 
+    {
+        // 이 함수는 FarmingManager 클래스의 Start 함수와 UpgradeFarmSize 함수에서 사용할 것..
+
+        // 딕셔너리에 이미 현재 등록하려는 타일이 존재하면 걍 빠져나가도록..
+        if (farmingData.ContainsKey(pos)) return;
+
+
+        // 아니면 딕셔너리에 등록
+        // 유니티에서는 new 를 쓰려면 class 가 MonoBehaviour 를 상속 받으면 안 됨.
+        farmingData[pos] = new FarmingData();
+        farmingData[pos].buttons = new Button[3]; // [0]: plow 버튼, [1]: plant 버튼, [2]: harvest 버튼
+
+        // 각 타일마다 세 개의 버튼을 가지고 시작하도록..
+        for (int i = 0; i < buttonPrefabs.Length; i++)
+        {
+            // 클로저 문제를 피하기 위해서 값을 변수에 저장해놓고 이 변수를 사용함..
+            int index = i;
+            Vector3Int tilePos = pos;
+            farmingData[pos].buttons[i] = CreateButton(index, tilePos).GetComponent<Button>();
+
+            if (index == 0)
+            {
+                // 버튼에 함수를 저장해놓음(tilePos 도 같이 저장해놓기)
+                farmingData[tilePos].buttons[index].onClick.AddListener(() => PlowTile(tilePos));
+            }
+            else if (index == 1)
+            {
+                //farmingData[tilePos].buttons[index].onClick.AddListener(() => PlantTile(tilePos));
+                farmingData[tilePos].buttons[index].onClick.AddListener(() => OpenPlantSeedPanel(tilePos)); // 씨앗 선택창 화면에 띄우는 함수 연결시키기
+            }
+            else if (index == 2)
+            {
+                farmingData[tilePos].buttons[index].onClick.AddListener(() => HarvestTile(tilePos));
+            }
+        }
+
+        // 맨 처음에는 plow 버튼을 저장하고 있도록
+        farmingData[pos].stateButton = farmingData[pos].buttons[0];
+    }
+
+
+    public void UpgradeFarmSize()
+    {
+        // 땅의 크기를 업그레이드 하는 함수
+
+        BoundsInt bounds = farmEnableZoneTilemap.cellBounds; // 농사 가능 구역 타일맵의 현재 크기 가져오기
+
+        // 새로 확장할 영역 좌표 계산 로직..
+        Debug.Log(bounds.xMin);
+
+        int minX = bounds.xMin - expansionSize;
+        int maxX = bounds.xMax + expansionSize;
+        int minY = bounds.yMin - expansionSize;
+        int maxY = bounds.yMax + expansionSize;
+
+        for (int i = minX; i < maxX; i++)
+        {
+            for (int j = minY; j < maxY; j++)
+            {
+                Vector3Int pos = new Vector3Int(i, j, 0);
+                farmTilemap.SetTile(pos, grassTile); // 타일의 모습을 경계 타일에서 풀 타일로 바꾸기
+
+                // 농사 가능 구역 타일맵에 타일이 없으면 진입
+                if (!farmEnableZoneTilemap.HasTile(pos))
+                {
+                    farmEnableZoneTilemap.SetTile(pos, grassTile);
+                }
+            }
+        }
+
+        
+        // 경계 타일맵 깔기 위한 로직
+        bounds = farmEnableZoneTilemap.cellBounds; // 업데이트된 농사 가능 구역 타일맵의 현재 크기 가져오기
+        minX = bounds.xMin - 1;
+        maxX = bounds.xMax + 1;
+        minY = bounds.yMin - 1;
+        maxY = bounds.yMax + 1;
+
+        Debug.Log("maxX: " + maxX + " maxY: " + maxY);
+        Debug.Log("minX: " + minX + " minY: " + minY);
+
+        for (int i = minX; i < maxX; i++)
+        {
+            for (int j = minY; j < maxY; j++)
+            {
+                // 테투리 부분만 경계타일 까는 로직
+                // max 값은 1 이 더 더해져있기 때문에 이를 고려해서 조건식 짜야함.
+                // 그래서 maxX, maxY 일 때는 i, j 에 1 을 더해줌..
+                if (i == minX || i+1 == maxX)
+                    farmTilemap.SetTile(new Vector3Int(i, j, 0), borderTile);
+                if (j == minY || j+1 == maxY)
+                    farmTilemap.SetTile(new Vector3Int(i, j, 0), borderTile);
+            }
+        }
+
+
+        // 농사 가능 구역 타일맵의 타일들을 모두 돌면서..
+        foreach (Vector3Int pos in farmEnableZoneTilemap.cellBounds.allPositionsWithin)
+        {
+            SetFarmingData(pos); // 새로운 농사 가능 구역의 타일 정보를 딕셔너리에 저장..
+        }
+
+        FarmLevel++; // 농장 레벨 증가
+        Debug.Log("농장을 업그레이드 했다!");
     }
 }
