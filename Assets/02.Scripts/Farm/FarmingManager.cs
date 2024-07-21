@@ -88,60 +88,67 @@ public class FarmingManager : MonoBehaviour
         // 버튼 눌렀을 때 뒤에 있는 타일 못 누르도록 하기 위한 구문..
         if (IsPointerOverUIObject()) return;
 
-        // 땅을 왼쪽 마우스키로 누르면..
-        if (Input.GetMouseButtonDown(0))
-        {
-            growTimePanel.SetActive(false); // 누르면 이전에 켜진 판넬 꺼지도록..
-
-            // 땅에 아무것도 안 한 상태는 plow 버튼을 갖고, 갈린 상태는 버튼으로 plant 버튼을 갖는다.
-            // 다른 땅을 클릭하면 전에 클릭한 땅의 버튼은 안 보여야 하므로 SetActive 로 안보이게 조정한다..
-            // 수확하기 버튼은 과일이 다 자라면 계속 보여야함..
-            if (farmEnableZoneTilemap.HasTile(prevSelectTile))
-            {
-                if (farmingData[prevSelectTile].currentState == "None" || farmingData[prevSelectTile].currentState == "plow")
-                {
-                    farmingData[prevSelectTile].stateButton.gameObject.SetActive(false);
-                }
-            }
-
-            // 현재 마우스 위치를 게임 월드 위치로 바꿔서 저장
-            clickPosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-            // 게임 월드 위치를 타일 맵의 타일 셀 위치로 변환
-            cellPosition = farmTilemap.WorldToCell(clickPosition);
-            Debug.Log(cellPosition);
+        // 모바일용
+        if (Input.touchCount > 0)
+            OnSingleTouch();
 
 
-            foreach (Vector3Int pos in farmingData.Keys)
-            {
-                // 저장해놓은 타일 중에 현재 마우스로 클릭한 위치랑 같은 타일이 있으면
-                if (pos == cellPosition)
-                {
-                    // 밭이 안 갈린 상태면 눌렀을 때 버튼 뜰 수 있도록
-                    if (farmingData[cellPosition].plowEnableState)
-                    {
-                        farmingData[cellPosition].stateButton.gameObject.SetActive(true);
-                    }
-                    else
-                    {
-                        // 씨앗이 안 심어져 있을 때 또는 씨앗이 다 자랐을 때 버튼 뜰 수 있도록
-                        if (farmingData[cellPosition].seed == null || (farmingData[cellPosition].seed.isGrown))
-                        {
-                            farmingData[cellPosition].stateButton.gameObject.SetActive(true);
-                        }
-                        // 씨앗이 자라는 중이면 남은 시간 나타내는 판넬 뜨도록
-                        else if (!farmingData[cellPosition].seed.isGrown)
-                        {
-                            // 판넬 위치를 현재 클릭한 타일 위치로..
-                            growTimePanel.transform.position = mainCamera.WorldToScreenPoint(farmTilemap.CellToWorld(cellPosition)) + new Vector3(0, 50, 0);
-                            growTimePanel.SetActive(true);
-                            growTimeText.text = "남은시간\n" + (int)(farmingData[cellPosition].seed.growTime - farmingData[cellPosition].seed.currentTime);
-                        }
-                    }
-                }
-            }
+        //// 데스크탑용
+        //// 땅을 왼쪽 마우스키로 누르면..
+        //if (Input.GetMouseButtonDown(0))
+        //{
+        //    growTimePanel.SetActive(false); // 누르면 이전에 켜진 판넬 꺼지도록..
 
-            prevSelectTile = cellPosition; // 지금 누른 타일을 이전에 누른 타일 위치를 저장하는 변수에 저장.. 
-        }
+        //    // 땅에 아무것도 안 한 상태는 plow 버튼을 갖고, 갈린 상태는 버튼으로 plant 버튼을 갖는다.
+        //    // 다른 땅을 클릭하면 전에 클릭한 땅의 버튼은 안 보여야 하므로 SetActive 로 안보이게 조정한다..
+        //    // 수확하기 버튼은 과일이 다 자라면 계속 보여야함..
+        //    if (farmEnableZoneTilemap.HasTile(prevSelectTile))
+        //    {
+        //        if (farmingData[prevSelectTile].currentState == "None" || farmingData[prevSelectTile].currentState == "plow")
+        //        {
+        //            farmingData[prevSelectTile].stateButton.gameObject.SetActive(false);
+        //        }
+        //    }
+
+        //    // 현재 마우스 위치를 게임 월드 위치로 바꿔서 저장
+        //    clickPosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        //    // 게임 월드 위치를 타일 맵의 타일 셀 위치로 변환
+        //    cellPosition = farmTilemap.WorldToCell(clickPosition);
+        //    Debug.Log(cellPosition);
+
+
+        //    foreach (Vector3Int pos in farmingData.Keys)
+        //    {
+        //        // 저장해놓은 타일 중에 현재 마우스로 클릭한 위치랑 같은 타일이 있으면
+        //        if (pos == cellPosition)
+        //        {
+        //            // 밭이 안 갈린 상태면 눌렀을 때 버튼 뜰 수 있도록
+        //            if (farmingData[cellPosition].plowEnableState)
+        //            {
+        //                farmingData[cellPosition].stateButton.gameObject.SetActive(true);
+        //            }
+        //            else
+        //            {
+        //                // 씨앗이 안 심어져 있을 때 또는 씨앗이 다 자랐을 때 버튼 뜰 수 있도록
+        //                if (farmingData[cellPosition].seed == null || (farmingData[cellPosition].seed.isGrown))
+        //                {
+        //                    farmingData[cellPosition].stateButton.gameObject.SetActive(true);
+        //                }
+        //                // 씨앗이 자라는 중이면 남은 시간 나타내는 판넬 뜨도록
+        //                else if (!farmingData[cellPosition].seed.isGrown)
+        //                {
+        //                    // 판넬 위치를 현재 클릭한 타일 위치로..
+        //                    growTimePanel.transform.position = mainCamera.WorldToScreenPoint(farmTilemap.CellToWorld(cellPosition)) + new Vector3(0, 50, 0);
+        //                    growTimePanel.SetActive(true);
+        //                    growTimeText.text = "남은시간\n" + (int)(farmingData[cellPosition].seed.growTime - farmingData[cellPosition].seed.currentTime);
+        //                }
+        //            }
+        //        }
+        //    }
+
+        //    prevSelectTile = cellPosition; // 지금 누른 타일을 이전에 누른 타일 위치를 저장하는 변수에 저장.. 
+        //}
+
 
         // 자라는데 남은 시간이 계속 업데이트 되어야 하므로..
         if (farmEnableZoneTilemap.HasTile(cellPosition) && farmingData[cellPosition].seed != null)
@@ -183,11 +190,88 @@ public class FarmingManager : MonoBehaviour
         }
     } 
 
+
+    private void OnSingleTouch()
+    {
+        // 맨 처음 터치만 이용할 것
+        Touch touch = Input.GetTouch(0);
+        if (IsPointerOverUIObject(touch)) return; // 터치한 곳에 UI 있으면 그냥 빠져나오도록..
+
+
+        // 맨 처음 터치 시작시
+        if (touch.phase == TouchPhase.Began)
+        {
+            growTimePanel.SetActive(false); // 누르면 이전에 켜진 판넬 꺼지도록..
+
+            // 땅에 아무것도 안 한 상태는 plow 버튼을 갖고, 갈린 상태는 버튼으로 plant 버튼을 갖는다.
+            // 다른 땅을 클릭하면 전에 클릭한 땅의 버튼은 안 보여야 하므로 SetActive 로 안보이게 조정한다..
+            // 수확하기 버튼은 과일이 다 자라면 계속 보여야함..
+            if (farmEnableZoneTilemap.HasTile(prevSelectTile))
+            {
+                if (farmingData[prevSelectTile].currentState == "None" || farmingData[prevSelectTile].currentState == "plow")
+                {
+                    farmingData[prevSelectTile].stateButton.gameObject.SetActive(false);
+                }
+            }
+
+
+            // 현재 터치 위치를 게임 월드 위치로 바꿔서 저장
+            clickPosition = mainCamera.ScreenToWorldPoint(touch.position);
+            // 게임 월드 위치를 타일 맵의 타일 셀 위치로 변환
+            cellPosition = farmTilemap.WorldToCell(clickPosition);
+            Debug.Log(cellPosition);
+
+
+            foreach (Vector3Int pos in farmingData.Keys)
+            {
+                // 저장해놓은 타일 중에 현재 마우스로 클릭한 위치랑 같은 타일이 있으면
+                if (pos == cellPosition)
+                {
+                    // 밭이 안 갈린 상태면 눌렀을 때 버튼 뜰 수 있도록
+                    if (farmingData[cellPosition].plowEnableState)
+                    {
+                        farmingData[cellPosition].stateButton.gameObject.SetActive(true);
+                    }
+                    else
+                    {
+                        // 씨앗이 안 심어져 있을 때 또는 씨앗이 다 자랐을 때 버튼 뜰 수 있도록
+                        if (farmingData[cellPosition].seed == null || (farmingData[cellPosition].seed.isGrown))
+                        {
+                            farmingData[cellPosition].stateButton.gameObject.SetActive(true);
+                        }
+                        // 씨앗이 자라는 중이면 남은 시간 나타내는 판넬 뜨도록
+                        else if (!farmingData[cellPosition].seed.isGrown)
+                        {
+                            // 판넬 위치를 현재 클릭한 타일 위치로..
+                            growTimePanel.transform.position = mainCamera.WorldToScreenPoint(farmTilemap.CellToWorld(cellPosition)) + new Vector3(0, 50, 0);
+                            growTimePanel.SetActive(true);
+                            growTimeText.text = "남은시간\n" + (int)(farmingData[cellPosition].seed.growTime - farmingData[cellPosition].seed.currentTime);
+                        }
+                    }
+                }
+            }
+
+            prevSelectTile = cellPosition; // 지금 누른 타일을 이전에 누른 타일 위치를 저장하는 변수에 저장..
+        }
+    }
+
     private bool IsPointerOverUIObject()
     {
         PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current)
         {
             position = new Vector2(Input.mousePosition.x, Input.mousePosition.y)
+        };
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
+        return results.Count > 0;
+    }
+
+    private bool IsPointerOverUIObject(Touch touch)
+    {
+        PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current)
+        {
+            position = new Vector2(touch.position.x, touch.position.y)
+            //position = new Vector2(Input.mousePosition.x, Input.mousePosition.y)
         };
         List<RaycastResult> results = new List<RaycastResult>();
         EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
@@ -282,6 +366,23 @@ public class FarmingManager : MonoBehaviour
         GameManager.instance.money -= seedContainer.prefabs[idx].GetComponent<Seed>().seedPrice * count; // 가진 돈에서 차감!
     }
 
+    public void SellSeed(int count, int idx)
+    {
+        // 만약 판매하려고 하는 과일의 개수가 현재 과일의 개수보다 적으면 그냥 빠져나가도록..
+        if (fruitContainer.fruitCount[idx] < count) {
+            Debug.Log("과일이 부족해!!!");
+            return;
+        } 
+
+        fruitContainer.fruitCount[idx] -= count; // 판매할 과일의 수만큼 과일 컨테이너에서 빼주기
+        GameManager.instance.money += fruitContainer.prefabs[idx].GetComponent<Fruit>().fruitPrice * count; // 가진 돈에 더하기!
+
+        for (int i=0; i<count; i++)
+        {
+            fruitContainer.pools[idx][i].SetActive(false); // 판매한 과일 수만큼 과일 활성화 끄기..
+        }
+    }
+
     public void SetFarmingData(Vector3Int pos) 
     {
         // 이 함수는 FarmingManager 클래스의 Start 함수와 UpgradeFarmSize 함수에서 사용할 것..
@@ -326,6 +427,13 @@ public class FarmingManager : MonoBehaviour
 
     public void UpgradeFarmSize()
     {
+        // 일단 임시로 만원으로 해놨다..
+        if (GameManager.instance.money < 10000)
+        {
+            Debug.Log("돈 없어!");
+            return;
+        }
+
         // 땅의 크기를 업그레이드 하는 함수
 
         BoundsInt bounds = farmEnableZoneTilemap.cellBounds; // 농사 가능 구역 타일맵의 현재 크기 가져오기
@@ -342,8 +450,15 @@ public class FarmingManager : MonoBehaviour
         {
             for (int j = minY; j < maxY; j++)
             {
+                // 테투리 부분만 경계타일 까는 로직
+                // max 값은 1 이 더 더해져있기 때문에 이를 고려해서 조건식 짜야함.
+                // 그래서 maxX, maxY 일 때는 i, j 에 1 을 더해줌..
+                if (i == minX || i + 1 == maxX)
+                    farmTilemap.SetTile(new Vector3Int(i, j, 0), grassTile);
+                if (j == minY || j + 1 == maxY)
+                    farmTilemap.SetTile(new Vector3Int(i, j, 0), grassTile);
+
                 Vector3Int pos = new Vector3Int(i, j, 0);
-                farmTilemap.SetTile(pos, grassTile); // 타일의 모습을 경계 타일에서 풀 타일로 바꾸기
 
                 // 농사 가능 구역 타일맵에 타일이 없으면 진입
                 if (!farmEnableZoneTilemap.HasTile(pos))

@@ -8,7 +8,7 @@ public class Fruit : MonoBehaviour
     // 만들어놓은 프리팹은 FruitContainer 에 저장할 것..
 
     public string fruitName;
-    public float fruitPrice;
+    public int fruitPrice;
     public bool isEnabled = false;
 
     public int fruitIdx = 0; // 과일 인덱스
