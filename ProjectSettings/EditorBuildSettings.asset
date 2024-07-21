@@ -5,14 +5,17 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
-  - enabled: 1
+  - enabled: 0
     path: Assets/01.Scenes/CakeStorePractice.unity
     guid: 585a954b7ecad42dc9a01f899f3b375e
   - enabled: 1
     path: Assets/01.Scenes/Farm.unity
     guid: a9e44f3506a16f1458c97d0eb4564fc6
   m_configObjects:
+    com.unity.adaptiveperformance.google.android.provider_settings: {fileID: 11400000, guid: f16a112f6b219c7448d9262a852dcfa0, type: 2}
+    com.unity.adaptiveperformance.loader_settings: {fileID: 11400000, guid: 0cfdae7e717627c40948ced28264e60e, type: 2}
+    com.unity.adaptiveperformance.samsung.android.provider_settings: {fileID: 11400000, guid: 90c4bdd67c4c17547923d024864ee289, type: 2}
     com.unity.adaptiveperformance.simulator.provider_settings: {fileID: 11400000, guid: 810ed0c3657603142af58db86c0dc642, type: 2}
