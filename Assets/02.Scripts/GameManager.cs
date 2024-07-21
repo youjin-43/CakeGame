@@ -30,6 +30,14 @@ public class GameManager : MonoBehaviour
         }
     }
 
+
+    [Header("Managers")]
+    public DataManager dataManager = new DataManager();
+    private QuestManager questManager = new QuestManager();
+
+
+    //이거 아래 스토어 매니저로 옮기는게 좋을것 같은데 
+
     enum Seasons
     {
         spring,
@@ -57,8 +65,15 @@ public class GameManager : MonoBehaviour
     public Text moneyText;//현재 돈을 표시할 텍스트 컴포넌트
     public Text popularityText;//현재 돈을 표시할 텍스트 컴포넌트
 
+    //public GameObject QuestBoard;
+    public Text QuestText;//임시 퀘스트 관련 텍스트 컴포넌트
+
+
     void Start()
     {
+        questManager.QuestDT = dataManager.tableDic[DataManager.CSVDatas.QuestTable];
+        //Debug.Log(questManager.QuestDT.Columns[0]);
+
         //이전 데이터 가져오기
         season = (Seasons)PlayerPrefs.GetInt("season");
         date = PlayerPrefs.GetInt("date");
@@ -95,6 +110,19 @@ public class GameManager : MonoBehaviour
             moneyText.text = "Money : " + money;
         }
 
+        //임시 퀘스트 창
+        //if (Input.GetKeyDown(KeyCode.Q))
+        //{
+        //    if(QuestBoard.activeSelf == true)
+        //    {
+        //        QuestBoard.SetActive(false);
+        //    }
+        //    else
+        //    {
+        //        QuestBoard.SetActive(true);
+        //    }
+        //}
+
         //가게가 운영되는 동안 운영 시간 표시 
         if (isRunning)
         {
@@ -123,6 +151,10 @@ public class GameManager : MonoBehaviour
 
         date++;
         runTime = 0;
+
+        //새로운 퀘스트 부여
+        Quest quest = questManager.GenQuest();
+        QuestText.text = "ID : " + quest.QuestID + " || getMony :" + quest.Reward1Amount + "\n 목표 :" + quest.ExplaneText;
 
         //데이터 표시
         seasonText.text = season.ToString();

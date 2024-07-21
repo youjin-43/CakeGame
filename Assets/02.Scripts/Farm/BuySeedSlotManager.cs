@@ -5,92 +5,53 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 
-public class BuySeedSlotManager : MonoBehaviour
+public class BuySeedSlotManager : SlotManager
 {
-    [Header("FarmingManager")]
-    public FarmingManager farmingManager;
-
-    [Header("Slot Button UI")]
-    public Image seedImage;
-    public Text seedName;
-    public GameObject BuySlot;
-    public Text totalPrice;
-    public Text seedCountText;
-    public Button leftButton;
-    public Button rightButton;
-    public Button buySeedButton;
-
-    [Header("Slot Imformation")]
-    public int prevSeedCount = 1;
-    public int seedCount = 1;
-    public int maxCount = 64;
-    public int minCount = 1;
-    public int seedIdx; // BuySeedUIManager 에서 값 설정해줄 것..
-
-
     private void Start()
     {
-        farmingManager = FindObjectOfType<FarmingManager>(); // 음.. 처음에는 BuySeedUIManager 에서 슬롯 정보 초기화 해줄 때 이 값도 초기화 해주려고 했는데 안됨. 왜?? 그래서 일단 find 함수 사용
-        buySeedButton.onClick.AddListener(() => farmingManager.BuySeed(1, seedIdx)); // 일단 초기 함수 연결 해놓기
+        farmingManager = FindObjectOfType<FarmingManager>();
+        interactionButton.onClick.AddListener(() => farmingManager.BuySeed(1, idx)); // 일단 초기 함수 연결 해놓기
     }
 
     private void Update()
     {
-
+        // 부모의 IsPointerOverUIObject 함수 쓸 것..
         if (IsPointerOverUIObject()) return;
         else
         {
             // UI 가 아닌 부분을 클릭하면 그냥 꺼지도록..
             if (Input.GetMouseButtonDown(0))
             {
-                BuySlot.SetActive(false);
+                openSlot.SetActive(false); // 슬롯의 뒷면 꺼지도록..
             }
         }
     }
 
-
-    private bool IsPointerOverUIObject()
+    public override void minusCount()
     {
-        PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current)
-        {
-            position = new Vector2(Input.mousePosition.x, Input.mousePosition.y)
-        };
-        List<RaycastResult> results = new List<RaycastResult>();
-        EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
-        return results.Count > 0;
-    }
-
-    public void minusSeedCount()
-    {
-        if (seedCount <= minCount)
+        if (curCount <= minCount)
         {
             // 현재 구매하려고 하는 씨앗 개수가 씨앗 구매 최소 개수보다 작아지는 순간 최댓값으로 넘어가도록
-            seedCount = maxCount + 1;
+            curCount = maxCount + 1;
         }
 
-        seedCount--;
+        curCount--;
 
-        buySeedButton.onClick.RemoveAllListeners(); // 현재 선택 씨앗 개수가 변경되었으므로 모든 Listener 를 제거하고 시작
-        buySeedButton.onClick.AddListener(() => farmingManager.BuySeed(seedCount, seedIdx));
+        interactionButton.onClick.RemoveAllListeners(); // 현재 선택 씨앗 개수가 변경되었으므로 모든 Listener 를 제거하고 시작
+        interactionButton.onClick.AddListener(() => farmingManager.BuySeed(curCount, idx));
     }
 
-    public void plusSeedCount()
+    public override void plusCount()
     {
         // 현재 구매하려고 하는 씨앗 개수가 씨앗 구매 최대 개수보다 커지는 순간 최솟값으로 넘어가도록
-        if (seedCount >= maxCount)
+        if (curCount >= maxCount)
         {
-            seedCount = minCount - 1;
+            curCount = minCount - 1;
         }
 
-        seedCount++;
+        curCount++;
 
-        buySeedButton.onClick.RemoveAllListeners(); // 현재 선택 씨앗 개수가 변경되었으므로 모든 Listener 를 제거하고 시작
-        buySeedButton.onClick.AddListener(() => farmingManager.BuySeed(seedCount, seedIdx));
-    }
-
-
-    public void ResetData()
-    {
-        seedCount = 1;
+        interactionButton.onClick.RemoveAllListeners(); // 현재 선택 씨앗 개수가 변경되었으므로 모든 Listener 를 제거하고 시작
+        interactionButton.onClick.AddListener(() => farmingManager.BuySeed(curCount, idx));
     }
 }
