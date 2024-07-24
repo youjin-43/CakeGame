@@ -95,11 +95,6 @@ public class SeedFruitUIManager : MonoBehaviour
 
     private void Update()
     {
-        //// 임시로 W 키 누르면 구매창 켜지도록..
-        //if (Input.GetKeyDown(KeyCode.W))
-        //    buySeedPanel.SetActive(true);
-
-
         // 씨앗 구매 관련
         for (int i = 0; i < buySeedSlots.Count; i++)
         {
