@@ -9,7 +9,7 @@ public class SellFruitSlotManager : SlotManager
     private void Start()
     {
         farmingManager = FindObjectOfType<FarmingManager>();
-        interactionButton.onClick.AddListener(() => farmingManager.SellSeed(1, idx)); // 일단 초기 함수 연결 해놓기
+        interactionButton.onClick.AddListener(() => farmingManager.SellFruit(1, idx)); // 일단 초기 함수 연결 해놓기
         maxCount = farmingManager.fruitContainer.fruitCount[idx]; // 해당 슬롯 인덱스에 맞는 현재 과일의 수를 maxCount 에 저장함.
     }
 
@@ -42,7 +42,7 @@ public class SellFruitSlotManager : SlotManager
         if (curCount == 0) curCount = 1;
 
         interactionButton.onClick.RemoveAllListeners(); // 현재 선택 과일 개수가 변경되었으므로 모든 Listener 를 제거하고 시작
-        interactionButton.onClick.AddListener(() => farmingManager.SellSeed(curCount, idx));
+        interactionButton.onClick.AddListener(() => farmingManager.SellFruit(curCount, idx));
     }
 
     public override void plusCount()
@@ -57,6 +57,6 @@ public class SellFruitSlotManager : SlotManager
         curCount++;
 
         interactionButton.onClick.RemoveAllListeners(); // 현재 선택 과일 개수가 변경되었으므로 모든 Listener 를 제거하고 시작
-        interactionButton.onClick.AddListener(() => farmingManager.SellSeed(curCount, idx));
+        interactionButton.onClick.AddListener(() => farmingManager.SellFruit(curCount, idx));
     }
 }
