@@ -8,7 +8,10 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
-  - enabled: 0
+  - enabled: 1
+    path: Assets/01.Scenes/CakeStore 1.unity
+    guid: 7266e0ef089d9f24faf796e01cf9549d
+  - enabled: 1
     path: Assets/01.Scenes/CakeStorePractice.unity
     guid: 585a954b7ecad42dc9a01f899f3b375e
   - enabled: 1
