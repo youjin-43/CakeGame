@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
         {
             // instance가 비어있다면(null) 그곳에 자기 자신을 할당
             instance = this;
+            Debug.Log("게임매니저가 생성됐습니다");
         }
         else
         {
@@ -27,52 +28,47 @@ public class GameManager : MonoBehaviour
             // 싱글톤 오브젝트는 하나만 존재해야 하므로 자신의 게임 오브젝트를 파괴
             Debug.LogWarning("씬에 두개 이상의 게임 매니저가 존재합니다!");
             Destroy(gameObject);
+            Debug.Log("게임매니저를 죽입니다");
         }
     }
 
 
     [Header("Managers")]
     public DataManager dataManager = new DataManager();
-    private QuestManager questManager = new QuestManager();
+    private QuestManager questManager;
+    private UIManager uiManager;
 
-
-    //이거 아래 스토어 매니저로 옮기는게 좋을것 같은데 
-
-    enum Seasons
+    public enum Seasons
     {
         spring,
-        summer,
+        summer, 
         fall,
         winter
     }
 
-    [Header("Data")]
-    [SerializeField] private Seasons season;
-    [SerializeField] private int date;
-    [SerializeField] public int money;
-    [SerializeField] private int popularity;
-
+    [Header("BasicData")]
+    public Seasons season;
+    public int date;
+    public int money;
+    public int popularity;
 
     [Header("About Running")]
-    [SerializeField] private float runTime; // 가게 runTime시간
-    [SerializeField] public bool isRunning; //가게가 운영중인지 표시하는 변수
+    public float runTime; // 가게 runTime시간
+    public bool isRunning; //가게가 운영중인지 표시하는 변수
 
-    [Header("About UI")]
-    public GameObject runningOverBoard; //가게 운영이 끝났을때 활성화 할 오브젝트 
-    public Text runningTimeText;//현재 시간을 표시할 텍스트 컴포넌트
-    public Text seasonText;
-    public Text dateText;
-    public Text moneyText;//현재 돈을 표시할 텍스트 컴포넌트
-    public Text popularityText;//현재 돈을 표시할 텍스트 컴포넌트
-
-    //public GameObject QuestBoard;
-    public Text QuestText;//임시 퀘스트 관련 텍스트 컴포넌트
+    public GameObject QuestBoard;
+    public GameObject QuestUIprefab;
 
 
     void Start()
     {
-        questManager.QuestDT = dataManager.tableDic[DataManager.CSVDatas.QuestTable];
-        //Debug.Log(questManager.QuestDT.Columns[0]);
+
+
+        questManager = GetComponent<QuestManager>();
+        questManager.QuestDT = dataManager.tableDic[DataManager.CSVDatas.QuestTable]; //여기서 이렇게 할당을 해줘야 돌아감. 퀘스트매니저 안에서 할당받으면 안돌아감; 이유는 몰루,,
+        Debug.Log(questManager.QuestDT.Columns[0] + "게임매니저에서 퀘스트 데이터를 할당받음 ");
+
+        uiManager = GetComponent<UIManager>();
 
         //이전 데이터 가져오기
         season = (Seasons)PlayerPrefs.GetInt("season");
@@ -80,89 +76,42 @@ public class GameManager : MonoBehaviour
         money = PlayerPrefs.GetInt("money"); //주어진 키로 저장된 값이 없으면 기본값을 반환
         popularity = PlayerPrefs.GetInt("popularity");
 
-
-
-        //가게 운영 시작 -> start는 게임 처음 실행될때 실행되는거라 가게 운영 시작하는 기능은 따로 빼야할 듯
-        StartRunning();
+        uiManager.SetDatainUI();//UI 데이터 표시
 
     }
 
     void Update()
     {
-        //우선 임시로 R 누르면 넘어가도록 해놓음 
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("CakeStorePractice")){
-                SceneManager.LoadScene("Farm");
-            }
-            else
-            {
-                SceneManager.LoadScene("CakeStorePractice");
-            }
-            
-        }
-
-        //혹시 개발 과정에서 필요할까 싶어 
-        if (Input.GetKeyDown(KeyCode.X))
-        {
-            money = 0;
-            PlayerPrefs.SetInt("money", money); //이걸 endRunning 함수에 넣어야 하나 고민중
-            moneyText.text = "Money : " + money;
-        }
-
-        //임시 퀘스트 창
-        //if (Input.GetKeyDown(KeyCode.Q))
-        //{
-        //    if(QuestBoard.activeSelf == true)
-        //    {
-        //        QuestBoard.SetActive(false);
-        //    }
-        //    else
-        //    {
-        //        QuestBoard.SetActive(true);
-        //    }
-        //}
 
         //가게가 운영되는 동안 운영 시간 표시 
         if (isRunning)
         {
             runTime += Time.deltaTime;
-            runningTimeText.text = "Time :" + (int)runTime;
+            uiManager.runningTimeText.text = "Time :" + (int)runTime;
 
-            if (runTime>=5.0f) // 우선 5로 해놓음 
+            if (runTime >= 5.0f) // 우선 5로 해놓음 
             {
                 EndRunning();
             }
         }
-        else
-        {
-            if (Input.GetKeyDown(KeyCode.N))
-            {
-                StartRunning();
-            }
-        }
+
     }
 
 
     //가게 운영 시작하는 함수 
-    private void StartRunning()
+    public void StartRunning()
     {
-        runningOverBoard.SetActive(false); // 정산 화면 끄기
+        uiManager.runningOverBoard.SetActive(false); // 정산 화면 끄기
 
         date++;
         runTime = 0;
 
-        //새로운 퀘스트 부여
-        Quest quest = questManager.GenQuest();
-        QuestText.text = "ID : " + quest.QuestID + " || getMony :" + quest.Reward1Amount + "\n 목표 :" + quest.ExplaneText;
-
-        //데이터 표시
-        seasonText.text = season.ToString();
-        dateText.text = date.ToString();
-        moneyText.text = "Money : " + money;
-        popularityText.text = "Popularity : " + popularity;
+        
 
         isRunning = true;
+
+        //새로운 퀘스트 부여
+        questManager.GenQuest();
 
     }
 
@@ -170,7 +119,8 @@ public class GameManager : MonoBehaviour
     private void EndRunning()
     {
         isRunning = false; //운영 끝! 
-        runningOverBoard.SetActive(true); // 정산 화면 뜨기
+        uiManager.runningOverBoard.SetActive(true); // 정산 화면 뜨기
+        uiManager.RunStartButton.SetActive(true);
 
         //정산 결과 저장 -> 돈, 인지도 등 데이터 갱신
         PlayerPrefs.SetInt("date", date);
@@ -180,7 +130,7 @@ public class GameManager : MonoBehaviour
         //PlayerPrefs.GetFloat(string key); float 값을 불러올 때
         //int 와 string도 가능
 
-        //PlayerPrefs.SetFloat("money", money);
+        PlayerPrefs.SetFloat("money", money);
 
 
     }
@@ -189,7 +139,7 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("getmoeny 함수 실행");
         money += 100;
-        moneyText.text = "Money : " + money;
+        uiManager.moneyText.text = "Money : " + money;
 
         PlayerPrefs.SetInt("money", money); //이걸 endRunning 함수에 넣어야 하나 고민중 
     }
