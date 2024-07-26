@@ -10718,6 +10718,64 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9cee11ee93ac71499a3cd59212d2e05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &2047828334
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2047828336}
+  - component: {fileID: 2047828335}
+  - component: {fileID: 2047828337}
+  m_Layer: 0
+  m_Name: HowToUse
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2047828335
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2047828334}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba45c263008974eea83431552ffe18ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  apple: {fileID: 0}
+--- !u!4 &2047828336
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2047828334}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1488.0203, y: 764.821, z: 90.884766}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2047828337
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2047828334}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39507585275544871b7fb1dfc1c8e386, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2064496115
 GameObject:
   m_ObjectHideFlags: 0
@@ -10893,3 +10951,4 @@ SceneRoots:
   - {fileID: 1622390172}
   - {fileID: 1533931283}
   - {fileID: 1886851816}
+  - {fileID: 2047828336}
