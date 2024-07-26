@@ -11,10 +11,13 @@ public class CakeMaker : MonoBehaviour
     public int cakeImageNum;
     public int cakeNameNum;
     public int cakeCountNum;
+    public int clickedNum;
+    public int lockedNum;
     public int cakeMaterialNum;
     public int cakeCostNum;
     public int cakeTimeNum;
-    public int lockedNum;
+    public int buttonNum;
+    int unlock = 0;
     void Start()
     {
         int childCount = scrollViewContent.transform.childCount;
@@ -36,6 +39,11 @@ public class CakeMaker : MonoBehaviour
             {
                 button.onClick.AddListener(() => OnCakeClicked(index));
             }
+            Button Clickedbutton = scrollViewContent.transform.GetChild(i).GetChild(clickedNum).GetChild(buttonNum).GetComponent<Button>();
+            if (Clickedbutton != null)
+            {
+                Clickedbutton.onClick.AddListener(() => OnMakeClicked(index));
+            }
         }
 
         UpdateUI();
@@ -43,39 +51,66 @@ public class CakeMaker : MonoBehaviour
 
     void OnCakeClicked(int index)
     {
-        if (cakeLocked[index])
+        int childCount = scrollViewContent.transform.childCount;
+        Transform panel = scrollViewContent.transform.GetChild(index);
+        GameObject clickedPanel = panel.GetChild(clickedNum).gameObject;
+        clickedPanel.SetActive(true);
+        for (int i = 0; i < childCount; i++)
         {
-            Debug.Log("이 케이크는 잠겨 있습니다!");
-            return;
+            if (i != index)
+            {
+                Transform panel2 = scrollViewContent.transform.GetChild(i);
+                GameObject clickedPanel2 = panel2.GetChild(clickedNum).gameObject;
+                clickedPanel2.SetActive(false);
+            }
         }
+    }
 
+    void OnMakeClicked(int index)
+    {
         cakeCounts[index]++;
         Debug.Log("케이크 " + index + " 보유 수: " + cakeCounts[index]);
 
         // 다음 케이크 잠금 해제 로직
-        if (index + 1 < cakeLocked.Length && cakeLocked[index + 1])
-        {
-            cakeLocked[index + 1] = false;
-        }
+
 
         UpdateUI();
     }
 
+    public void Unlock()
+    {
+        if (unlock + 1 < cakeLocked.Length && cakeLocked[unlock + 1])
+        {
+            cakeLocked[unlock + 1] = false;
+            unlock++;
+        }
+        UpdateUI();
+    }
     void UpdateUI()
     {
         for (int i = 0; i < scrollViewContent.transform.childCount; i++)
         {
             Transform panel = scrollViewContent.transform.GetChild(i);
             Text countText = panel.GetChild(cakeCountNum).GetComponent<Text>(); // 보유 수를 표시하는 텍스트 참조
-            
+
             GameObject lockedPanel = panel.GetChild(lockedNum).gameObject; // 잠금 패널 참조
-            
+
 
             countText.text = "보유 수: " + cakeCounts[i];
             lockedPanel.SetActive(cakeLocked[i]);
 
             Button button = panel.GetComponent<Button>();
             button.interactable = !cakeLocked[i]; // 버튼 클릭 가능 여부 설정
+
+
+        }
+        for (int i = 0; i < scrollViewContent.transform.childCount; i++)
+        {
+
+            Transform panel2 = scrollViewContent.transform.GetChild(i);
+            GameObject clickedPanel2 = panel2.GetChild(clickedNum).gameObject;
+            clickedPanel2.SetActive(false);
+
         }
     }
 }
