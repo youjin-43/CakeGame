@@ -5,12 +5,13 @@ using UnityEngine.UI;
 
 public class CakeMakeManager : MonoBehaviour
 {
+    public GameObject spritesToDisable;
     public GameObject cakeMakersPool;
     public GameObject cakeMakerPanel;
     public GameObject scrollViewContent; // ScrollView의 Content를 참조
     private GameObject[] cakeMakers;
-    private int[] cakeCounts; // 각 케이크의 보유 수를 저장하는 배열
-    private bool[] cakeLocked; // 각 케이크가 잠겨 있는지 여부를 저장하는 배열
+    public int[] cakeCounts; // 각 케이크의 보유 수를 저장하는 배열
+    public bool[] cakeLocked; // 각 케이크가 잠겨 있는지 여부를 저장하는 배열
     public int cakeCountNum;
     public int clickedNum;
     public int lockedNum;
@@ -27,9 +28,28 @@ public class CakeMakeManager : MonoBehaviour
         InitializeCakeMakers();
         InitializeCakeStatus();
         SetupButtons();
-        UpdateUI();
     }
+    public void DisableSprites(bool isActive)
+    {
+        for (int i = 0; i < spritesToDisable.transform.childCount; i++)
+        {
+            for (int j = 0; j < spritesToDisable.transform.GetChild(i).childCount; j++)
+            {
+                Collider2D collider = spritesToDisable.transform.GetChild(i).GetChild(j).GetComponent<Collider2D>();
+                if (collider != null)
+                {
+                    collider.enabled = !isActive;
+                }
+            }
+        }
+    }
+    
 
+    public void CloseMenu(GameObject menu)
+    {
+        DisableSprites(false);
+        menu.SetActive(false);
+    }
     void InitializeCakeMakers()
     {
         cakeMakers = new GameObject[cakeMakersPool.transform.childCount];
@@ -43,7 +63,7 @@ public class CakeMakeManager : MonoBehaviour
             cakeMaker.cakeMakerIndex = i;
             cakeMaker.cakeMakerPanel = cakeMakerPanel;
             cakeMaker.storeManager = this.gameObject;
-            
+
             GameObject timerUI = cakeMaker.timerUI;
             Button timerButton = timerUI.GetComponent<Button>();
             if (timerButton == null)
@@ -89,8 +109,10 @@ public class CakeMakeManager : MonoBehaviour
 
     public void OpenPanel(int index)
     {
+        DisableSprites(true);
         cakeMakerPanel.SetActive(true);
         cakeMakerIndex = index;
+        UpdateUI();
     }
 
     void OnCakeClicked(int index)
@@ -105,6 +127,7 @@ public class CakeMakeManager : MonoBehaviour
     void OnMakeClicked(int index)
     {
         cakeMakerPanel.SetActive(false);
+        DisableSprites(false);
         int cakeMakeTime = cakeMakers[cakeMakerIndex].GetComponent<CakeMaker>().GetCakeMakeTime();
         cakeMakers[cakeMakerIndex].GetComponent<CakeMaker>().StartMakingCake(index, cakeMakeTime);
     }
@@ -145,5 +168,7 @@ public class CakeMakeManager : MonoBehaviour
             panel.GetComponent<Button>().interactable = !cakeLocked[i];
             panel.GetChild(clickedNum).gameObject.SetActive(false);
         }
+
+        gameObject.GetComponent<CakeShowcaseManager>().UpdateUI();
     }
 }
