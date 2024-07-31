@@ -15,7 +15,9 @@ public class EventDialog : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        DialogDT = GameManager.instance.dataManager.tableDic[DataManager.CSVDatas.EventTable];
+        DialogDT = DataManager.instance.tableDic[DataManager.CSVDatas.EventTable];
+        Debug.Log("데이터에서 EventTable 할당받음");
+
         dialogText.text = DialogDT.Rows[idx][1].ToString();
 
         //경험치 실험 중

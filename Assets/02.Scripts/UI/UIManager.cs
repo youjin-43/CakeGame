@@ -44,6 +44,12 @@ public class UIManager : MonoBehaviour
     [Header("About EXP")]
     public GameObject ExpBar;
 
+    private void Start()
+    {
+        SetDatainUI();
+        setExpUI();
+    }
+
 
     //private void Update()
     //{

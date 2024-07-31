@@ -26,11 +26,21 @@ public class ExpManager : MonoBehaviour
             Destroy(gameObject);
             Debug.Log("ExpManager를 죽입니다");
         }
+
+        //이전 데이터 가져오기
+        Debug.Log("exp매니저에서 데이터를 로드함");
+        level = PlayerPrefs.GetInt("level");
+        exp = PlayerPrefs.GetFloat("exp");
     }
 
     public int level = 1;
     public float exp = 0f; // 이거 getset으로 하면 인스펙터 창에 안뜨던데 우선 이렇게 해놓겟음 
     public float exp_max = 100f;
+
+    private void Start()
+    {
+        ;
+    }
 
     public void getExp(float delta)
     {
