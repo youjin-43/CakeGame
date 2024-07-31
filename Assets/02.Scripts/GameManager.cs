@@ -30,14 +30,21 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
             Debug.Log("게임매니저를 죽입니다");
         }
+
+        //이전 데이터 가져오기
+        Debug.Log("게임매니저에서 기본 데이터를 로드함");
+        season = (Seasons)PlayerPrefs.GetInt("season");
+        date = PlayerPrefs.GetInt("date");
+        money = PlayerPrefs.GetInt("money"); //주어진 키로 저장된 값이 없으면 기본값을 반환
+        popularity = PlayerPrefs.GetInt("popularity");
     }
 
 
-    [Header("Managers")]
-    public DataManager dataManager = new DataManager();
-    private QuestManager questManager;
-    private UIManager uiManager;
-    private ExpManager expManager;
+    //[Header("Managers")]
+    //public DataManager dataManager = new DataManager();
+    //private QuestManager questManager;
+    //private UIManager uiManager;
+    //private ExpManager expManager;
 
     public enum Seasons
     {
@@ -53,7 +60,7 @@ public class GameManager : MonoBehaviour
     public int money;
     public int popularity;
 
-    [Header("About Exp")]
+    //[Header("About Exp")]
     //[SerializeField] public float exp = 0f; // 이거 getset으로 하면 인스펙터 창에 안뜨던데 우선 이렇게 해놓겟음 
     //[SerializeField] public float exp_max = 100f;
 
@@ -61,32 +68,25 @@ public class GameManager : MonoBehaviour
     public float runTime; // 가게 runTime시간
     public bool isRunning; //가게가 운영중인지 표시하는 변수
 
-    public GameObject QuestBoard;
-    public GameObject QuestUIprefab;
-
-
     void Start()
     {
 
 
-        questManager = GetComponent<QuestManager>();
-        questManager.QuestDT = dataManager.tableDic[DataManager.CSVDatas.QuestTable]; //여기서 이렇게 할당을 해줘야 돌아감. 퀘스트매니저 안에서 할당받으면 안돌아감; 이유는 몰루,,
-        Debug.Log(questManager.QuestDT.Columns[0] + "게임매니저에서 퀘스트 데이터를 할당받음 ");
+        //questManager = GetComponent<QuestManager>();
+        //questManager.QuestDT = dataManager.tableDic[DataManager.CSVDatas.QuestTable]; //여기서 이렇게 할당을 해줘야 돌아감. 퀘스트매니저 안에서 할당받으면 안돌아감; 이유는 몰루,,
+        //Debug.Log(questManager.QuestDT.Columns[0] + "게임매니저에서 퀘스트 데이터를 할당받음 ");
 
-        uiManager = GetComponent<UIManager>();
-        expManager = GetComponent<ExpManager>();
+        //uiManager = GetComponent<UIManager>();
+        //expManager = GetComponent<ExpManager>();
 
-        //이전 데이터 가져오기
-        season = (Seasons)PlayerPrefs.GetInt("season");
-        date = PlayerPrefs.GetInt("date");
-        money = PlayerPrefs.GetInt("money"); //주어진 키로 저장된 값이 없으면 기본값을 반환
-        popularity = PlayerPrefs.GetInt("popularity");
 
-        expManager.level = PlayerPrefs.GetInt("level");
-        expManager.exp = PlayerPrefs.GetFloat("exp");
 
-        uiManager.SetDatainUI();//UI 데이터 표시
-        uiManager.setExpUI();//UI에 경험치 표시 
+
+        //expManager.level = PlayerPrefs.GetInt("level"); -> exp 매니저로 옮김 
+        //expManager.exp = PlayerPrefs.GetFloat("exp");
+
+        //uiManager.SetDatainUI();//UI 데이터 표시 -> UI 매니저에서 실행 
+        //uiManager.setExpUI();//UI에 경험치 표시 
 
     }
 
@@ -97,7 +97,8 @@ public class GameManager : MonoBehaviour
         if (isRunning)
         {
             runTime += Time.deltaTime;
-            uiManager.runningTimeText.text = "Time :" + (int)runTime;
+            UIManager.instance.runningTimeText.text = "Time :" + (int)runTime;
+            //uiManager.runningTimeText.text = "Time :" + (int)runTime;
 
             if (runTime >= 5.0f) // 우선 5로 해놓음 
             {
@@ -117,7 +118,9 @@ public class GameManager : MonoBehaviour
     //가게 운영 시작하는 함수 
     public void StartRunning()
     {
-        uiManager.runningOverBoard.SetActive(false); // 정산 화면 끄기
+        UIManager.instance.runningOverBoard.SetActive(false);
+        Debug.Log("정산화면 끄기 실행 완료 ");
+        //uiManager.runningOverBoard.SetActive(false); // 정산 화면 끄기
 
         date++;
         runTime = 0;
@@ -127,35 +130,37 @@ public class GameManager : MonoBehaviour
         isRunning = true;
 
         //새로운 퀘스트 부여
-        questManager.GenQuest();
+        //questManager.GenQuest();
+        QuestManager.instance.GenQuest();
+        Debug.Log("게임 매니저에서 GenQuest()실행 ");
+
 
     }
 
     //가게 운영이 끝났을때 호출 할 함수
     private void EndRunning()
     {
-        isRunning = false; //운영 끝! 
-        uiManager.runningOverBoard.SetActive(true); // 정산 화면 뜨기
-        uiManager.RunStartButton.SetActive(true);
+        isRunning = false; //운영 끝!
+
+        //uiManager.runningOverBoard.SetActive(true); // 정산 화면 뜨기
+        //uiManager.RunStartButton.SetActive(true);
+        UIManager.instance.runningOverBoard.SetActive(true); // 정산 화면 뜨기
+        UIManager.instance.RunStartButton.SetActive(true);
+
+        
 
         //정산 결과 저장 -> 돈, 인지도 등 데이터 갱신
         PlayerPrefs.SetInt("date", date);
         PlayerPrefs.SetInt("season", (int)season);
-
-        //PlayerPrefs.SetFloat(string key, float value); //float 값을 저장할때 : 키와 키와 대응하는 값을 입력값으로 받음
-        //PlayerPrefs.GetFloat(string key); float 값을 불러올 때
-        //int 와 string도 가능
-
         PlayerPrefs.SetFloat("money", money);
-
-
     }
 
     public void getMoney()
     {
         Debug.Log("getmoeny 함수 실행");
         money += 100;
-        uiManager.moneyText.text = "Money : " + money;
+        //uiManager.moneyText.text = "Money : " + money;
+        UIManager.instance.moneyText.text = "Money : " + money;
 
         PlayerPrefs.SetInt("money", money); //이걸 endRunning 함수에 넣어야 하나 고민중 
     }

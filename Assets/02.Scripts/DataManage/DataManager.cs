@@ -7,8 +7,35 @@ using System.IO; //for StreamReader
 
 
 
-public class DataManager
+public class DataManager : MonoBehaviour
 {
+    //싱글턴으로
+    public static DataManager instance; // 싱글톤을 할당할 전역 변수
+
+    // 게임 시작과 동시에 싱글톤을 구성
+    void Awake()
+    {
+        // 싱글톤 변수 instance가 비어있는가?
+        if (instance == null)
+        {
+            // instance가 비어있다면(null) 그곳에 자기 자신을 할당
+            instance = this;
+            Debug.Log("DataManager가 생성됐습니다");
+        }
+        else
+        {
+            // instance에 이미 다른 GameManager 오브젝트가 할당되어 있는 경우 씬에 두개 이상의 GameManager 오브젝트가 존재한다는 의미.
+            // 싱글톤 오브젝트는 하나만 존재해야 하므로 자신의 게임 오브젝트를 파괴
+            Debug.LogWarning("씬에 두개 이상의 DataManager가 존재합니다!");
+            Destroy(gameObject);
+            Debug.Log("DataManager를 죽입니다");
+        }
+
+        Debug.Log("csv파일을 데이터 데이블 딕셔너리로 저장(in Awake();) ");
+        tableDic.Add(CSVDatas.QuestTable, CSVReader(Application.dataPath + "/StreamingAssets/Quest.csv"));
+        tableDic.Add(CSVDatas.EventTable, CSVReader(Application.dataPath + "/StreamingAssets/DialogTmp.csv"));
+    }
+
     public enum CSVDatas
     {
         QuestTable,
@@ -19,12 +46,12 @@ public class DataManager
     public Dictionary<CSVDatas, DataTable> tableDic = new Dictionary<CSVDatas, DataTable>();
 	
     // 생성자 호출 시 자동으로 csv를 불러와 딕셔너리에 저장
-    public DataManager()
-    {
-        Debug.Log("csv파일을 데이터 데이블 딕셔너리로 저장 ");
-        tableDic.Add(CSVDatas.QuestTable, CSVReader(Application.dataPath + "/StreamingAssets/Quest.csv"));
-        tableDic.Add(CSVDatas.EventTable, CSVReader(Application.dataPath + "/StreamingAssets/DialogTmp.csv"));
-    }
+    //public DataManager()
+    //{
+    //    Debug.Log("csv파일을 데이터 데이블 딕셔너리로 저장 ");
+    //    tableDic.Add(CSVDatas.QuestTable, CSVReader(Application.dataPath + "/StreamingAssets/Quest.csv"));
+    //    tableDic.Add(CSVDatas.EventTable, CSVReader(Application.dataPath + "/StreamingAssets/DialogTmp.csv"));
+    //}
 	
 
 	// csv의 행과 열을 각각 읽어와 리턴
