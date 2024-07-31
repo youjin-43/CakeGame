@@ -21,7 +21,9 @@ public class DataManager
     // 생성자 호출 시 자동으로 csv를 불러와 딕셔너리에 저장
     public DataManager()
     {
+        Debug.Log("csv파일을 데이터 데이블 딕셔너리로 저장 ");
         tableDic.Add(CSVDatas.QuestTable, CSVReader(Application.dataPath + "/StreamingAssets/Quest.csv"));
+        tableDic.Add(CSVDatas.EventTable, CSVReader(Application.dataPath + "/StreamingAssets/DialogTmp.csv"));
     }
 	
 
