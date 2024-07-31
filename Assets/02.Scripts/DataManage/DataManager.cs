@@ -21,6 +21,11 @@ public class DataManager : MonoBehaviour
             // instance가 비어있다면(null) 그곳에 자기 자신을 할당
             instance = this;
             Debug.Log("DataManager가 생성됐습니다");
+            DontDestroyOnLoad(gameObject); // 씬이 변경되어도 삭제되지 않도록
+
+            Debug.Log("csv파일을 데이터 데이블 딕셔너리로 저장(in Awake();) ");
+            tableDic.Add(CSVDatas.QuestTable, CSVReader(Application.dataPath + "/StreamingAssets/Quest.csv"));
+            tableDic.Add(CSVDatas.EventTable, CSVReader(Application.dataPath + "/StreamingAssets/DialogTmp.csv"));
         }
         else
         {
@@ -31,9 +36,6 @@ public class DataManager : MonoBehaviour
             Debug.Log("DataManager를 죽입니다");
         }
 
-        Debug.Log("csv파일을 데이터 데이블 딕셔너리로 저장(in Awake();) ");
-        tableDic.Add(CSVDatas.QuestTable, CSVReader(Application.dataPath + "/StreamingAssets/Quest.csv"));
-        tableDic.Add(CSVDatas.EventTable, CSVReader(Application.dataPath + "/StreamingAssets/DialogTmp.csv"));
     }
 
     public enum CSVDatas

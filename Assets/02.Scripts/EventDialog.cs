@@ -22,6 +22,21 @@ public class EventDialog : MonoBehaviour
 
         //경험치 실험 중
 
+        Debug.Log("GameManager.instance.date : " + GameManager.instance.date);
+
+
+        if(GameManager.instance == null)
+        {
+            Debug.Log("GameManager.instance is null");
+        }
+        else
+        {
+            Debug.Log("GameManager.instance is not null");
+        }
+
+        Debug.Log("GameManager.instance.date : " + GameManager.instance.date);
+
+        Debug.Log(GameManager.tmp);
 
     }
 

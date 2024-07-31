@@ -18,6 +18,10 @@ public class QuestManager : MonoBehaviour
             // instance가 비어있다면(null) 그곳에 자기 자신을 할당
             instance = this;
             Debug.Log("QuestManager가 생성됐습니다");
+            DontDestroyOnLoad(gameObject); // 씬이 변경되어도 삭제되지 않도록
+
+            QuestDT = DataManager.instance.tableDic[DataManager.CSVDatas.QuestTable];
+            Debug.Log("QuestDT.Rows.Count :" + QuestDT.Rows.Count + " - 퀘스트 매니저에서 성공적으로 데이터 테이블을 할당받음!");
         }
         else
         {
@@ -50,8 +54,8 @@ public class QuestManager : MonoBehaviour
 
     private void Start()
     {
-        QuestDT = DataManager.instance.tableDic[DataManager.CSVDatas.QuestTable];
-        Debug.Log("QuestDT.Rows.Count :" + QuestDT.Rows.Count + " - 퀘스트 매니저에서 성공적으로 데이터 테이블을 할당받음!");
+        //QuestDT = DataManager.instance.tableDic[DataManager.CSVDatas.QuestTable];
+        //Debug.Log("QuestDT.Rows.Count :" + QuestDT.Rows.Count + " - 퀘스트 매니저에서 성공적으로 데이터 테이블을 할당받음!");
     }
 
 

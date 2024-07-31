@@ -10,7 +10,8 @@ using UnityEngine.SceneManagement;//씬 관련 라이브러리
 public class GameManager : MonoBehaviour
 {
     //싱글턴으로
-    public static GameManager instance; // 싱글톤을 할당할 전역 변수
+    public static GameManager instance; // 싱글톤을 할당할 전역 변수 -> 이 instance 자체는 게임 오브젝트를 얘기하는것 같고 
+    public static int tmp = 1;
 
     // 게임 시작과 동시에 싱글톤을 구성
     void Awake()
@@ -21,6 +22,15 @@ public class GameManager : MonoBehaviour
             // instance가 비어있다면(null) 그곳에 자기 자신을 할당
             instance = this;
             Debug.Log("게임매니저가 생성됐습니다");
+            DontDestroyOnLoad(gameObject); // 씬이 변경되어도 삭제되지 않도록 s
+
+            //이전 데이터 가져오기
+            Debug.Log("게임매니저에서 기본 데이터를 로드함");
+            season = (Seasons)PlayerPrefs.GetInt("season");
+            date = PlayerPrefs.GetInt("date");
+            money = PlayerPrefs.GetInt("money"); //주어진 키로 저장된 값이 없으면 기본값을 반환
+            popularity = PlayerPrefs.GetInt("popularity");
+
         }
         else
         {
@@ -31,12 +41,7 @@ public class GameManager : MonoBehaviour
             Debug.Log("게임매니저를 죽입니다");
         }
 
-        //이전 데이터 가져오기
-        Debug.Log("게임매니저에서 기본 데이터를 로드함");
-        season = (Seasons)PlayerPrefs.GetInt("season");
-        date = PlayerPrefs.GetInt("date");
-        money = PlayerPrefs.GetInt("money"); //주어진 키로 저장된 값이 없으면 기본값을 반환
-        popularity = PlayerPrefs.GetInt("popularity");
+
     }
 
 
