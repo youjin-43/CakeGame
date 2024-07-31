@@ -32,7 +32,7 @@ public class SlotManager : MonoBehaviour
 
     protected bool IsPointerOverUIObject()
     {
-        Touch touch = Input.GetTouch(0);
+        //Touch touch = Input.GetTouch(0);
 
         PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current)
         {

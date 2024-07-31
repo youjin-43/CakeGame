@@ -1,3 +1,4 @@
+using Inventory.Model;
 using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
@@ -31,6 +32,12 @@ public class FarmingManager : MonoBehaviour
     public Camera mainCamera; // 마우스 좌표를 게임 월드 좌표로 변환하기 위해 필요한 변수(카메라 오브젝트 할당해줄 것)
     public SeedContainer seedContainer; // 현재 가진 씨앗을 가져오기 위해 필요한 변수(씨앗 컨테이너 게임 오브젝트 할당해줄 것)
     public FruitContainer fruitContainer; // 수확한 과일을 저장하기 위해 필요한 변수(과일 컨테이너 게임 오브젝트 할당해줄 것)
+    public UIInventoryController inventoryController; // 인벤토리 관리하기 위해 필요한 변수(인벤토리 매니저 게임 오브젝트 할당해줄 것) 
+
+    // 아이템 스크립터블 오브젝트를 저장해놓기..
+    public FruitItemSO[] fruitItems; // [0]: 사과, [1]: 바나나, [2]: 체리, [3]: 오렌지, [4]: 딸기
+    public SeedItemSO[] seedItems; // [0]: 사과, [1]: 바나나, [2]: 체리, [3]: 오렌지, [4]: 딸기
+
 
     [Header("Tile")]
     public TileBase borderTile; // 제한 구역 상태
@@ -161,7 +168,7 @@ public class FarmingManager : MonoBehaviour
                         // 판넬 위치를 현재 클릭한 타일 위치로..
                         growTimePanel.transform.position = mainCamera.WorldToScreenPoint(farmTilemap.CellToWorld(cellPosition)) + new Vector3(0, 50, 0);
                         growTimePanel.SetActive(true);
-                        growTimeText.text = "남은시간\n" + (int)(farmingData[cellPosition].seed.growTime - farmingData[cellPosition].seed.currentTime);
+                        growTimeText.text = "남은시간\n" + (int)(farmingData[cellPosition].seed.seedData.growTime - farmingData[cellPosition].seed.currentTime);
                     }
                 }
             }
@@ -224,7 +231,7 @@ public class FarmingManager : MonoBehaviour
                             // 판넬 위치를 현재 클릭한 타일 위치로..
                             growTimePanel.transform.position = mainCamera.WorldToScreenPoint(farmTilemap.CellToWorld(cellPosition)) + new Vector3(0, 50, 0);
                             growTimePanel.SetActive(true);
-                            growTimeText.text = "남은시간\n" + (int)(farmingData[cellPosition].seed.growTime - farmingData[cellPosition].seed.currentTime);
+                            growTimeText.text = "남은시간\n" + (int)(farmingData[cellPosition].seed.seedData.growTime - farmingData[cellPosition].seed.currentTime);
                         }
                     }
                 }
@@ -240,7 +247,7 @@ public class FarmingManager : MonoBehaviour
         if (farmEnableZoneTilemap.HasTile(cellPosition) && farmingData[cellPosition].seed != null)
         {
             if (!farmingData[cellPosition].seed.isGrown)
-                growTimeText.text = "남은시간\n" + (int)(farmingData[cellPosition].seed.growTime - farmingData[cellPosition].seed.currentTime);
+                growTimeText.text = "남은시간\n" + (int)(farmingData[cellPosition].seed.seedData.growTime - farmingData[cellPosition].seed.currentTime);
             else
                 growTimePanel.SetActive(false); // 다 자라면 남은시간 나타내는 판넬 꺼지도록..
         }
@@ -354,8 +361,19 @@ public class FarmingManager : MonoBehaviour
         farmingData[pos].plowEnableState = true;
         farmingData[pos].currentState = "None"; // 과일을 수확한 상태니까 None 으로 바꿔주기
 
-        fruitContainer.GetFruit(farmingData[pos].seed.seedIdx); // 씨앗의 인덱스와 같은 과일 생성
-        fruitContainer.fruitCount[farmingData[pos].seed.seedIdx]++; // 씨앗의 인덱스와 같은 과일의 수 증가시키기
+
+        // 이건 이제 이 함수에서 관리 안 할 것...
+        //fruitContainer.fruitCount[farmingData[pos].seed.seedData.seedIdx]++; // 씨앗의 인덱스와 같은 과일의 수 증가시키기
+
+
+        // 구매하려는 씨앗의 개수만큼 InventoryItem 구조체의 인스턴스를 만들기..
+        InventoryItem tempItem = new InventoryItem()
+        {
+            item = fruitItems[farmingData[pos].seed.seedData.seedIdx],
+            quantity = 1,
+        };
+        inventoryController.AddItem(tempItem); // 새로 생성한 인벤토리 아이템을 인벤토리 데이터에 추가해주기..
+
 
         farmingData[pos].stateButton.gameObject.SetActive(false); // 버튼 한 번 눌렀으니까 꺼지도록..
         farmingData[pos].stateButton = farmingData[pos].buttons[0]; // plow 버튼을 가지고 있도록..
@@ -369,13 +387,23 @@ public class FarmingManager : MonoBehaviour
     public void BuySeed(int count, int idx)
     {
         // 돈이 부족하면 씨앗 못사!
-        if (GameManager.instance.money < seedContainer.prefabs[idx].GetComponent<Seed>().seedPrice * count) {
+        if (GameManager.instance.money < seedContainer.prefabs[idx].GetComponent<Seed>().seedData.seedPrice * count) {
             Debug.Log("돈 없어!!!");
             return; 
         }
 
-        seedContainer.seedCount[idx] += count; // 씨앗의 개수를 저장하고 있는 배열의 인덱스 요소에 구매한 씨앗의 개수만큼 더해주기
-        GameManager.instance.money -= seedContainer.prefabs[idx].GetComponent<Seed>().seedPrice * count; // 가진 돈에서 차감!
+        // 구매하려는 씨앗의 개수만큼 InventoryItem 구조체의 인스턴스를 만들기..
+        InventoryItem tempItem = new InventoryItem()
+        {
+            item = seedItems[idx],
+            quantity = count,
+        };
+        inventoryController.AddItem(tempItem); // 새로 생성한 인벤토리 아이템을 인벤토리 데이터에 추가해주기..
+
+
+        // 이건 이제 이 함수에서 관리 안 할 것..
+        //seedContainer.seedCount[idx] += count; // 씨앗의 개수를 저장하고 있는 배열의 인덱스 요소에 구매한 씨앗의 개수만큼 더해주기
+        GameManager.instance.money -= seedContainer.prefabs[idx].GetComponent<Seed>().seedData.seedPrice * count; // 가진 돈에서 차감!
     }
 
     public void SellFruit(int count, int idx)
@@ -384,15 +412,22 @@ public class FarmingManager : MonoBehaviour
         if (fruitContainer.fruitCount[idx] < count) {
             Debug.Log("과일이 부족해!!!");
             return;
-        } 
-
-        fruitContainer.fruitCount[idx] -= count; // 판매할 과일의 수만큼 과일 컨테이너에서 빼주기
-        GameManager.instance.money += fruitContainer.prefabs[idx].GetComponent<Fruit>().fruitPrice * count; // 가진 돈에 더하기!
-
-        for (int i=0; i<count; i++)
-        {
-            fruitContainer.pools[idx][i].SetActive(false); // 판매한 과일 수만큼 과일 활성화 끄기..
         }
+
+        // 판매하려는 과일의 개수만큼 InventoryItem 구조체의 인스턴스를 만들기..
+        InventoryItem tempItem = new InventoryItem()
+        {
+            item = fruitItems[idx],
+            quantity = count,
+        };
+
+        inventoryController.MinusItem(tempItem); // 새로 생성한 인벤토리 아이템을 인벤토리 데이터에서 빼주기..
+
+        // 이건 이제 이 함수에서 관리 안 할 것..
+        //fruitContainer.fruitCount[idx] -= count; // 판매할 과일의 수만큼 과일 컨테이너에서 빼주기
+
+
+        GameManager.instance.money += fruitItems[idx].fruitPrice * count; // 가진 돈에 더하기!
 
         PlayerPrefs.SetInt("money", GameManager.instance.money); // 현재 돈 저장
     }

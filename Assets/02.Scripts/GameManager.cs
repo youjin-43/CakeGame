@@ -37,6 +37,7 @@ public class GameManager : MonoBehaviour
     public DataManager dataManager = new DataManager();
     private QuestManager questManager;
     private UIManager uiManager;
+    private ExpManager expManager;
 
     public enum Seasons
     {
@@ -51,6 +52,10 @@ public class GameManager : MonoBehaviour
     public int date;
     public int money;
     public int popularity;
+
+    [Header("About Exp")]
+    //[SerializeField] public float exp = 0f; // 이거 getset으로 하면 인스펙터 창에 안뜨던데 우선 이렇게 해놓겟음 
+    //[SerializeField] public float exp_max = 100f;
 
     [Header("About Running")]
     public float runTime; // 가게 runTime시간
@@ -69,6 +74,7 @@ public class GameManager : MonoBehaviour
         Debug.Log(questManager.QuestDT.Columns[0] + "게임매니저에서 퀘스트 데이터를 할당받음 ");
 
         uiManager = GetComponent<UIManager>();
+        expManager = GetComponent<ExpManager>();
 
         //이전 데이터 가져오기
         season = (Seasons)PlayerPrefs.GetInt("season");
@@ -76,7 +82,11 @@ public class GameManager : MonoBehaviour
         money = PlayerPrefs.GetInt("money"); //주어진 키로 저장된 값이 없으면 기본값을 반환
         popularity = PlayerPrefs.GetInt("popularity");
 
+        expManager.level = PlayerPrefs.GetInt("level");
+        expManager.exp = PlayerPrefs.GetFloat("exp");
+
         uiManager.SetDatainUI();//UI 데이터 표시
+        uiManager.setExpUI();//UI에 경험치 표시 
 
     }
 
@@ -93,6 +103,12 @@ public class GameManager : MonoBehaviour
             {
                 EndRunning();
             }
+        }
+
+        //경험치 실험 중
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            ExpManager.instance.getExp(10);
         }
 
     }
@@ -143,4 +159,6 @@ public class GameManager : MonoBehaviour
 
         PlayerPrefs.SetInt("money", money); //이걸 endRunning 함수에 넣어야 하나 고민중 
     }
+
+
 }
