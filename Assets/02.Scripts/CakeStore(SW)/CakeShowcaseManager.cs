@@ -56,12 +56,13 @@ public class CakeShowcaseManager : MonoBehaviour
     void IsClickedMenuSelect(int index){
         CakeShowcase cakeShowcase = cakeShowcases[cakeShowcaseIndex].GetComponent<CakeShowcase>();
         CakeMakeManager cakeMakeManager =  gameObject.GetComponent<CakeMakeManager>();
-        if(cakeMakeManager.cakeCounts[cakeShowcase.cakeType[cakeShowcasePlaceIndex]] == 0){
+        if(cakeMakeManager.cakeCounts[index] == 0){
             Debug.Log("케이크 수가 부족합니다.");
             return;
         }
         if(cakeShowcase.isCakeSelected[cakeShowcasePlaceIndex])
         {
+            Debug.Log("이미 케이크 존재");
             cakeMakeManager.cakeCounts[cakeShowcase.cakeType[cakeShowcasePlaceIndex]]++;
         }
         
