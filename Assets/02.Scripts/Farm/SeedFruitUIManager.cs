@@ -49,12 +49,13 @@ public class SeedFruitUIManager : MonoBehaviour
         for (int i = 0; i < buySeedSlots.Count; i++)
         {
             BuySeedSlotManager slot = buySeedSlots[i].GetComponent<BuySeedSlotManager>();
-            Seed slotSeedInfo = seedInfo.prefabs[i].GetComponent<Seed>();
 
-            slot.slotImage.sprite = seedImages[i];
-            slot.slotName.text = slotSeedInfo.seedName;
-            slot.totalPrice.text = "가격: " + slotSeedInfo.seedPrice;
-            slot.idx = slotSeedInfo.seedIdx;
+            SeedItemSO seedInfo = farmingManager.seedItems[i];
+
+            slot.slotImage.sprite = seedInfo.itemImage; // 스크립터블 오브젝트의 이미지로..
+            slot.slotName.text = seedInfo.Name;
+            slot.totalPrice.text = "가격: " + seedInfo.seedPrice;
+            slot.idx = seedInfo.seedIdx;
             slot.countText.text = "1";
         }
 
@@ -62,12 +63,13 @@ public class SeedFruitUIManager : MonoBehaviour
         for (int i=0; i<sellFruitSlots.Count; i++)
         {
             SellFruitSlotManager slot = sellFruitSlots[i].GetComponent<SellFruitSlotManager>();
-            Fruit slotFruitInfo = fruitInfo.prefabs[i].GetComponent<Fruit>();
 
-            slot.slotImage.sprite = seedImages[i]; // 일단 과일 이미지도 씨앗 이미지랑 똑같이 해놓음..
-            slot.slotName.text = slotFruitInfo.fruitName;
-            slot.totalPrice.text = "가격: " + slotFruitInfo.fruitPrice;
-            slot.idx = slotFruitInfo.fruitIdx;
+            FruitItemSO fruitInfo = farmingManager.fruitItems[i];
+
+            slot.slotImage.sprite = fruitInfo.itemImage; // 스크립터블 오브젝트의 이미지로..
+            slot.slotName.text = fruitInfo.Name;
+            slot.totalPrice.text = "가격: " + fruitInfo.fruitPrice;
+            slot.idx = fruitInfo.fruitIdx;
             slot.countText.text = "1";
         }
 
@@ -84,12 +86,13 @@ public class SeedFruitUIManager : MonoBehaviour
         for (int i=0; i < plantSeedSlots.Count; i++)
         {
             PlantSeedSlotManager slot = plantSeedSlots[i].GetComponent<PlantSeedSlotManager>();
-            Seed slotSeedInfo = seedInfo.prefabs[i].GetComponent<Seed>();
 
-            slot.seedImage.sprite = seedImages[i];
-            slot.seedNameText.text = slotSeedInfo.seedName;
-            slot.seedCountText.text = seedInfo.seedCount[i] + "";
-            slot.seedIdx = slotSeedInfo.seedIdx;
+            SeedItemSO seedInfo = farmingManager.seedItems[i];
+
+            slot.seedImage.sprite = seedInfo.itemImage;
+            slot.seedNameText.text = seedInfo.Name;
+            slot.seedCountText.text = farmingManager.seedContainer.seedCount[i] + "";
+            slot.seedIdx = seedInfo.seedIdx;
         }
     }
 
@@ -106,7 +109,7 @@ public class SeedFruitUIManager : MonoBehaviour
             {
                 // 선택된 씨앗 개수랑 총 가격만 계속해서 업데이트 해주면 됨.
                 slot.countText.text = slot.curCount + "";
-                slot.totalPrice.text = "가격: " + (int)(slot.curCount * slotSeedInfo.seedPrice);
+                slot.totalPrice.text = "가격: " + (int)(slot.curCount * slotSeedInfo.seedData.seedPrice);
             }
         }
 
@@ -115,14 +118,14 @@ public class SeedFruitUIManager : MonoBehaviour
         for (int i=0; i<sellFruitSlots.Count; i++)
         {
             SellFruitSlotManager slot = sellFruitSlots[i].GetComponent<SellFruitSlotManager>();
-            Fruit slotFruitInfo = fruitInfo.prefabs[i].GetComponent<Fruit>();
+            FruitItemSO fruitInfo = farmingManager.fruitItems[i];
 
             // SellSlot 이 활성화 되어 있는 슬롯의 정보만 계속해서 변경해줄 것
             if (slot.openSlot.activeSelf)
             {
                 // 선택된 과일 개수랑 총 가격만 계속해서 업데이트 해주면 됨.
                 slot.countText.text = slot.curCount + "";
-                slot.totalPrice.text = "가격: " + (int)(slot.curCount * slotFruitInfo.fruitPrice);
+                slot.totalPrice.text = "가격: " + (int)(slot.curCount * fruitInfo.fruitPrice);
             }
         }
 
