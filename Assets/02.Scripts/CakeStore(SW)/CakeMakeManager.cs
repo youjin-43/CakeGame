@@ -9,7 +9,7 @@ public class CakeMakeManager : MonoBehaviour
     public GameObject cakeMakersPool;
     public GameObject cakeMakerPanel;
     public GameObject scrollViewContent; // ScrollView의 Content를 참조
-    private GameObject[] cakeMakers;
+    public GameObject[] cakeMakers;
     public int[] cakeCounts; // 각 케이크의 보유 수를 저장하는 배열
     public bool[] cakeLocked; // 각 케이크가 잠겨 있는지 여부를 저장하는 배열
     public int cakeCountNum;

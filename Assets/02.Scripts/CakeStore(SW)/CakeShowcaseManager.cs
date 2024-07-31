@@ -90,10 +90,10 @@ public class CakeShowcaseManager : MonoBehaviour
             cakeShowcase.cakeImages[i].GetComponent<SpriteRenderer>().sprite = cakeImages[cakeShowcase.cakeType[i]];
         }
     }
-    public void CakeSell(int index, int soldCakeNum){
-        CakeShowcase cakeShowcase = cakeShowcases[index].GetComponent<CakeShowcase>();
+    public void CakeSell(/*int index, */int soldCakeNum){
+        CakeShowcase cakeShowcase = cakeShowcases[0/*index*/].GetComponent<CakeShowcase>();
         cakeShowcase.isCakeSelected[soldCakeNum] = false;
-        SetCake(index);
+        SetCake(0/*index*/);
         UpdateUI();
     }
 
