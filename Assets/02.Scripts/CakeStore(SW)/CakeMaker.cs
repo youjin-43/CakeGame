@@ -1,116 +1,113 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class CakeMaker : MonoBehaviour
 {
-    public GameObject scrollViewContent; // ScrollView의 Content를 참조
-    private int[] cakeCounts; // 각 케이크의 보유 수를 저장하는 배열
-    private bool[] cakeLocked; // 각 케이크가 잠겨 있는지 여부를 저장하는 배열
-    public int cakeImageNum;
-    public int cakeNameNum;
-    public int cakeCountNum;
-    public int clickedNum;
-    public int lockedNum;
-    public int cakeMaterialNum;
-    public int cakeCostNum;
-    public int cakeTimeNum;
-    public int buttonNum;
-    int unlock = 0;
+    public int cakeMakerIndex;
+    public GameObject cakeMakerPanel;
+    public GameObject storeManager;
+    public GameObject timerUI;
+    public Sprite[] timerSprites; // 0.2초마다 순환할 4개의 이미지
+    public Sprite completedSprite; // 제작 완료 시 설정할 이미지
+
+    private int currentCakeIndex;
+    private bool isMakingCake;
+    private bool isMakeComplete;
+    private Image timerImage;
+    private float totalMakeTime;
+    private float elapsedTime;
+
     void Start()
     {
-        int childCount = scrollViewContent.transform.childCount;
-        cakeCounts = new int[childCount];
-        cakeLocked = new bool[childCount];
-
-        // 잠김 상태 초기화 (예를 들어 첫 번째 케이크만 잠금 해제된 상태)
-        cakeLocked[0] = false;
-        for (int i = 1; i < childCount; i++)
-        {
-            cakeLocked[i] = true;
-        }
-
-        for (int i = 0; i < childCount; i++)
-        {
-            int index = i; // 클로저 문제를 피하기 위해 지역 변수를 사용
-            Button button = scrollViewContent.transform.GetChild(i).GetComponent<Button>();
-            if (button != null)
-            {
-                button.onClick.AddListener(() => OnCakeClicked(index));
-            }
-            Button Clickedbutton = scrollViewContent.transform.GetChild(i).GetChild(clickedNum).GetChild(buttonNum).GetComponent<Button>();
-            if (Clickedbutton != null)
-            {
-                Clickedbutton.onClick.AddListener(() => OnMakeClicked(index));
-            }
-        }
-
-        UpdateUI();
+        timerImage = timerUI.transform.GetComponent<Image>();
+        timerImage.sprite = timerSprites[0];
+        timerUI.SetActive(false);
+        isMakingCake = false;
+        isMakeComplete = false;
     }
 
-    void OnCakeClicked(int index)
+    void Update()
     {
-        int childCount = scrollViewContent.transform.childCount;
-        Transform panel = scrollViewContent.transform.GetChild(index);
-        GameObject clickedPanel = panel.GetChild(clickedNum).gameObject;
-        clickedPanel.SetActive(true);
-        for (int i = 0; i < childCount; i++)
+        if (isMakingCake)
         {
-            if (i != index)
-            {
-                Transform panel2 = scrollViewContent.transform.GetChild(i);
-                GameObject clickedPanel2 = panel2.GetChild(clickedNum).gameObject;
-                clickedPanel2.SetActive(false);
-            }
+            UpdateTimerPosition();
         }
     }
 
-    void OnMakeClicked(int index)
+    void UpdateTimerPosition()
     {
-        cakeCounts[index]++;
-        Debug.Log("케이크 " + index + " 보유 수: " + cakeCounts[index]);
-
-        // 다음 케이크 잠금 해제 로직
-
-
-        UpdateUI();
+        // CakeMaker 오브젝트의 월드 공간 위치를 화면 좌표로 변환
+        Vector3 screenPos = Camera.main.WorldToScreenPoint(transform.position);
+        // Timer UI의 RectTransform 위치를 화면 좌표로 변환한 위치로 설정
+        timerUI.GetComponent<RectTransform>().position = screenPos + new Vector3(0, 50, 0); // 필요에 따라 오프셋 조정
     }
 
-    public void Unlock()
+    void OnMouseDown()
     {
-        if (unlock + 1 < cakeLocked.Length && cakeLocked[unlock + 1])
+        if (!isMakingCake)
         {
-            cakeLocked[unlock + 1] = false;
-            unlock++;
+            storeManager.GetComponent<CakeMakeManager>().OpenPanel(cakeMakerIndex);
         }
-        UpdateUI();
     }
-    void UpdateUI()
+
+    public void StartMakingCake(int index, int cakeMakeTime)
     {
-        for (int i = 0; i < scrollViewContent.transform.childCount; i++)
+        currentCakeIndex = index;
+        totalMakeTime = cakeMakeTime;
+        elapsedTime = 0f;
+        StartCoroutine(TimerRoutine(cakeMakeTime));
+        StartCoroutine(SpriteChangeRoutine());
+    }
+
+    IEnumerator TimerRoutine(int cakeMakeTime)
+    {
+        isMakingCake = true;
+        timerUI.SetActive(true);
+        UpdateTimerPosition();
+        while (elapsedTime < cakeMakeTime)
         {
-            Transform panel = scrollViewContent.transform.GetChild(i);
-            Text countText = panel.GetChild(cakeCountNum).GetComponent<Text>(); // 보유 수를 표시하는 텍스트 참조
-
-            GameObject lockedPanel = panel.GetChild(lockedNum).gameObject; // 잠금 패널 참조
-
-
-            countText.text = "보유 수: " + cakeCounts[i];
-            lockedPanel.SetActive(cakeLocked[i]);
-
-            Button button = panel.GetComponent<Button>();
-            button.interactable = !cakeLocked[i]; // 버튼 클릭 가능 여부 설정
-
-
+            elapsedTime += Time.deltaTime;
+            yield return null;
         }
-        for (int i = 0; i < scrollViewContent.transform.childCount; i++)
+        isMakeComplete = true;
+        timerImage.sprite = completedSprite; // 제작 완료 이미지로 변경
+    }
+
+    IEnumerator SpriteChangeRoutine()
+    {
+        int spriteIndex = 0;
+        while (elapsedTime < totalMakeTime)
         {
-
-            Transform panel2 = scrollViewContent.transform.GetChild(i);
-            GameObject clickedPanel2 = panel2.GetChild(clickedNum).gameObject;
-            clickedPanel2.SetActive(false);
-
+            timerImage.sprite = timerSprites[spriteIndex];
+            spriteIndex = (spriteIndex + 1) % timerSprites.Length;
+            yield return new WaitForSeconds(0.2f);
         }
+    }
+
+    public void CompleteCake()
+    {
+        storeManager.GetComponent<CakeMakeManager>().CompleteCake(currentCakeIndex);
+        timerUI.SetActive(false);
+        isMakingCake = false;
+        isMakeComplete = false;
+        timerImage.sprite = timerSprites[0]; // 처음 이미지로 리셋
+    }
+
+    public bool IsMakeComplete()
+    {
+        return isMakeComplete;
+    }
+
+    public bool TimerUIActive()
+    {
+        return timerUI.activeSelf;
+    }
+
+    public int GetCakeMakeTime()
+    {
+        // 여기에 케이크 제작 시간을 반환하는 로직을 추가합니다.
+        // 예시로 5초로 설정합니다.
+        return 5;
     }
 }
