@@ -50,16 +50,6 @@ public class UIManager : MonoBehaviour
         setExpUI();
     }
 
-
-    //private void Update()
-    //{
-    //    if (GameManager.instance.isRunning)
-    //    {
-    //        runningTimeText.text = "Time :" + (int)GameManager.instance.runTime;
-    //    }
-    //}
-    // 아나ㅣ 여따 하면 왤케 오류가 생기냐....
-
     public void setExpUI()
     {
         ExpBar.GetComponent<Image>().fillAmount = ExpManager.instance.exp / ExpManager.instance.exp_max;

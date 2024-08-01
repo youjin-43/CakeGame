@@ -40,11 +40,6 @@ public class ExpManager : MonoBehaviour
     public float exp = 0f; // 이거 getset으로 하면 인스펙터 창에 안뜨던데 우선 이렇게 해놓겟음 
     public float exp_max = 100f;
 
-    private void Start()
-    {
-        ;
-    }
-
     public void getExp(float delta)
     {
         exp += delta;
