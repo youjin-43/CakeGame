@@ -5,12 +5,12 @@ using UnityEngine.UI;
 public class CakeMaker : MonoBehaviour
 {
     public int cakeMakerIndex;
-    public GameObject cakeMakerPanel;
-    public GameObject storeManager;
     public GameObject timerUI;
-    public Sprite[] timerSprites; // 0.2초마다 순환할 4개의 이미지
-    public Sprite completedSprite; // 제작 완료 시 설정할 이미지
+    public Sprite[] timerSprites;
+    public Sprite completedSprite;
 
+    private GameObject storeManager;
+    private GameObject cakeMakerPanel;
     private int currentCakeIndex;
     private bool isMakingCake;
     private bool isMakeComplete;
@@ -18,13 +18,22 @@ public class CakeMaker : MonoBehaviour
     private float totalMakeTime;
     private float elapsedTime;
 
-    void Start()
+    public void Initialize(int index, GameObject manager, GameObject panel, Sprite[] sprites, Sprite completeSprite)
     {
-        timerImage = timerUI.transform.GetComponent<Image>();
+        cakeMakerIndex = index;
+        storeManager = manager;
+        cakeMakerPanel = panel;
+        timerSprites = sprites;
+        completedSprite = completeSprite;
+
+        timerImage = timerUI.GetComponent<Image>();
         timerImage.sprite = timerSprites[0];
         timerUI.SetActive(false);
         isMakingCake = false;
         isMakeComplete = false;
+
+        Button timerButton = timerUI.GetComponent<Button>() ?? timerUI.AddComponent<Button>();
+        timerButton.onClick.AddListener(() => storeManager.GetComponent<CakeMakeManager>().OnTimerUIClicked(index));
     }
 
     void Update()
@@ -37,10 +46,8 @@ public class CakeMaker : MonoBehaviour
 
     void UpdateTimerPosition()
     {
-        // CakeMaker 오브젝트의 월드 공간 위치를 화면 좌표로 변환
         Vector3 screenPos = Camera.main.WorldToScreenPoint(transform.position);
-        // Timer UI의 RectTransform 위치를 화면 좌표로 변환한 위치로 설정
-        timerUI.GetComponent<RectTransform>().position = screenPos + new Vector3(0, 50, 0); // 필요에 따라 오프셋 조정
+        timerUI.GetComponent<RectTransform>().position = screenPos + new Vector3(0, 50, 0);
     }
 
     void OnMouseDown()
@@ -71,7 +78,7 @@ public class CakeMaker : MonoBehaviour
             yield return null;
         }
         isMakeComplete = true;
-        timerImage.sprite = completedSprite; // 제작 완료 이미지로 변경
+        timerImage.sprite = completedSprite;
     }
 
     IEnumerator SpriteChangeRoutine()
@@ -91,7 +98,7 @@ public class CakeMaker : MonoBehaviour
         timerUI.SetActive(false);
         isMakingCake = false;
         isMakeComplete = false;
-        timerImage.sprite = timerSprites[0]; // 처음 이미지로 리셋
+        timerImage.sprite = timerSprites[0];
     }
 
     public bool IsMakeComplete()
@@ -106,8 +113,6 @@ public class CakeMaker : MonoBehaviour
 
     public int GetCakeMakeTime()
     {
-        // 여기에 케이크 제작 시간을 반환하는 로직을 추가합니다.
-        // 예시로 5초로 설정합니다.
-        return 5;
+        return 5; // 예시로 5초 설정
     }
 }
