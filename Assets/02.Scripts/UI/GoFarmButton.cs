@@ -14,7 +14,7 @@ public class GoFarmButton : MonoBehaviour
         }
         else
         {
-            SceneManager.LoadScene("CakeStore 2");
+            SceneManager.LoadScene("CakeStore 1");
         }
     }
 }
