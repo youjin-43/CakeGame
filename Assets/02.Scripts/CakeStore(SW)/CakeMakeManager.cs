@@ -8,27 +8,28 @@ public class CakeMakeManager : MonoBehaviour
     public GameObject spritesToDisable;
     public GameObject cakeMakersPool;
     public GameObject cakeMakerPanel;
-    public GameObject scrollViewContent; // ScrollView의 Content를 참조
+    public GameObject scrollViewContent;
     public GameObject[] cakeMakers;
-    public int[] cakeCounts; // 각 케이크의 보유 수를 저장하는 배열
-    public bool[] cakeLocked; // 각 케이크가 잠겨 있는지 여부를 저장하는 배열
     public int cakeCountNum;
     public int clickedNum;
     public int lockedNum;
     public int buttonNum;
     public int cakeMakerIndex;
-    int unlock = 0;
 
     public GameObject timers;
-    public Sprite[] timerSprites; // 4개의 타이머 스프라이트
-    public Sprite completedSprite; // 제작 완료 스프라이트
+    public Sprite[] timerSprites;
+    public Sprite completedSprite;
+
+    private CakeManager cakeManager;
 
     void Awake()
     {
+        cakeManager = gameObject.GetComponent<CakeManager>();
         InitializeCakeMakers();
-        InitializeCakeStatus();
         SetupButtons();
+        UpdateUI();
     }
+
     public void DisableSprites(bool isActive)
     {
         for (int i = 0; i < spritesToDisable.transform.childCount; i++)
@@ -43,13 +44,13 @@ public class CakeMakeManager : MonoBehaviour
             }
         }
     }
-    
 
     public void CloseMenu(GameObject menu)
     {
         DisableSprites(false);
         menu.SetActive(false);
     }
+
     void InitializeCakeMakers()
     {
         cakeMakers = new GameObject[cakeMakersPool.transform.childCount];
@@ -75,24 +76,11 @@ public class CakeMakeManager : MonoBehaviour
         }
     }
 
-    void InitializeCakeStatus()
-    {
-        int childCount = scrollViewContent.transform.childCount;
-        cakeCounts = new int[childCount];
-        cakeLocked = new bool[childCount];
-
-        cakeLocked[0] = false;
-        for (int i = 1; i < childCount; i++)
-        {
-            cakeLocked[i] = true;
-        }
-    }
-
     void SetupButtons()
     {
         for (int i = 0; i < scrollViewContent.transform.childCount; i++)
         {
-            int index = i; // 클로저 문제를 피하기 위해 지역 변수를 사용
+            int index = i;
             var panel = scrollViewContent.transform.GetChild(i);
             SetupButton(panel.GetComponent<Button>(), () => OnCakeClicked(index));
             SetupButton(panel.GetChild(clickedNum).GetChild(buttonNum).GetComponent<Button>(), () => OnMakeClicked(index));
@@ -128,14 +116,13 @@ public class CakeMakeManager : MonoBehaviour
     {
         cakeMakerPanel.SetActive(false);
         DisableSprites(false);
-        int cakeMakeTime = cakeMakers[cakeMakerIndex].GetComponent<CakeMaker>().GetCakeMakeTime();
+        int cakeMakeTime = cakeManager.cakeDataList[index].bakeTime;
         cakeMakers[cakeMakerIndex].GetComponent<CakeMaker>().StartMakingCake(index, cakeMakeTime);
     }
 
     public void CompleteCake(int index)
     {
-        cakeCounts[index]++;
-        Debug.Log("케이크 " + index + " 보유 수: " + cakeCounts[index]);
+        cakeManager.IncreaseCakeCount(index);
         UpdateUI();
     }
 
@@ -150,22 +137,17 @@ public class CakeMakeManager : MonoBehaviour
 
     public void Unlock()
     {
-        if (unlock + 1 < cakeLocked.Length && cakeLocked[unlock + 1])
-        {
-            cakeLocked[unlock + 1] = false;
-            unlock++;
-        }
+        cakeManager.UnlockCake();
         UpdateUI();
     }
-
     void UpdateUI()
     {
         for (int i = 0; i < scrollViewContent.transform.childCount; i++)
         {
             Transform panel = scrollViewContent.transform.GetChild(i);
-            panel.GetChild(cakeCountNum).GetComponent<Text>().text = "보유 수: " + cakeCounts[i];
-            panel.GetChild(lockedNum).gameObject.SetActive(cakeLocked[i]);
-            panel.GetComponent<Button>().interactable = !cakeLocked[i];
+            panel.GetChild(cakeCountNum).GetComponent<Text>().text = "보유 수: " + cakeManager.cakeDataList[i].cakeCount;
+            panel.GetChild(lockedNum).gameObject.SetActive(cakeManager.cakeDataList[i].isLocked);
+            panel.GetComponent<Button>().interactable = !cakeManager.cakeDataList[i].isLocked;
             panel.GetChild(clickedNum).gameObject.SetActive(false);
         }
 
