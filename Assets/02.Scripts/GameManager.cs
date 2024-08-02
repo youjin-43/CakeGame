@@ -10,7 +10,8 @@ using UnityEngine.SceneManagement;//씬 관련 라이브러리
 public class GameManager : MonoBehaviour
 {
     //싱글턴으로
-    public static GameManager instance; // 싱글톤을 할당할 전역 변수
+    public static GameManager instance; // 싱글톤을 할당할 전역 변수 -> 이 instance 자체는 게임 오브젝트를 얘기하는것 같고 
+    public static int tmp = 1;
 
     // 게임 시작과 동시에 싱글톤을 구성
     void Awake()
@@ -21,6 +22,15 @@ public class GameManager : MonoBehaviour
             // instance가 비어있다면(null) 그곳에 자기 자신을 할당
             instance = this;
             Debug.Log("게임매니저가 생성됐습니다");
+            DontDestroyOnLoad(gameObject); // 씬이 변경되어도 삭제되지 않도록 s
+
+            //이전 데이터 가져오기
+            Debug.Log("게임매니저에서 기본 데이터를 로드함");
+            season = (Seasons)PlayerPrefs.GetInt("season");
+            date = PlayerPrefs.GetInt("date");
+            money = PlayerPrefs.GetInt("money"); //주어진 키로 저장된 값이 없으면 기본값을 반환
+            popularity = PlayerPrefs.GetInt("popularity");
+
         }
         else
         {
@@ -30,21 +40,7 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
             Debug.Log("게임매니저를 죽입니다");
         }
-
-        //이전 데이터 가져오기
-        Debug.Log("게임매니저에서 기본 데이터를 로드함");
-        season = (Seasons)PlayerPrefs.GetInt("season");
-        date = PlayerPrefs.GetInt("date");
-        money = PlayerPrefs.GetInt("money"); //주어진 키로 저장된 값이 없으면 기본값을 반환
-        popularity = PlayerPrefs.GetInt("popularity");
     }
-
-
-    //[Header("Managers")]
-    //public DataManager dataManager = new DataManager();
-    //private QuestManager questManager;
-    //private UIManager uiManager;
-    //private ExpManager expManager;
 
     public enum Seasons
     {
@@ -60,34 +56,12 @@ public class GameManager : MonoBehaviour
     public int money;
     public int popularity;
 
-    //[Header("About Exp")]
-    //[SerializeField] public float exp = 0f; // 이거 getset으로 하면 인스펙터 창에 안뜨던데 우선 이렇게 해놓겟음 
-    //[SerializeField] public float exp_max = 100f;
-
     [Header("About Running")]
     public float runTime; // 가게 runTime시간
     public bool isRunning; //가게가 운영중인지 표시하는 변수
 
     void Start()
     {
-
-
-        //questManager = GetComponent<QuestManager>();
-        //questManager.QuestDT = dataManager.tableDic[DataManager.CSVDatas.QuestTable]; //여기서 이렇게 할당을 해줘야 돌아감. 퀘스트매니저 안에서 할당받으면 안돌아감; 이유는 몰루,,
-        //Debug.Log(questManager.QuestDT.Columns[0] + "게임매니저에서 퀘스트 데이터를 할당받음 ");
-
-        //uiManager = GetComponent<UIManager>();
-        //expManager = GetComponent<ExpManager>();
-
-
-
-
-        //expManager.level = PlayerPrefs.GetInt("level"); -> exp 매니저로 옮김 
-        //expManager.exp = PlayerPrefs.GetFloat("exp");
-
-        //uiManager.SetDatainUI();//UI 데이터 표시 -> UI 매니저에서 실행 
-        //uiManager.setExpUI();//UI에 경험치 표시 
-
     }
 
     void Update()
@@ -98,9 +72,8 @@ public class GameManager : MonoBehaviour
         {
             runTime += Time.deltaTime;
             UIManager.instance.runningTimeText.text = "Time :" + (int)runTime;
-            //uiManager.runningTimeText.text = "Time :" + (int)runTime;
 
-            if (runTime >= 5.0f) // 우선 5로 해놓음 
+            if (runTime >= 5.0f) // 우선 5초로 해놓음 
             {
                 EndRunning();
             }
@@ -120,17 +93,13 @@ public class GameManager : MonoBehaviour
     {
         UIManager.instance.runningOverBoard.SetActive(false);
         Debug.Log("정산화면 끄기 실행 완료 ");
-        //uiManager.runningOverBoard.SetActive(false); // 정산 화면 끄기
 
         date++;
         runTime = 0;
 
-        
-
         isRunning = true;
 
         //새로운 퀘스트 부여
-        //questManager.GenQuest();
         QuestManager.instance.GenQuest();
         Debug.Log("게임 매니저에서 GenQuest()실행 ");
 
@@ -142,12 +111,8 @@ public class GameManager : MonoBehaviour
     {
         isRunning = false; //운영 끝!
 
-        //uiManager.runningOverBoard.SetActive(true); // 정산 화면 뜨기
-        //uiManager.RunStartButton.SetActive(true);
         UIManager.instance.runningOverBoard.SetActive(true); // 정산 화면 뜨기
         UIManager.instance.RunStartButton.SetActive(true);
-
-        
 
         //정산 결과 저장 -> 돈, 인지도 등 데이터 갱신
         PlayerPrefs.SetInt("date", date);
@@ -158,11 +123,10 @@ public class GameManager : MonoBehaviour
     public void getMoney()
     {
         Debug.Log("getmoeny 함수 실행");
-        money += 100;
-        //uiManager.moneyText.text = "Money : " + money;
-        UIManager.instance.moneyText.text = "Money : " + money;
 
-        PlayerPrefs.SetInt("money", money); //이걸 endRunning 함수에 넣어야 하나 고민중 
+        money += 100;
+        UIManager.instance.moneyText.text = "Money : " + money;
+        PlayerPrefs.SetInt("money", money); 
     }
 
 

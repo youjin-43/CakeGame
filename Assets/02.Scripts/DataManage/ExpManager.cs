@@ -17,6 +17,12 @@ public class ExpManager : MonoBehaviour
             // instance가 비어있다면(null) 그곳에 자기 자신을 할당
             instance = this;
             Debug.Log("ExpManager가 생성됐습니다");
+            DontDestroyOnLoad(gameObject); // 씬이 변경되어도 삭제되지 않도록
+
+            //이전 데이터 가져오기
+            Debug.Log("exp매니저에서 데이터를 로드함");
+            level = PlayerPrefs.GetInt("level");
+            exp = PlayerPrefs.GetFloat("exp");
         }
         else
         {
@@ -27,20 +33,12 @@ public class ExpManager : MonoBehaviour
             Debug.Log("ExpManager를 죽입니다");
         }
 
-        //이전 데이터 가져오기
-        Debug.Log("exp매니저에서 데이터를 로드함");
-        level = PlayerPrefs.GetInt("level");
-        exp = PlayerPrefs.GetFloat("exp");
+
     }
 
     public int level = 1;
     public float exp = 0f; // 이거 getset으로 하면 인스펙터 창에 안뜨던데 우선 이렇게 해놓겟음 
     public float exp_max = 100f;
-
-    private void Start()
-    {
-        ;
-    }
 
     public void getExp(float delta)
     {
@@ -50,7 +48,7 @@ public class ExpManager : MonoBehaviour
             exp = exp - exp_max;
             level++;
 
-            if(level == 3) SceneManager.LoadScene("Level5");
+            if(level == 1) SceneManager.LoadScene("Level5");
 
             UIManager.instance.levelText.text = level.ToString();
 
