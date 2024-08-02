@@ -19,9 +19,6 @@ public class QuestManager : MonoBehaviour
             instance = this;
             Debug.Log("QuestManager가 생성됐습니다");
             DontDestroyOnLoad(gameObject); // 씬이 변경되어도 삭제되지 않도록
-
-            QuestDT = DataManager.instance.tableDic[DataManager.CSVDatas.QuestTable];
-            Debug.Log("QuestDT.Rows.Count :" + QuestDT.Rows.Count + " - 퀘스트 매니저에서 성공적으로 데이터 테이블을 할당받음!");
         }
         else
         {
@@ -39,31 +36,15 @@ public class QuestManager : MonoBehaviour
     public GameObject QuestBoard; // 정확히는 새로운 퀘스트 UI 프리팹이 들어갈 content
     public GameObject QuestUIprefab;
 
-    //public QuestManager()
-    //{
-    //    Debug.Log("generate QuestManager");
-    //    QuestDT = GameManager.instance.dataManager.tableDic[DataManager.CSVDatas.QuestTable];
-    //}
-
-    //void Start()
-    //{
-    //    QuestDT = GameManager.instance.dataManager.tableDic[DataManager.CSVDatas.QuestTable]; //얘가 왜 
-    //    Debug.Log(QuestDT.Rows.Count + "퀘스트 매니저에서 성공적으로 데이터 테이블을 할당받음!");
-    //}
-    //여긴 왤케 순서가 꼬이는지 아직도 이해얀됨;
-
     private void Start()
     {
-        //QuestDT = DataManager.instance.tableDic[DataManager.CSVDatas.QuestTable];
-        //Debug.Log("QuestDT.Rows.Count :" + QuestDT.Rows.Count + " - 퀘스트 매니저에서 성공적으로 데이터 테이블을 할당받음!");
+        QuestDT = DataManager.instance.tableDic[DataManager.CSVDatas.QuestTable];
+        Debug.Log("QuestDT.Rows.Count :" + QuestDT.Rows.Count + " - 퀘스트 매니저에서 성공적으로 데이터 테이블을 할당받음!");
     }
 
 
     public void GenQuest()
     {
-        //Debug.Log(QuestDT.Rows.Count);
-        //Debug.Log(QuestDT.Rows[10][0]);
-        //Debug.Log(QuestDT.Rows[10][1]);
 
         int randNum = Random.Range(0, QuestDT.Rows.Count);
         Debug.Log("NewQuestNum : "+randNum);
