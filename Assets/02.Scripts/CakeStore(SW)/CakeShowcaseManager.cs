@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,18 +15,23 @@ public class CakeShowcaseManager : MonoBehaviour
 
     public GameObject scrollViewContent;
     public int cakeCountNum;
-    public int lockedNum;   
+    public int lockedNum;
     public int placeButtonImageNum;
     public int cakePlaceNum = 4;
-    void Awake(){
+
+    private CakeManager cakeManager;
+
+    void Awake()
+    {
+        cakeManager = gameObject.GetComponent<CakeManager>();
         cakeShowcaseMenu.SetActive(false);
         cakeShowcasePlace.SetActive(false);
         cakeShowcases = new GameObject[cakeShowcasePool.transform.childCount];
-        
+
         int childCount = scrollViewContent.transform.childCount;
 
         for (int i = 0; i < cakeShowcasePool.transform.childCount; i++)
-        { 
+        {
             cakeShowcases[i] = cakeShowcasePool.transform.GetChild(i).gameObject;
             cakeShowcases[i].GetComponent<CakeShowcase>().storeManager = this.gameObject;
             cakeShowcases[i].GetComponent<CakeShowcase>().cakeShowcaseIndex = i;
@@ -44,38 +48,40 @@ public class CakeShowcaseManager : MonoBehaviour
             Button menuButton = scrollViewContent.transform.GetChild(i).GetComponent<Button>();
             menuButton.onClick.AddListener(() => IsClickedMenuSelect(index));
         }
-        for (int i = 0; i < cakeShowcasePlace.transform.childCount; i++){
-            Button placeButton = cakeShowcasePlace.transform.GetChild(i).GetComponent<Button>();
-        }
     }
-    void IsClickedPlaceSelect(int index){
+
+    void IsClickedPlaceSelect(int index)
+    {
         cakeShowcaseMenu.SetActive(true);
         cakeShowcasePlaceIndex = index;
         cakeShowcasePlace.SetActive(false);
     }
-    void IsClickedMenuSelect(int index){
+
+    void IsClickedMenuSelect(int index)
+    {
         CakeShowcase cakeShowcase = cakeShowcases[cakeShowcaseIndex].GetComponent<CakeShowcase>();
-        CakeMakeManager cakeMakeManager =  gameObject.GetComponent<CakeMakeManager>();
-        if(cakeMakeManager.cakeCounts[index] == 0){
+        if (cakeManager.cakeDataList[index].cakeCount == 0)
+        {
             Debug.Log("케이크 수가 부족합니다.");
             return;
         }
-        if(cakeShowcase.isCakeSelected[cakeShowcasePlaceIndex])
+        if (cakeShowcase.isCakeSelected[cakeShowcasePlaceIndex])
         {
             Debug.Log("이미 케이크 존재");
-            cakeMakeManager.cakeCounts[cakeShowcase.cakeType[cakeShowcasePlaceIndex]]++;
+            cakeManager.IncreaseCakeCount(cakeShowcase.cakeType[cakeShowcasePlaceIndex]);
         }
-        
+
         cakeShowcase.isCakeSelected[cakeShowcasePlaceIndex] = true;
         cakeShowcase.cakeType[cakeShowcasePlaceIndex] = index;
-        cakeMakeManager.cakeCounts[index]--;
+        cakeManager.DecreaseCakeCount(index);
         SetCake(cakeShowcaseIndex);
-        
+
         gameObject.GetComponent<CakeMakeManager>().DisableSprites(false);
         cakeShowcaseMenu.SetActive(false);
-        
+
         UpdateUI();
     }
+
     public void OpenPanel(int index)
     {
         gameObject.GetComponent<CakeMakeManager>().DisableSprites(true);
@@ -84,30 +90,33 @@ public class CakeShowcaseManager : MonoBehaviour
         UpdateUI();
     }
 
-    public void SetCake(int index){
+    public void SetCake(int index)
+    {
         CakeShowcase cakeShowcase = cakeShowcases[index].GetComponent<CakeShowcase>();
-        for(int i = 0; i < cakePlaceNum; i++){
+        for (int i = 0; i < cakePlaceNum; i++)
+        {
             cakeShowcase.cakeImages[i].SetActive(cakeShowcase.isCakeSelected[i]);
-            cakeShowcase.cakeImages[i].GetComponent<SpriteRenderer>().sprite = cakeImages[cakeShowcase.cakeType[i]];
+            cakeShowcase.cakeImages[i].GetComponent<SpriteRenderer>().sprite = cakeManager.cakeDataList[cakeShowcase.cakeType[i]].cakeImage;
         }
     }
-    public void CakeSell(/*int index, */int soldCakeNum){
-        CakeShowcase cakeShowcase = cakeShowcases[0/*index*/].GetComponent<CakeShowcase>();
+
+    public void CakeSell(int soldCakeNum)
+    {
+        CakeShowcase cakeShowcase = cakeShowcases[0].GetComponent<CakeShowcase>();
         cakeShowcase.isCakeSelected[soldCakeNum] = false;
-        SetCake(0/*index*/);
+        SetCake(0);
         UpdateUI();
     }
 
     public void UpdateUI()
     {
-        CakeMakeManager cakeMakeManager = gameObject.GetComponent<CakeMakeManager>();
         for (int i = 0; i < scrollViewContent.transform.childCount; i++)
         {
-            int cakeCount = cakeMakeManager.cakeCounts[i];
+            int cakeCount = cakeManager.cakeDataList[i].cakeCount;
             Transform panel = scrollViewContent.transform.GetChild(i);
             panel.GetChild(cakeCountNum).GetComponent<Text>().text = "보유 수: " + cakeCount;
-            panel.GetChild(lockedNum).gameObject.SetActive(cakeMakeManager.cakeLocked[i]);
-            panel.GetComponent<Button>().interactable = !cakeMakeManager.cakeLocked[i];
+            panel.GetChild(lockedNum).gameObject.SetActive(cakeManager.cakeDataList[i].isLocked);
+            panel.GetComponent<Button>().interactable = !cakeManager.cakeDataList[i].isLocked;
         }
         for (int i = 0; i < cakeShowcasePlace.transform.childCount; i++)
         {
@@ -115,7 +124,7 @@ public class CakeShowcaseManager : MonoBehaviour
             CakeShowcase cakeShowcase = cakeShowcases[cakeShowcaseIndex].GetComponent<CakeShowcase>();
             placeButton.SetActive(cakeShowcase.isCakeSelected[i]);
             Image placeButtonImage = placeButton.GetComponent<Image>();
-            placeButtonImage.sprite = cakeImages[cakeShowcase.cakeType[i]];
+            placeButtonImage.sprite = cakeManager.cakeDataList[cakeShowcase.cakeType[i]].cakeImage;
         }
     }
 }

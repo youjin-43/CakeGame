@@ -748,7 +748,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &63457933
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6540,6 +6540,7 @@ GameObject:
   - component: {fileID: 299771897}
   - component: {fileID: 299771898}
   - component: {fileID: 299771899}
+  - component: {fileID: 299771900}
   m_Layer: 0
   m_Name: StoreManager
   m_TagString: Untagged
@@ -6628,8 +6629,6 @@ MonoBehaviour:
   cakeMakerPanel: {fileID: 1454436840}
   scrollViewContent: {fileID: 1672258583}
   cakeMakers: []
-  cakeCounts: 
-  cakeLocked: 
   cakeCountNum: 2
   clickedNum: 4
   lockedNum: 3
@@ -6669,6 +6668,24 @@ MonoBehaviour:
   lockedNum: 4
   placeButtonImageNum: 1
   cakePlaceNum: 4
+--- !u!114 &299771900
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 299771894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2119bc230e6a8644fbd8d3bd90d7ac69, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cakeDataList:
+  - {fileID: 11400000, guid: 6d88e7322e9e3a54095aeb71ed6834e8, type: 2}
+  - {fileID: 11400000, guid: e4e6d0bb27db1794e9c2df7bc92732da, type: 2}
+  - {fileID: 11400000, guid: 3e79b25d03e0bac43981f254da8b2c4e, type: 2}
+  - {fileID: 11400000, guid: aea4690d5c70b674ca40736154234bfc, type: 2}
+  - {fileID: 11400000, guid: f93080eb7c5940e44bb131b2cd115e22, type: 2}
 --- !u!1 &304153279
 GameObject:
   m_ObjectHideFlags: 0
@@ -23013,7 +23030,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2036637592
 MonoBehaviour:
   m_ObjectHideFlags: 0
