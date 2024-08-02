@@ -19,25 +19,6 @@ public class EventDialog : MonoBehaviour
         Debug.Log("데이터에서 EventTable 할당받음");
 
         dialogText.text = DialogDT.Rows[idx][1].ToString();
-
-        //경험치 실험 중
-
-        Debug.Log("GameManager.instance.date : " + GameManager.instance.date);
-
-
-        if(GameManager.instance == null)
-        {
-            Debug.Log("GameManager.instance is null");
-        }
-        else
-        {
-            Debug.Log("GameManager.instance is not null");
-        }
-
-        Debug.Log("GameManager.instance.date : " + GameManager.instance.date);
-
-        Debug.Log(GameManager.tmp);
-
     }
 
     // Update is called once per frame

@@ -46,15 +46,6 @@ public class DataManager : MonoBehaviour
     }
 
     public Dictionary<CSVDatas, DataTable> tableDic = new Dictionary<CSVDatas, DataTable>();
-	
-    // 생성자 호출 시 자동으로 csv를 불러와 딕셔너리에 저장
-    //public DataManager()
-    //{
-    //    Debug.Log("csv파일을 데이터 데이블 딕셔너리로 저장 ");
-    //    tableDic.Add(CSVDatas.QuestTable, CSVReader(Application.dataPath + "/StreamingAssets/Quest.csv"));
-    //    tableDic.Add(CSVDatas.EventTable, CSVReader(Application.dataPath + "/StreamingAssets/DialogTmp.csv"));
-    //}
-	
 
 	// csv의 행과 열을 각각 읽어와 리턴
     public DataTable CSVReader(string path)
@@ -67,7 +58,6 @@ public class DataManager : MonoBehaviour
         foreach (string header in headers)
         {
             dt.Columns.Add(header);
-            //Debug.Log(header);
         }
 
         while (!sr.EndOfStream)

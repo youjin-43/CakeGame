@@ -60,10 +60,6 @@ public class GameManager : MonoBehaviour
     public float runTime; // 가게 runTime시간
     public bool isRunning; //가게가 운영중인지 표시하는 변수
 
-    void Start()
-    {
-    }
-
     void Update()
     {
 
