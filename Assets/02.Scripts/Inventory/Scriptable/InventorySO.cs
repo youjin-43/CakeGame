@@ -20,7 +20,7 @@ namespace Inventory.Model
 
         // 인벤토리가 업데이트 됐는지 여부 확인 후 함수 호출하기 위함(매번 Update 함수에서 확인 안해도됨)..
         public event Action<Dictionary<int, InventoryItem>> OnInventoryUpdated; // Dictionary<int, InventoryItem> 타입의 매개변수를 받는 함수를 연결할 수 있음..
-        public event Action<int> OnInventoryUpdatedInt; // int 타입의 매개변수를 받는 함수를 연결할 수 있음..
+        public event Action<int> OnInventoryUpdatedInt, OnInventorySizeUpdated; // int 타입의 매개변수를 받는 함수를 연결할 수 있음..
 
 
         // 맨 처음 게임 시작시 호출하는 함수
@@ -92,10 +92,53 @@ namespace Inventory.Model
                             item = item,
                             quantity = quantity // 양 그대로 넣어주기..
                         };
+                        return;
                     }
-                    return;
                 }
             }
+
+
+            // 아이템을 저장할 공간이 부족하면..
+            if (quantity > 0)
+            {
+                while (quantity > 0) {
+                    SizeUpInventory(); // 인벤토리를 한칸 늘려주고..
+
+                    // 아이템이 스택 가능하고, 아이템의 양이 아이템의 맥스치보다 크면 
+                    if (item.IsStackable && quantity > item.MaxStackSize)
+                    {
+                        // 새로운 아이템 칸을 만들고
+                        inventoryItems[inventoryItems.Count - 1] = new InventoryItem
+                        {
+                            item = item,
+                            quantity = item.MaxStackSize
+                        };
+                        quantity -= item.MaxStackSize; // 남은 양 구하기..
+                    }
+                    // 아이템의 종류가 스택 불가능 하거나, 아이템의 양이 아이템의 맥스치보다 작으면
+                    else
+                    {
+                        // 새로운 아이템 칸을 만들고
+                        inventoryItems[inventoryItems.Count - 1] = new InventoryItem
+                        {
+                            item = item,
+                            quantity = quantity // 양 그대로 넣어주기..
+                        };
+                        return;
+                    }
+                }
+            }
+        }
+
+        public void SizeUpInventory()
+        {
+            // 인벤토리 사이즈 늘리고, 새로 만든 칸을 리스트에 넣어주고, 변경사항 알리는 함수 호출!!
+            Size += 1;
+            inventoryItems.Add(InventoryItem.GetEmptyItem());
+
+            // 델리게이트에 연결되어 있는 함수 호출..
+            // 인벤토리의 사이즈가 업데이트 될 때 실행되어야 하는 함수 연결되어있음..
+            OnInventorySizeUpdated?.Invoke(Size); // 매개변수로 현재 인벤토리의 사이즈 보내주기..
         }
 
         public void AddItem(InventoryItem item)
@@ -213,6 +256,16 @@ namespace Inventory.Model
         public void MinusItem(InventoryItem item)
         {
             MinusItem(item.item, item.quantity);
+            InformAboutChange();
+        }
+
+        public void MinusItemAt(int itemIdx, int quantity)
+        {
+            if (inventoryItems[itemIdx].quantity == quantity) // 해당 인덱스의 아이템의 양과 똑같은 양을 뺀다면 아이템칸이 빈 인벤토리 아이템을 가지도록..
+                inventoryItems[itemIdx] = InventoryItem.GetEmptyItem();
+            else // 해당 인덱스의 아이템의 양보다 적은 양을 뺀다면, 그 수만큼 반영해주기(해당 아이템 양보다 더 많은 양을 빼려고 하는 경우가 생기지 않도록 다른 클래스에서 조정할 것..)
+                inventoryItems[itemIdx] = inventoryItems[itemIdx].ChangeQuantity(inventoryItems[itemIdx].quantity - quantity);
+
             InformAboutChange();
         }
 

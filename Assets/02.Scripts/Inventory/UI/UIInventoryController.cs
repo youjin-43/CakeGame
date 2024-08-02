@@ -42,6 +42,10 @@ public class UIInventoryController : MonoBehaviour
     [SerializeField]
     public List<InventoryItem> initialItems = new List<InventoryItem>(); // 처음 시작 인벤토리(이거 그냥 임시로 해놓음..)
 
+    [Header("Sell Item Info")]
+    [SerializeField]
+    public ItemSellPanel itemSellPanel; // 아이템 판매 판넬
+
 
     void Awake()
     {
@@ -80,6 +84,12 @@ public class UIInventoryController : MonoBehaviour
             {
                 inventoryUI.Hide();
             }
+
+            // 인벤토리 창이 켜졌는지 여부에 따라 씨앗, 과일 인벤토리창 선택 버튼도 켜질지 꺼질지 결정..
+            seedButton.gameObject.SetActive(inventoryUI.isActiveAndEnabled);
+            fruitButton.gameObject.SetActive(inventoryUI.isActiveAndEnabled);
+            inventoryUI.ResetDescription(); // 설명창 리셋해주기.. 
+            inventoryUI.sellButtonPanel.gameObject.SetActive(false); // 판매 버튼 판넬도 꺼주기..
         }
     }
 
@@ -125,6 +135,39 @@ public class UIInventoryController : MonoBehaviour
         }
     }
 
+    private void SetItemSellPanel(int itemIndex)
+    {
+        InventoryItem item = curInventoryData.GetItemAt(itemIndex);
+        itemSellPanel.gameObject.SetActive(true);
+
+        itemSellPanel.SetItemInfo(item);
+    }
+
+    public void SellItem(int count, int price, int itemType)
+    {
+        switch (itemType)
+        {
+            case 1:
+                // 과일
+
+                // 현재 마우스로 클릭한 아이템의 인덱스 요소를 판매하려는 아이템의 수만큼 감소시키기.. 
+                fruitInventoryData.MinusItemAt(inventoryUI.currentMouseClickIndex, count);
+                GameManager.instance.money += price; // 판매 가격만큼 돈을 더해줌..
+
+                break;
+            case 2:
+                // 보석
+                break;
+            case 3:
+                // 케이크
+                break;
+        }
+
+        itemSellPanel.gameObject.SetActive(false); // 팔고 난 다음에 창 끄기..
+        inventoryUI.currentMouseClickIndex = -1; // -1 로 다시 바꿔주기..
+        inventoryUI.ResetDescription(); // 아이템 설명창도 리셋해주기..
+        inventoryUI.sellButtonPanel.gameObject.SetActive(false); // 판매 버튼 판넬도 꺼주기..
+    }
 
     private void UpdateInventoryUI(Dictionary<int, InventoryItem> curInventory)
     {
@@ -138,6 +181,11 @@ public class UIInventoryController : MonoBehaviour
 
             inventoryUI.inventoryUIItems[index].SetData(temp.item.itemImage, temp.quantity);
         }
+    }
+
+    private void SetInventoryUI(int inventorySize)
+    {
+        inventoryUI.SetInventoryUI(inventorySize);
     }
 
     private void SetInventoryToContainer(int itemType)
@@ -179,6 +227,17 @@ public class UIInventoryController : MonoBehaviour
         }
     }
 
+    private void SetOpenSellButton()
+    { 
+        if (curInventoryData.inventoryType == 1 || curInventoryData.inventoryType == 2)
+        {
+            // 현재 인벤토리 데이터가 가리키는 게 과일이랑 보석이면 판매 버튼이 뜰 수 있도록..
+            inventoryUI.isPossible = true;
+        } else
+        {
+            inventoryUI.isPossible = false;
+        }
+    }
 
     private void PrepareInventoryData()
     {
@@ -196,6 +255,19 @@ public class UIInventoryController : MonoBehaviour
         // 인벤토리 데이터에 변경사항이 생기면 SetInvenetoryToContainer 함수를 호출할 수 있도록..
         seedInventoryData.OnInventoryUpdatedInt += SetInventoryToContainer;
         fruitInventoryData.OnInventoryUpdatedInt += SetInventoryToContainer;
+
+        // 델리게이트에 SetInventoryUI 함수 연결하기..
+        // 인벤토리 사이즈에 변경사항이 생기면 호출할 수 있도록..
+        seedInventoryData.OnInventorySizeUpdated += SetInventoryUI;
+        fruitInventoryData.OnInventorySizeUpdated += SetInventoryUI;
+
+        // 델리게이트에 SetItemSellPanel 함수 연결해놓기..
+        // 판매 버튼 눌렀을 때, 판매 창 정보를 현재 선택한 아이템의 정보로 설정하기 위함..
+        inventoryUI.OnItemActionRequested += SetItemSellPanel;
+
+        // 델리게이트에 SetOpenSellButton 함수 연결해놓기..
+        // 아이템 눌렀을 때, 아이템이 과일, 보석이면 인벤토리에서 판매버튼 뜰 수 있도록 하기 위함.. 
+        inventoryUI.OpenSellButtonPossible += SetOpenSellButton;
 
 
 
@@ -217,6 +289,9 @@ public class UIInventoryController : MonoBehaviour
         seedButton.onClick.AddListener(SetCurInventoryDataSeed); // 씨앗 버튼에 인벤토리 데이터를 씨앗 인벤토리 데이터로 바꿔주는 함수 연결
         fruitButton.onClick.AddListener(SetCurInventoryDataFruit); // 과일 버튼에 인벤토리 데이터를 과일 인벤토리 데이터로 바꿔주는 함수 연결
 
+        // 아이템 판매 판넬 클래스의 델리게이트에 SellItem 함수 연결..
+        itemSellPanel.sellButtonClicked += SellItem;
+
 
         inventoryUI.InitializeInventoryUI(curInventoryData.Size); // 씨앗 인벤토리 사이즈만큼 UI 초기화해주기
         inventoryUI.OnDescriptionRequested += HandleDescriptionRequest;
@@ -228,7 +303,7 @@ public class UIInventoryController : MonoBehaviour
 
     private void HandleDescriptionRequest(int itemIndex)
     {
-        InventoryItem inventoryItem;
+        InventoryItem inventoryItem; // InventoryItem 은 구조체라 null 값을 가질 수 없음(r-value 임..)
 
         // 현재 인벤토리 데이터 변수가 가리키는 값이 씨앗 인벤토리 데이터 값이라면..
         if (curInventoryData == seedInventoryData)
@@ -274,14 +349,14 @@ public class UIInventoryController : MonoBehaviour
         }
     }
 
-    private void HandleDragging(int index)
+    private void HandleDragging(int itemIndex)
     {
 
     }
 
-    private void HandleItemActionRequest(int index)
+    private void HandleItemActionRequest(int itemIndex)
     {
-
+        
     }
 
 
@@ -289,8 +364,12 @@ public class UIInventoryController : MonoBehaviour
     private void SetCurInventoryDataSeed()
     {
         // 현재 인벤토리 데이터 값을 Seed 인벤토리 데이터 값으로 설정하는 함수
+
+        inventoryUI.sellButtonPanel.gameObject.SetActive(false); // 씨앗은 판매 불가능하니까 씨앗 인벤토리 창으로 전환하면 판매 버튼도 그냥 꺼지도록..
+
         curInventoryData = seedInventoryData;
         inventoryUI.SetInventoryUI(curInventoryData.Size); // 인벤토리 UI 를 현재 보려고 선택한 인벤토리 데이터에 맞게 설정..
+        inventoryUI.ResetDescription(); // 인벤토리 창 변경하면 설명도 꺼지도록..
         curInventoryData.InformAboutChange();
     }
 
@@ -299,6 +378,7 @@ public class UIInventoryController : MonoBehaviour
         // 현재 인벤토리 데이터 값을 Fruit 인벤토리 데이터 값으로 설정하는 함수
         curInventoryData = fruitInventoryData;
         inventoryUI.SetInventoryUI(curInventoryData.Size); // 인벤토리 UI 를 현재 보려고 선택한 인벤토리 데이터에 맞게 설정..
+        inventoryUI.ResetDescription(); // 인벤토리 창 변경하면 설명도 꺼지도록..
         curInventoryData.InformAboutChange();
     }
 }
