@@ -252,6 +252,9 @@ MonoBehaviour:
   fruitContainer: {fileID: 634117040}
   initialItems: []
   itemSellPanel: {fileID: 1948448634}
+  inventoryData:
+    seedInventoryData: {fileID: 0}
+    fruitInventoryData: {fileID: 0}
 --- !u!1 &46165183
 GameObject:
   m_ObjectHideFlags: 0
@@ -2388,7 +2391,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &315390536
 RectTransform:
   m_ObjectHideFlags: 0
@@ -22627,7 +22630,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1773025083
 RectTransform:
   m_ObjectHideFlags: 0
@@ -24430,7 +24433,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1948448631
 RectTransform:
   m_ObjectHideFlags: 0

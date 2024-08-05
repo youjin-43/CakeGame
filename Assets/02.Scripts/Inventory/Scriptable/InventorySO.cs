@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace Inventory.Model
 {
+    [Serializable]
     [CreateAssetMenu]
     public class InventorySO : ScriptableObject
     {

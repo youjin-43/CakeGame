@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class Seed : MonoBehaviour
 {
+    // 생성자.. 그 팜 씬으로 돌아왔을 때, 이전 농장의 상태를 반영해주기 위함..
+    public Seed(float currentTime, bool isGrown)
+    {
+        this.currentTime = currentTime;
+        this.isGrown = isGrown;
+    }
+
     // 씨앗은 다 프리팹으로 만들어 놓을 것
     // 만들어놓은 프리팹은 SeedContainer 에 저장할 것..
 

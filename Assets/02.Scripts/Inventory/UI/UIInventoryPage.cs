@@ -42,15 +42,17 @@ public class UIInventoryPage : MonoBehaviour
 
     public event Action OpenSellButtonPossible;
 
-    public event Action<int> OnDescriptionRequested, OnItemActionRequested, OnStartDragging;
+    public event Action<int> OnDescriptionRequested, OnItemActionRequested;
 
     public event Action<int, int> OnSwapItems;
 
 
     private void Awake()
     {
+        Debug.Log("인벤토리 페이지 생성됐어요..");
+
         mouseDragItem.gameObject.SetActive(false); // 활성화 끈채로 시작..
-        transform.gameObject.SetActive(false); // 창 끈채로 시작..
+        //transform.gameObject.SetActive(false); // 창 끈채로 시작..
     }
 
 

@@ -1,7 +1,9 @@
 using Inventory.Model;
 using JetBrains.Annotations;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -11,17 +13,91 @@ using UnityEngine.UI;
 using static UnityEditor.PlayerSettings;
 
 
+
+[Serializable]
+public class SaveData
+{
+    // 농사 데이터 저장용 딕셔너리..
+    [SerializeField]
+    // Vector3Int 는 JSON 으로 직렬화가 안 된다고 한다.. 큰 사고다..
+    // 아.. 애초에 딕셔너리도 직렬화가 안된다고한다... 망햇따........ㅠ_ㅠ
+    // 어쩐지 계속 해도 저장이 안된다.....
+    // 아.... 어케 해야함...
+    // 아... 아침에 일어나서 다시 해야겠다..
+    public Dictionary<PosInt, SaveFarmingData> saveData = new Dictionary<PosInt, SaveFarmingData>();
+    [SerializeField]
+    public int farmLevel;
+}
+
+
+[Serializable]
+// 아예 따로 클래스 만들어서 값을 저장할 때 Vector3Int 대신 PosString 써야할 것 같다..
+public class PosInt
+{
+    [SerializeField]
+    public int x;
+    [SerializeField]
+    public int y;
+    [SerializeField]
+    public int z;
+}
+
+ 
+// 데이터 저장 클래스
+[Serializable]
+public class SaveFarmingData
+{
+    [SerializeField]
+    public bool seedOnTile; // 타일 위에 씨앗이 있는지 여부 확인용
+    [SerializeField]
+    public bool plowEnableState; // 밭을 갈 수 있는 상태인지 여부 확인용
+    [SerializeField]
+    public bool plantEnableState; // 씨앗을 심을 수 있은 상태인지 여부 확인용
+    [SerializeField]
+    public bool harvestEnableState; // 작물이 다 자란 상태인지 여부 확인용
+    [SerializeField]
+    public string currentState; // 농사 땅 상태..
+
+    // 씨앗 데이터
+    [SerializeField]
+    public int seedIdx; // 씨앗 인덱스 저장(종류 저장하기 위함)..
+    [SerializeField]
+    public float currentTime; // 씨앗을 심은 뒤로 흐른 시간 저장
+    [SerializeField]
+    public bool isGrown; // 씨앗이 다 자랐는지 안자랐는지 여부 저장..
+
+
+    public void PrintData()
+    {
+        Debug.Log(seedOnTile + " " + plowEnableState + " " + plantEnableState + " " + harvestEnableState + " " + currentState + " " + seedIdx + " " + currentTime + " " + isGrown);
+    }
+}
+
+
 // 타일이 가지는 농사 데이터
+[Serializable]
 class FarmingData
 {
+    [SerializeField]
     public Seed seed; // 타일이 가지는 씨앗 정보
     //public bool seedOnTile; // 타일 위에 씨앗이 있는지 여부 확인용(씨앗이 있으면 밭을 갈 수 없음)
+    [SerializeField]
     public bool plowEnableState; // 밭을 갈 수 있는 상태인지 여부 확인용(밭이 안 갈린 상태)
+    [SerializeField]
     public bool plantEnableState; // 씨앗을 심을 수 있는 상태인지 여부 확인용
+    [SerializeField]
     public bool harvestEnableState; // 작물이 다 자란 상태인지 여부 확인용
-    public Button stateButton; // 타일을 누르면 타일 위에 뜨도록 하는 버튼
-    public Button[] buttons; // [0]: plow 버튼, [1]: plant 버튼, [2]: harvest 버튼
 
+
+    /*
+     Button과 같은 Unity 엔진 내장 컴포넌트들은 게임 오브젝트나 컴포넌트로 참조되어 있기 때문에 JSON 직렬화에서 제대로 다룰 수 없다고함..
+     Unity의 직렬화 시스템도 이러한 Unity 엔진 내장 객체들을 처리하는 방식과 JSON 직렬화는 다르기 때문에, 이런 컴포넌트들을 JSON으로 저장할 수는 없다고 함..
+     => 일반적인 경우는 UI 요소들은 직렬화에서 제외한다고 함..
+     */
+    [NonSerialized] public Button stateButton; // 타일을 누르면 타일 위에 뜨도록 하는 버튼
+    [NonSerialized] public Button[] buttons; // [0]: plow 버튼, [1]: plant 버튼, [2]: harvest 버튼
+
+    [SerializeField]
     public string currentState = "None"; // 현재 상태(초기에는 아무것도 안 한 상태니까 None 으로.. -> plow: 밭 갈린 상태, plant: 씨앗 심은 상태, harvest: 다 자란 상태)
 }
 
@@ -64,7 +140,7 @@ public class FarmingManager : MonoBehaviour
     public Vector2 clickPosition; // 현재 마우스 위치를 게임 월드 위치로 바꿔서 저장
     public Vector3Int cellPosition; // 게임 월드 위치를 타일 맵의 타일 셀 위치로 변환
     Dictionary<Vector3Int, FarmingData> farmingData;
-    public int FarmLevel = 0; // 농장 레벨. 농장 레벨 업그레이드 함수 호출하면 증가하도록..
+    public int farmLevel = 0; // 농장 레벨. 농장 레벨 업그레이드 함수 호출하면 증가하도록..
     public int expansionSize = 1; // 농장 한 번 업그레이트 할 때 얼마나 확장될 건지.. 일단 임시로 1로 해놨다.. 나중에 변경할 것.
 
     [Header("PlantSeed Information")]
@@ -73,14 +149,170 @@ public class FarmingManager : MonoBehaviour
     public bool clickedSelectedSeedButton = false; // 이 값이 true 가 되면 씨앗 심기 함수 호출하도록(씨앗 심기 함수에서는 이 값을 다시 false 로 돌림).. 
 
 
-    private void Awake()
+
+    // 데이터 저장
+    [Header("Save Data")]
+    private string filePath; // 데이터 저장 경로..
+    public SaveData saveFarmingData = new SaveData();
+
+    
+
+    public void SaveFarmingData()
     {
-        farmingData = new Dictionary<Vector3Int, FarmingData>();
-        clickPosition = Vector2.zero;
+        Dictionary<PosInt, SaveFarmingData> tempDic = new Dictionary<PosInt, SaveFarmingData>();
+
+        foreach (var item in farmingData)
+        {
+            Debug.Log(item.Key + "저장할겁니다!!");
+
+            // JSON 저장할 때 Vector3Int 가 직렬화가 안되므로 따로 만든 PosString 이용하가ㅣ..
+            PosInt pos = new PosInt
+            {
+                x = item.Key.x,
+                y = item.Key.y,
+                z = item.Key.z
+            };
+
+            SaveFarmingData temp = new SaveFarmingData { 
+                plowEnableState = farmingData[item.Key].plowEnableState,
+                plantEnableState = farmingData[item.Key].plantEnableState,
+                harvestEnableState = farmingData[item.Key].harvestEnableState,
+                currentState = farmingData[item.Key].currentState
+            };
+
+
+            // 농사 땅 위에 씨앗이 없을 때 진입..
+            if (farmingData[item.Key].seed == null)
+            {
+                temp.seedOnTile = false;
+            }
+            // 농사 땅 위에 씨앗 있을 때 진입..
+            else
+            {
+                temp.seedOnTile = true; // 땅에 씨앗 심어져있는지 여부 판단 정보 저장..
+                temp.seedIdx = farmingData[item.Key].seed.seedData.seedIdx; // 씨앗 인덱스 저장..
+                temp.currentTime = farmingData[item.Key].seed.currentTime; // 자라기 까지 남은 시간 저장..
+
+                // 만약 씨앗 다 자랐으면..
+                if (farmingData[item.Key].seed.isGrown)
+                {
+                    temp.isGrown = true; // 씨앗 다 자란 상태를 변수에 저장..
+                }
+            }
+
+            tempDic.Add(pos, temp);
+            tempDic[pos].PrintData();
+        }
+
+
+        SaveData saveData = new SaveData
+        {
+            saveData = tempDic,
+            farmLevel = farmLevel,
+        };
+
+
+        // Json 직렬화 하기
+        string json = JsonUtility.ToJson(saveData, true);
+        Debug.Log(json);
+
+        Debug.Log("데이터 저장 완료!");
+
+        // 외부 폴더에 접근해서 Json 파일 저장하기
+        // Application.persistentDataPath: 특정 운영체제에서 앱이 사용할 수 있도록 허용한 경로
+        File.WriteAllText(filePath, json);
     }
 
-    private void Start()
+
+    // 씬 로드 된 후에 SetFarmingData 함수 먼저 호출한 후 호출할 함수..
+    public void LoadFarmingData()
     {
+        // Json 파일 경로 가져오기
+        string path = Path.Combine(Application.persistentDataPath, "FarmingData.json");
+
+        // 지정된 경로에 파일이 있는지 확인한다
+        if (File.Exists(path))
+        {
+            Debug.Log("파일 있어여!!");
+
+
+            // 경로에 파일이 있으면 Json 을 다시 오브젝트로 변환한다.
+            string json = File.ReadAllText(path);
+            Debug.Log(json);
+
+            SaveData saveData = JsonUtility.FromJson<SaveData>(json);
+            Dictionary<PosInt, SaveFarmingData> tempDic = saveData.saveData;
+
+            Debug.Log(tempDic.Count + "!!!!!!!!!!!!!!!!!!!!1");
+
+            foreach (var item in tempDic)
+            {
+                tempDic[item.Key].PrintData();
+
+                Vector3Int pos = new Vector3Int(item.Key.x, item.Key.y, item.Key.z);
+
+                switch (tempDic[item.Key].currentState)
+                {
+                    // 현재 농사 땅 상태에 맞는 버튼으로 설정해주기..
+                    
+                    case "None":
+                        farmingData[pos].stateButton = farmingData[pos].buttons[0];
+                        farmTilemap.SetTile(pos, grassTile); // 타일을 아무것도 안 한 상태로 변경(키 값이 농사땅의 pos 임)
+                        break;
+
+                    case "plow":
+                        farmingData[pos].stateButton = farmingData[pos].buttons[1];
+                        farmTilemap.SetTile(pos, farmTile); // 타일을 밭 갈린 모습으로 변경..
+                        break;
+
+                    case "plant":
+                        farmingData[pos].stateButton = farmingData[pos].buttons[2];
+                        farmTilemap.SetTile(pos, plantTile); // 타일을 씨앗 심은 모습으로 변경..
+                        break;
+
+                    case "harvest":
+                        farmingData[pos].stateButton = farmingData[pos].buttons[2];
+                        farmTilemap.SetTile(pos, harvestTile); // 타일을 다 자란 모습으로 변경..
+                        break;
+                }
+
+
+                // 저장해놓은 데이터 가져와서 설정해주기..
+                farmingData[pos].plowEnableState = tempDic[item.Key].plowEnableState;
+                farmingData[pos].plantEnableState = tempDic[item.Key].plantEnableState;
+                farmingData[pos].harvestEnableState = tempDic[item.Key].harvestEnableState;
+                farmingData[pos].currentState = tempDic[item.Key].currentState;
+
+
+                // 저장당시 농사 땅 위에 씨앗 있었으면 씨앗 데이터 설정해주기..
+                if (tempDic[item.Key].seedOnTile)
+                {
+                    // 씨앗 데이터 가져와서 데이터에 맞는 씨앗 생성해주기..
+                    farmingData[pos].seed = seedContainer.GetSeed(tempDic[item.Key].seedIdx).GetComponent<Seed>();
+
+                    // 기존 씨앗 데이터 적용..
+                    farmingData[pos].seed.currentTime = tempDic[item.Key].currentTime;
+                    farmingData[pos].seed.isGrown = tempDic[item.Key].isGrown;
+                }
+            }
+        }
+        // 지정된 경로에 파일이 없으면
+        else
+        {
+            Debug.Log("파일이 없어요!!");
+        }
+    }
+
+
+    private void Awake()
+    {
+        filePath = Path.Combine(Application.persistentDataPath, "FarmingData.json"); // 데이터 경로 설정..
+
+        farmingData = new Dictionary<Vector3Int, FarmingData>(); // 딕셔너리 생성
+        clickPosition = Vector2.zero;
+
+
+
         // 농사 가능 구역만 farmingData 에 저장할 것임.
         foreach (Vector3Int pos in farmEnableZoneTilemap.cellBounds.allPositionsWithin)
         {
@@ -88,7 +320,12 @@ public class FarmingManager : MonoBehaviour
 
             SetFarmingData(pos); // FarmingData 타입 인스턴스의 정보를 세팅해주는 함수.
         }
+
+
+
+        LoadFarmingData(); // 데이터 가져오기..
     }
+
 
     void Update()
     {
@@ -120,6 +357,11 @@ public class FarmingManager : MonoBehaviour
             // 씨앗 심는 함수 호출
             PlantTile(cellPosition, selectedSeedIdx);
         }
+
+
+        // 확인용 로직..
+        if (Input.GetKeyDown(KeyCode.W))
+            SaveFarmingData();
     } 
 
 
@@ -549,7 +791,7 @@ public class FarmingManager : MonoBehaviour
             SetFarmingData(pos); // 새로운 농사 가능 구역의 타일 정보를 딕셔너리에 저장..
         }
 
-        FarmLevel++; // 농장 레벨 증가
+        farmLevel++; // 농장 레벨 증가
         Debug.Log("농장을 업그레이드 했다!");
     }
 }
