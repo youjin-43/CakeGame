@@ -44,6 +44,9 @@ public class UIInventoryController : MonoBehaviour
     public Button fruitButton; // curInventoryData 의 값을 fruitInventoryData 의 값으로 설정하는 버튼..
 
     [SerializeField]
+    public Button changeSceneButton; // 씬을 변경하는 버튼
+
+    [SerializeField]
     public static UIInventoryController instance; // 싱글톤 이용하기 위한 변수..
 
 
@@ -163,6 +166,7 @@ public class UIInventoryController : MonoBehaviour
         fruitButton = GameObject.Find("FruitButton")?.GetComponent<Button>();
         seedContainer = GameObject.Find("SeedContainer")?.GetComponent<SeedContainer>();
         fruitContainer = GameObject.Find("FruitContainer")?.GetComponent<FruitContainer>();
+        changeSceneButton = GameObject.Find("tmp")?.GetComponent<Button>(); // 인벤토리 버튼 연결..
 
         // 일단 다 끈 상태로 시작..
         inventoryUI.gameObject.SetActive(false);
@@ -175,24 +179,24 @@ public class UIInventoryController : MonoBehaviour
 
     public void Update()
     {
-        if (Input.GetKeyDown(KeyCode.I))
-        {
-            if (inventoryUI.isActiveAndEnabled == false)
-            {
-                SetCurInventoryDataSeed(); // 인벤토리 창 켜질때는 씨앗을 기준으로 켜지도록..
-                inventoryUI.Show();
-            }
-            else
-            {
-                inventoryUI.Hide();
-            }
+        //if (Input.GetKeyDown(KeyCode.I))
+        //{
+        //    if (inventoryUI.isActiveAndEnabled == false)
+        //    {
+        //        SetCurInventoryDataSeed(); // 인벤토리 창 켜질때는 씨앗을 기준으로 켜지도록..
+        //        inventoryUI.Show();
+        //    }
+        //    else
+        //    {
+        //        inventoryUI.Hide();
+        //    }
 
-            // 인벤토리 창이 켜졌는지 여부에 따라 씨앗, 과일 인벤토리창 선택 버튼도 켜질지 꺼질지 결정..
-            seedButton.gameObject.SetActive(inventoryUI.isActiveAndEnabled);
-            fruitButton.gameObject.SetActive(inventoryUI.isActiveAndEnabled);
-            inventoryUI.ResetDescription(); // 설명창 리셋해주기.. 
-            inventoryUI.sellButtonPanel.gameObject.SetActive(false); // 판매 버튼 판넬도 꺼주기..
-        }
+        //    // 인벤토리 창이 켜졌는지 여부에 따라 씨앗, 과일 인벤토리창 선택 버튼도 켜질지 꺼질지 결정..
+        //    seedButton.gameObject.SetActive(inventoryUI.isActiveAndEnabled);
+        //    fruitButton.gameObject.SetActive(inventoryUI.isActiveAndEnabled);
+        //    inventoryUI.ResetDescription(); // 설명창 리셋해주기.. 
+        //    inventoryUI.sellButtonPanel.gameObject.SetActive(false); // 판매 버튼 판넬도 꺼주기..
+        //}
 
 
         // 임시 확인 코드
@@ -200,6 +204,26 @@ public class UIInventoryController : MonoBehaviour
         {
             LoadInventoryData();
         }
+    }
+
+    
+    public void OpenInventoryButton()
+    {
+        if (inventoryUI.isActiveAndEnabled == false)
+        {
+            SetCurInventoryDataSeed(); // 인벤토리 창 켜질때는 씨앗을 기준으로 켜지도록..
+            inventoryUI.Show();
+        }
+        else
+        {
+            inventoryUI.Hide();
+        }
+
+        // 인벤토리 창이 켜졌는지 여부에 따라 씨앗, 과일 인벤토리창 선택 버튼도 켜질지 꺼질지 결정..
+        seedButton.gameObject.SetActive(inventoryUI.isActiveAndEnabled);
+        fruitButton.gameObject.SetActive(inventoryUI.isActiveAndEnabled);
+        inventoryUI.ResetDescription(); // 설명창 리셋해주기.. 
+        inventoryUI.sellButtonPanel.gameObject.SetActive(false); // 판매 버튼 판넬도 꺼주기..
     }
 
 
