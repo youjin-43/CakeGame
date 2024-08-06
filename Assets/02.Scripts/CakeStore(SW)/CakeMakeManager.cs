@@ -5,14 +5,18 @@ using UnityEngine.UI;
 
 public class CakeMakeManager : MonoBehaviour
 {
-    public GameObject spritesToDisable;
     public GameObject cakeMakersPool;
     public GameObject cakeMakerPanel;
     public GameObject scrollViewContent;
     public GameObject[] cakeMakers;
+    public int cakeImageNum;
+    public int cakeNameNum;
     public int cakeCountNum;
-    public int clickedNum;
     public int lockedNum;
+    public int clickedNum;
+    public int costNum;
+    public int materialNum;
+    public int bakeTimeNum;
     public int buttonNum;
     public int cakeMakerIndex;
 
@@ -24,32 +28,12 @@ public class CakeMakeManager : MonoBehaviour
 
     void Awake()
     {
+        cakeMakerPanel.SetActive(false);
         cakeManager = gameObject.GetComponent<CakeManager>();
         InitializeCakeMakers();
         SetupButtons();
-        UpdateUI();
     }
 
-    public void DisableSprites(bool isActive)
-    {
-        for (int i = 0; i < spritesToDisable.transform.childCount; i++)
-        {
-            for (int j = 0; j < spritesToDisable.transform.GetChild(i).childCount; j++)
-            {
-                Collider2D collider = spritesToDisable.transform.GetChild(i).GetChild(j).GetComponent<Collider2D>();
-                if (collider != null)
-                {
-                    collider.enabled = !isActive;
-                }
-            }
-        }
-    }
-
-    public void CloseMenu(GameObject menu)
-    {
-        DisableSprites(false);
-        menu.SetActive(false);
-    }
 
     void InitializeCakeMakers()
     {
@@ -97,7 +81,7 @@ public class CakeMakeManager : MonoBehaviour
 
     public void OpenPanel(int index)
     {
-        DisableSprites(true);
+        cakeManager.DisableSprites(true);
         cakeMakerPanel.SetActive(true);
         cakeMakerIndex = index;
         UpdateUI();
@@ -115,7 +99,7 @@ public class CakeMakeManager : MonoBehaviour
     void OnMakeClicked(int index)
     {
         cakeMakerPanel.SetActive(false);
-        DisableSprites(false);
+        cakeManager.DisableSprites(false);
         int cakeMakeTime = cakeManager.cakeDataList[index].bakeTime;
         cakeMakers[cakeMakerIndex].GetComponent<CakeMaker>().StartMakingCake(index, cakeMakeTime);
     }
@@ -135,9 +119,9 @@ public class CakeMakeManager : MonoBehaviour
         }
     }
 
-    public void Unlock()
+    public void Unlock(int index)
     {
-        cakeManager.UnlockCake();
+        cakeManager.UnlockCake(index);
         UpdateUI();
     }
     void UpdateUI()
@@ -145,10 +129,20 @@ public class CakeMakeManager : MonoBehaviour
         for (int i = 0; i < scrollViewContent.transform.childCount; i++)
         {
             Transform panel = scrollViewContent.transform.GetChild(i);
-            panel.GetChild(cakeCountNum).GetComponent<Text>().text = "보유 수: " + cakeManager.cakeDataList[i].cakeCount;
+            
+            panel.GetChild(cakeImageNum).GetComponent<Image>().sprite = cakeManager.cakeDataList[i].itemImage;
+            panel.GetChild(cakeNameNum).GetComponent<Text>().text = cakeManager.cakeDataList[i].name;
+            panel.GetChild(cakeCountNum).GetComponent<Text>().text = $"보유 수 : {cakeManager.cakeCounts[i]}";
             panel.GetChild(lockedNum).gameObject.SetActive(cakeManager.cakeDataList[i].isLocked);
             panel.GetComponent<Button>().interactable = !cakeManager.cakeDataList[i].isLocked;
             panel.GetChild(clickedNum).gameObject.SetActive(false);
+            panel.GetChild(clickedNum).GetChild(costNum).GetComponent<Text>().text = $"G {cakeManager.cakeDataList[i].cakeCost}";
+            string material =  $"재료 : {cakeManager.cakeDataList[i].materialType[0]/*이번호에 해당되는 과일 이름으로 대체 예정*/} {cakeManager.cakeDataList[i].materialCount[0]}/{0/*현재 보유중인 과일 수로 변경 예정*/}";
+            for(int j = 1; j < cakeManager.cakeDataList[i].materialCount.Length; j++){
+                 material +=  $", {cakeManager.cakeDataList[i].materialType[j]/*이번호에 해당되는 과일 이름으로 대체 예정*/} {cakeManager.cakeDataList[i].materialCount[j]}/{0/*현재 보유중인 과일 수로 변경 예정*/}";
+            }
+            panel.GetChild(clickedNum).GetChild(materialNum).GetComponent<Text>().text = material;
+            panel.GetChild(clickedNum).GetChild(bakeTimeNum).GetComponent<Text>().text = $"제작 시간 : {cakeManager.cakeDataList[i].bakeTime}초" ;
         }
 
         gameObject.GetComponent<CakeShowcaseManager>().UpdateUI();
