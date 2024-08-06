@@ -1,11 +1,11 @@
 using UnityEngine;
 using UnityEditor;
 using System.IO;
-
 public class CsvToScriptableObject
 {
 
-    private static string  SeedCSVPath = Application.dataPath + "/StreamingAssets/Seed.csv";
+    //private static string  SeedCSVPath = Application.dataPath + "/StreamingAssets/Seed.csv";
+    private static string SeedCSVPath = Application.dataPath + "/StreamingAssets/FruitItemSoData.csv";
 
     [MenuItem("Utilities/Generate Seed")]
     public static void GenerateSeed()
@@ -18,19 +18,22 @@ public class CsvToScriptableObject
             string Oneline = allLines[i];
             string[] splitData = Oneline.Split(',');
 
-            //if (splitData.Length != 4)
-            //{
-            //    Debug.Log(Oneline + " Does not have 4 values");
-            //}
+            SeedItemSO seed = ScriptableObject.CreateInstance<SeedItemSO>();
 
-            Seedtmp seed = ScriptableObject.CreateInstance<Seedtmp>();
-            seed.name = splitData[0].ToString();
-            seed.seedPrice = int.Parse(splitData[1].ToString());
-            seed.growTime = int.Parse(splitData[2].ToString());
-            seed.seedIdx = int.Parse(splitData[3].ToString());
-            seed.sprite = Resources.Load<Sprite>($"FruitImange/{seed.name}");
+            //IsStackable,MaxStackSize,Name,Description,itemImage,itemType,fruitPrice,fruitIdx
 
-            AssetDatabase.CreateAsset(seed, $"Assets/SeedsTmp/{seed.name}.asset");
+            seed.IsStackable = (splitData[0].ToString() == "TRUE") ? true : false;
+            seed.MaxStackSize = int.Parse(splitData[1].ToString());
+            seed.Name = splitData[2].ToString();
+            seed.Description = splitData[3].ToString();
+            seed.itemImage = Resources.Load<Sprite>($"FruitImange/{seed.Name}");
+            seed.itemType = int.Parse(splitData[5].ToString());
+            seed.seedPrice = int.Parse(splitData[6].ToString());
+            //seed.fruitIdx = int.Parse(splitData[7].ToString());
+
+            //seed.sprite = Resources.Load<Sprite>($"FruitImange/{seed.name}"); //나중에 스프라이트 정보가 필요하닥면 추가 
+
+            AssetDatabase.CreateAsset(seed, $"Assets/Resources/SeedSO/{seed.Name}.asset");
         }
 
         AssetDatabase.SaveAssets();
