@@ -8,7 +8,7 @@ public class GoFarmButton : MonoBehaviour
     public void SceneChange()
     {
 
-        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("CakeStore 2"))
+        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("CakeStore 1"))
         {
             SceneManager.LoadScene("Farm");
         }
