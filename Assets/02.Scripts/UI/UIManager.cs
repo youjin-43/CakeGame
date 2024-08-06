@@ -17,6 +17,7 @@ public class UIManager : MonoBehaviour
             // instance가 비어있다면(null) 그곳에 자기 자신을 할당
             instance = this;
             Debug.Log("UIManager가 생성됐습니다");
+            DontDestroyOnLoad(gameObject); // 씬이 변경되어도 삭제되지 않도록
         }
         else
         {
@@ -60,7 +61,6 @@ public class UIManager : MonoBehaviour
         seasonText.text = GameManager.instance.season.ToString();
         dateText.text = GameManager.instance.date.ToString();
         moneyText.text = "Money : " + GameManager.instance.money;
-        popularityText.text = "Popularity : " + GameManager.instance.popularity;
         levelText.text = ExpManager.instance.level.ToString();
     }
 }

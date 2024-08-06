@@ -57,8 +57,11 @@ public class GameManager : MonoBehaviour
     public int popularity;
 
     [Header("About Running")]
-    public float runTime; // 가게 runTime시간
+    public float runTime; // 현재 시간
+    public float MaxRunTime = 5f;
     public bool isRunning; //가게가 운영중인지 표시하는 변수
+
+    public GameObject RuntimeBar;
 
     void Update()
     {
@@ -67,9 +70,9 @@ public class GameManager : MonoBehaviour
         if (isRunning)
         {
             runTime += Time.deltaTime;
-            UIManager.instance.runningTimeText.text = "Time :" + (int)runTime;
+            RuntimeBar.GetComponent<Image>().fillAmount = runTime / MaxRunTime;
 
-            if (runTime >= 5.0f) // 우선 5초로 해놓음 
+            if (runTime >= MaxRunTime) 
             {
                 EndRunning();
             }
@@ -87,8 +90,7 @@ public class GameManager : MonoBehaviour
     //가게 운영 시작하는 함수 
     public void StartRunning()
     {
-        UIManager.instance.runningOverBoard.SetActive(false);
-        Debug.Log("정산화면 끄기 실행 완료 ");
+        UIManager.instance.runningOverBoard.SetActive(false); //정산화면 끄기
 
         date++;
         runTime = 0;
