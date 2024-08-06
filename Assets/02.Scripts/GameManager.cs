@@ -29,7 +29,6 @@ public class GameManager : MonoBehaviour
             season = (Seasons)PlayerPrefs.GetInt("season");
             date = PlayerPrefs.GetInt("date");
             money = PlayerPrefs.GetInt("money"); //주어진 키로 저장된 값이 없으면 기본값을 반환
-            popularity = PlayerPrefs.GetInt("popularity");
 
         }
         else
@@ -54,7 +53,6 @@ public class GameManager : MonoBehaviour
     public Seasons season;
     public int date;
     public int money;
-    public int popularity;
 
     [Header("About Running")]
     public float runTime; // 현재 시간
@@ -93,6 +91,8 @@ public class GameManager : MonoBehaviour
         UIManager.instance.runningOverBoard.SetActive(false); //정산화면 끄기
 
         date++;
+        UIManager.instance.dateText.text = date.ToString();//UI 적용 
+
         runTime = 0;
 
         isRunning = true;
@@ -123,7 +123,7 @@ public class GameManager : MonoBehaviour
         Debug.Log("getmoeny 함수 실행");
 
         money += 100;
-        UIManager.instance.moneyText.text = "Money : " + money;
+        UIManager.instance.moneyText.text = money.ToString();
         PlayerPrefs.SetInt("money", money); 
     }
 

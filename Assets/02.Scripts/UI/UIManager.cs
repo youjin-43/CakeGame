@@ -42,25 +42,17 @@ public class UIManager : MonoBehaviour
 
     public GameObject RunStartButton; //가게 운영이 끝났을때 활성화 할 오브젝트
 
-    [Header("About EXP")]
-    public GameObject ExpBar;
-
     private void Start()
     {
         SetDatainUI();
-        setExpUI();
-    }
-
-    public void setExpUI()
-    {
-        ExpBar.GetComponent<Image>().fillAmount = ExpManager.instance.exp / ExpManager.instance.exp_max;
+        //setExpUI();
     }
 
     public void SetDatainUI()
     {
-        seasonText.text = GameManager.instance.season.ToString();
+        //seasonText.text = GameManager.instance.season.ToString();
         dateText.text = GameManager.instance.date.ToString();
-        moneyText.text = "Money : " + GameManager.instance.money;
+        moneyText.text = GameManager.instance.money.ToString();
         levelText.text = ExpManager.instance.level.ToString();
     }
 }
