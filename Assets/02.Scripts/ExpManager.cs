@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;//씬 관련 라이브러리
+using UnityEngine.UI;
 
 public class ExpManager : MonoBehaviour
 {
@@ -36,25 +37,44 @@ public class ExpManager : MonoBehaviour
 
     }
 
+    public GameObject ExpBar;
+
     public int level = 1;
     public float exp = 0f; // 이거 getset으로 하면 인스펙터 창에 안뜨던데 우선 이렇게 해놓겟음 
     public float exp_max = 100f;
 
+    private void Start()
+    {
+        level = PlayerPrefs.GetInt("level");
+        exp_max = PlayerPrefs.GetFloat("exp_max");
+        exp = PlayerPrefs.GetFloat("exp_max");
+    }
+
     public void getExp(float delta)
     {
         exp += delta;
+        PlayerPrefs.SetFloat("exp", exp);//exp데이터저장
+
         if (exp > exp_max)
         {
             exp = exp - exp_max;
-            level++;
+            PlayerPrefs.SetFloat("exp", exp);//exp데이터저장
 
-            if(level == 1) SceneManager.LoadScene("Level5");
+            level++;
+            PlayerPrefs.SetFloat("level", level);//레벨 데이터 저장
+
+            //if(level == 1) SceneManager.LoadScene("Level5");
 
             UIManager.instance.levelText.text = level.ToString();
 
             exp_max += 50;
         }
-        PlayerPrefs.SetFloat("exp", exp);
-        UIManager.instance.setExpUI();
+
+        SetExpBarUI();
+    }
+
+    public void SetExpBarUI()
+    {
+        ExpBar.GetComponent<Image>().fillAmount = exp / exp_max;
     }
 }
