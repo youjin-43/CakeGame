@@ -158,7 +158,10 @@ public class FarmingManager : MonoBehaviour
     private string filePath; // 데이터 저장 경로..
     public SaveData saveFarmingData = new SaveData();
 
+<<<<<<< HEAD
 >>>>>>> parent of 8486beb (FarmDataSave)
+=======
+>>>>>>> parent of eafa279 (Merge pull request #52 from youjin-43/Inventory)
     
 
     public void SaveFarmingData()
@@ -227,7 +230,10 @@ public class FarmingManager : MonoBehaviour
         File.WriteAllText(farmingDataFilePath, json);
 =======
         File.WriteAllText(filePath, json);
+<<<<<<< HEAD
 >>>>>>> parent of 8486beb (FarmDataSave)
+=======
+>>>>>>> parent of eafa279 (Merge pull request #52 from youjin-43/Inventory)
     }
 
 
@@ -247,6 +253,7 @@ public class FarmingManager : MonoBehaviour
             string json = File.ReadAllText(path);
             Debug.Log(json);
 <<<<<<< HEAD
+<<<<<<< HEAD
             Dictionary<PosInt, SaveFarmingData> tempDic = DictionaryJsonUtility.FromJson<PosInt, SaveFarmingData>(json);
 =======
 
@@ -256,6 +263,14 @@ public class FarmingManager : MonoBehaviour
 >>>>>>> parent of 8486beb (FarmDataSave)
             Debug.Log(tempDic.Count + "!!!!!!!!!!!!!!!!!!!!1");
 
+=======
+
+            SaveData saveData = JsonUtility.FromJson<SaveData>(json);
+            Dictionary<PosInt, SaveFarmingData> tempDic = saveData.saveData;
+
+            Debug.Log(tempDic.Count + "!!!!!!!!!!!!!!!!!!!!1");
+
+>>>>>>> parent of eafa279 (Merge pull request #52 from youjin-43/Inventory)
             foreach (var item in tempDic)
             {
                 tempDic[item.Key].PrintData();
