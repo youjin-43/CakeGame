@@ -15,89 +15,23 @@ using static UnityEditor.PlayerSettings;
 
 
 [Serializable]
-public class FarmingEnableZoneData
+public class SaveData
 {
-    // 농사 가능 구역의 위치를 저장할 리스트..
-    public List<PosInt> farmingEnableZoneSaveData;
+    // 농사 데이터 저장용 딕셔너리..
+    [SerializeField]
+    // Vector3Int 는 JSON 으로 직렬화가 안 된다고 한다.. 큰 사고다..
+    // 아.. 애초에 딕셔너리도 직렬화가 안된다고한다... 망햇따........ㅠ_ㅠ
+    // 어쩐지 계속 해도 저장이 안된다.....
+    // 아.... 어케 해야함...
+    // 아... 아침에 일어나서 다시 해야겠다..
+    public Dictionary<PosInt, SaveFarmingData> saveData = new Dictionary<PosInt, SaveFarmingData>();
+    [SerializeField]
+    public int farmLevel;
 }
-
 
 
 [Serializable]
-// 딕셔너리를 클래스 형식으로 key, value 를 만들어서 구성하가ㅣ..
-// 다른 Dictionary 도 고려하여 제네릭 타입으로 만들기..
-public class DataDictionary<TKey, TValue>
-{
-    public TKey Key;
-    public TValue Value;
-}
-
-[Serializable]
-public class JsonDataArray<TKey, TValue>
-{
-    // 임의로 생성한 딕셔너리 값 저장용 리스트
-    public List<DataDictionary<TKey, TValue>> data;
-}
-
-public static class DictionaryJsonUtility
-{
-
-    /// <summary>
-    /// Dictionary를 Json으로 파싱하기
-    /// </summary>
-    /// <typeparam name="TKey">Dictionary Key값 형식</typeparam>
-    /// <typeparam name="TValue">Dictionary Value값 형식</typeparam>
-    /// <param name="jsonDicData"></param>
-    /// <returns></returns>
-    public static string ToJson<TKey, TValue>(Dictionary<TKey, TValue> jsonDicData, bool pretty = false)
-    {
-        List<DataDictionary<TKey, TValue>> dataList = new List<DataDictionary<TKey, TValue>>();
-        DataDictionary<TKey, TValue> dictionaryData;
-        foreach (TKey key in jsonDicData.Keys)
-        {
-            dictionaryData = new DataDictionary<TKey, TValue>();
-            dictionaryData.Key = key;
-            dictionaryData.Value = jsonDicData[key];
-            dataList.Add(dictionaryData);
-        }
-        JsonDataArray<TKey, TValue> arrayJson = new JsonDataArray<TKey, TValue>();
-        arrayJson.data = dataList;
-
-        return JsonUtility.ToJson(arrayJson, pretty);
-    }
-
-    /// <summary>
-    /// Json Data를 다시 Dictionary로 파싱하기
-    /// </summary>
-    /// <typeparam name="TKey">Dictionary Key값 형식</typeparam>
-    /// <typeparam name="TValue">Dictionary Value값 형식</typeparam>
-    /// <param name="jsonData">파싱되었던 데이터</param>
-    /// <returns></returns>
-
-    public static Dictionary<TKey, TValue> FromJson<TKey, TValue>(string jsonData)
-    {
-        JsonDataArray<TKey, TValue> arrayJson = JsonUtility.FromJson<JsonDataArray<TKey, TValue>>(jsonData);
-        List<DataDictionary<TKey, TValue>> dataList = arrayJson.data;
-
-        Dictionary<TKey, TValue> returnDictionary = new Dictionary<TKey, TValue>();
-
-
-        for (int i = 0; i < dataList.Count; i++)
-        {
-            DataDictionary<TKey, TValue> dictionaryData = dataList[i];
-
-            returnDictionary.Add(dictionaryData.Key, dictionaryData.Value);
-            //returnDictionary[dictionaryData.Key] = dictionaryData.Value;
-        }
-
-        return returnDictionary;
-    }
-}
-
-
-
-[Serializable]
-// 아예 따로 클래스 만들어서 값을 저장할 때 Vector3Int 대신 PosInt 써야할 것 같다..
+// 아예 따로 클래스 만들어서 값을 저장할 때 Vector3Int 대신 PosString 써야할 것 같다..
 public class PosInt
 {
     [SerializeField]
@@ -165,12 +99,6 @@ class FarmingData
 
     [SerializeField]
     public string currentState = "None"; // 현재 상태(초기에는 아무것도 안 한 상태니까 None 으로.. -> plow: 밭 갈린 상태, plant: 씨앗 심은 상태, harvest: 다 자란 상태)
-
-
-    public void SetData()
-    {
-        plowEnableState = true;
-    }
 }
 
 
@@ -181,7 +109,6 @@ public class FarmingManager : MonoBehaviour
     public SeedContainer seedContainer; // 현재 가진 씨앗을 가져오기 위해 필요한 변수(씨앗 컨테이너 게임 오브젝트 할당해줄 것)
     public FruitContainer fruitContainer; // 수확한 과일을 저장하기 위해 필요한 변수(과일 컨테이너 게임 오브젝트 할당해줄 것)
     public UIInventoryController inventoryController; // 인벤토리 관리하기 위해 필요한 변수(인벤토리 매니저 게임 오브젝트 할당해줄 것) 
-    public Canvas canvas;
 
     // 아이템 스크립터블 오브젝트를 저장해놓기..
     public FruitItemSO[] fruitItems; // [0]: 사과, [1]: 바나나, [2]: 체리, [3]: 오렌지, [4]: 딸기
@@ -225,7 +152,13 @@ public class FarmingManager : MonoBehaviour
 
     // 데이터 저장
     [Header("Save Data")]
+<<<<<<< HEAD
     private string farmingDataFilePath; // 농사 데이터 저장 경로..
+=======
+    private string filePath; // 데이터 저장 경로..
+    public SaveData saveFarmingData = new SaveData();
+
+>>>>>>> parent of 8486beb (FarmDataSave)
     
 
     public void SaveFarmingData()
@@ -254,15 +187,11 @@ public class FarmingManager : MonoBehaviour
             // 농사 땅 위에 씨앗이 없을 때 진입..
             if (farmingData[item.Key].seed == null)
             {
-                Debug.Log("씨앗 없어여..");
-
                 temp.seedOnTile = false;
             }
             // 농사 땅 위에 씨앗 있을 때 진입..
             else
             {
-                Debug.Log("씨앗 있어여..");
-
                 temp.seedOnTile = true; // 땅에 씨앗 심어져있는지 여부 판단 정보 저장..
                 temp.seedIdx = farmingData[item.Key].seed.seedData.seedIdx; // 씨앗 인덱스 저장..
                 temp.currentTime = farmingData[item.Key].seed.currentTime; // 자라기 까지 남은 시간 저장..
@@ -279,14 +208,26 @@ public class FarmingManager : MonoBehaviour
         }
 
 
-        string json = DictionaryJsonUtility.ToJson(tempDic, true);
-        Debug.Log(json);
-        Debug.Log("데이터 저장 완료!");
+        SaveData saveData = new SaveData
+        {
+            saveData = tempDic,
+            farmLevel = farmLevel,
+        };
 
+
+        // Json 직렬화 하기
+        string json = JsonUtility.ToJson(saveData, true);
+        Debug.Log(json);
+
+        Debug.Log("데이터 저장 완료!");
 
         // 외부 폴더에 접근해서 Json 파일 저장하기
         // Application.persistentDataPath: 특정 운영체제에서 앱이 사용할 수 있도록 허용한 경로
+<<<<<<< HEAD
         File.WriteAllText(farmingDataFilePath, json);
+=======
+        File.WriteAllText(filePath, json);
+>>>>>>> parent of 8486beb (FarmDataSave)
     }
 
 
@@ -305,9 +246,15 @@ public class FarmingManager : MonoBehaviour
             // 경로에 파일이 있으면 Json 을 다시 오브젝트로 변환한다.
             string json = File.ReadAllText(path);
             Debug.Log(json);
+<<<<<<< HEAD
             Dictionary<PosInt, SaveFarmingData> tempDic = DictionaryJsonUtility.FromJson<PosInt, SaveFarmingData>(json);
-            Debug.Log(tempDic.Count + "!!!!!!!!!!!!!!!!!!!!1");
+=======
 
+            SaveData saveData = JsonUtility.FromJson<SaveData>(json);
+            Dictionary<PosInt, SaveFarmingData> tempDic = saveData.saveData;
+
+>>>>>>> parent of 8486beb (FarmDataSave)
+            Debug.Log(tempDic.Count + "!!!!!!!!!!!!!!!!!!!!1");
 
             foreach (var item in tempDic)
             {
@@ -461,7 +408,7 @@ public class FarmingManager : MonoBehaviour
         clickPosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
         // 게임 월드 위치를 타일 맵의 타일 셀 위치로 변환
         cellPosition = farmTilemap.WorldToCell(clickPosition);
-
+        Debug.Log(cellPosition);
 
 
         foreach (Vector3Int pos in farmingData.Keys)
@@ -627,11 +574,9 @@ public class FarmingManager : MonoBehaviour
         Vector3 worldPos = farmTilemap.CellToWorld(pos);
         // 월드 좌표를 스크린 좌표로 바꿔서 저장
         Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
-
-
         // 버튼의 좌표 설정
         button.transform.position = screenPos;
-        //button.transform.position += new Vector3(0, 50, 0);
+        button.transform.position += new Vector3(0, 50, 0);
 
         return button;
     }
@@ -764,7 +709,6 @@ public class FarmingManager : MonoBehaviour
         // 아니면 딕셔너리에 등록
         // 유니티에서는 new 를 쓰려면 class 가 MonoBehaviour 를 상속 받으면 안 됨.
         farmingData[pos] = new FarmingData();
-        farmingData[pos].SetData();
         farmingData[pos].buttons = new Button[3]; // [0]: plow 버튼, [1]: plant 버튼, [2]: harvest 버튼
 
         // 각 타일마다 세 개의 버튼을 가지고 시작하도록..
