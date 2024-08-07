@@ -95,6 +95,18 @@ public class CakeManager : MonoBehaviour
         }
     }
 
+    public string FindCakeLocate(int index){
+        string r = "";
+        for(int i = 0; i < GetComponent<CakeShowcaseManager>().cakeShowcases.Length; i++){
+            for (int j = 0; j < GetComponent<CakeShowcaseManager>().cakeShowcases[i].GetComponent<CakeShowcase>().cakeType.Length; j++){
+                if(index == GetComponent<CakeShowcaseManager>().cakeShowcases[i].GetComponent<CakeShowcase>().cakeType[j]){
+                    r += $"{i},{j}/";
+                }
+            }
+        }
+        return r;
+    }
+
     public void UnlockCake(int index)
     {
         if (index >= 0 && index < cakeDataList.Count && cakeDataList[index].isLocked)
@@ -163,6 +175,7 @@ public class CakeManager : MonoBehaviour
                 if (cakeData != null)
                 {
                     serializable.cakeName = cakeData.name;
+                    serializable.cakeImage = cakeData.itemImage;
                     serializable.cakeCost = cakeData.cakeCost;
                     serializable.bakeTime = cakeData.bakeTime;
                     serializable.cakePrice = cakeData.cakePrice;
@@ -208,6 +221,7 @@ public class CakeManager : MonoBehaviour
     private class CakeDataSerializable
     {
         public string cakeName;
+        public Sprite cakeImage;
         public int cakeCost;
         public int bakeTime;
         public int cakePrice;

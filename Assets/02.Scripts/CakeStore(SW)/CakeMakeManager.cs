@@ -129,7 +129,6 @@ public class CakeMakeManager : MonoBehaviour
         for (int i = 0; i < scrollViewContent.transform.childCount; i++)
         {
             Transform panel = scrollViewContent.transform.GetChild(i);
-            
             panel.GetChild(cakeImageNum).GetComponent<Image>().sprite = cakeManager.cakeDataList[i].itemImage;
             panel.GetChild(cakeNameNum).GetComponent<Text>().text = cakeManager.cakeDataList[i].name;
             panel.GetChild(cakeCountNum).GetComponent<Text>().text = $"보유 수 : {cakeManager.cakeCounts[i]}";

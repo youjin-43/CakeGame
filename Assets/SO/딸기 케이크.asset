@@ -21,7 +21,7 @@ MonoBehaviour:
   cakeCost: 100
   bakeTime: 3
   cakePrice: 500
-  materialType: 00000000
-  materialCount: 01000000
+  materialType: 0000000001000000
+  materialCount: 0100000001000000
   isLocked: 0
   cakeIdx: 0

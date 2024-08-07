@@ -17,6 +17,7 @@ public class CakeSOGeneratorEditor : EditorWindow
     {
         GetWindow<CakeSOGeneratorEditor>("Generate Cake");
     }
+
     private void OnEnable()
     {
         csvFilePath = EditorPrefs.GetString(CsvFilePathKey, "Assets/Data/cakes.csv");
@@ -41,18 +42,16 @@ public class CakeSOGeneratorEditor : EditorWindow
                 itemImages.RemoveAt(list.index);
             }
         };
-
     }
+
     private void OnDisable()
     {
         EditorPrefs.SetString(CsvFilePathKey, csvFilePath);
         EditorPrefs.SetString(OutputFolderKey, outputFolder);
     }
 
-
     private void OnGUI()
     {
-
         csvFilePath = EditorGUILayout.TextField("CSV File Path", csvFilePath);
         outputFolder = EditorGUILayout.TextField("Output Folder", outputFolder);
 
@@ -92,6 +91,7 @@ public class CakeSOGeneratorEditor : EditorWindow
             GenerateCakeSO();
         }
     }
+
     private void GenerateCakeSO()
     {
         Debug.Log("Starting to generate CakeSO from CSV");
@@ -108,6 +108,7 @@ public class CakeSOGeneratorEditor : EditorWindow
             Debug.LogError("CSV 데이터의 항목 수와 제공된 이미지 수가 일치하지 않습니다.");
             return;
         }
+        
         CakeManager cakeManager = FindObjectOfType<CakeManager>();
         if (cakeManager == null)
         {
@@ -121,6 +122,8 @@ public class CakeSOGeneratorEditor : EditorWindow
             var entry = data[i];
             try
             {
+                Debug.Log($"Processing row {i}: {string.Join(", ", entry.Values)}");
+                
                 CakeSO cake = ScriptableObject.CreateInstance<CakeSO>();
 
                 cake.IsStackable = bool.Parse(entry["IsStackable"]);
@@ -135,8 +138,8 @@ public class CakeSOGeneratorEditor : EditorWindow
                 cake.isLocked = bool.Parse(entry["isLock"]);
                 cake.cakeIdx = int.Parse(entry["cakeIdx"]);
 
-                var materialIdxList = entry["materialIdx"].Split(',');
-                var materialCountList = entry["materialCount"].Split(',');
+                var materialIdxList = entry["materialIdx"].Split('/');
+                var materialCountList = entry["materialCount"].Split('/');
 
                 cake.materialType = new int[materialIdxList.Length];
                 cake.materialCount = new int[materialCountList.Length];

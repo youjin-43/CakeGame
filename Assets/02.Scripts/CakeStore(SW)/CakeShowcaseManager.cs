@@ -104,11 +104,11 @@ public class CakeShowcaseManager : MonoBehaviour
         }
     }
 
-    public void CakeSell(int soldCakeNum)
+    public void CakeSell(int showcaseNum, int showcasePlace)
     {
-        CakeShowcase cakeShowcase = cakeShowcases[0].GetComponent<CakeShowcase>();
-        cakeShowcase.isCakeSelected[soldCakeNum] = false;
-        SetCake(0);
+        CakeShowcase cakeShowcase = cakeShowcases[showcaseNum].GetComponent<CakeShowcase>();
+        cakeShowcase.isCakeSelected[showcasePlace] = false;
+        SetCake(showcaseNum);
         UpdateUI();
     }
 
