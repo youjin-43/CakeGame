@@ -138,11 +138,12 @@ public class CakeMakeManager : MonoBehaviour
             panel.GetChild(clickedNum).gameObject.SetActive(false);
             panel.GetChild(clickedNum).GetChild(costNum).GetComponent<Text>().text = $"{cakeManager.cakeDataList[i].cakeCost}";
             for(int j = 1; j < panel.GetChild(clickedNum).GetChild(materialNum).childCount; j++) panel.GetChild(clickedNum).GetChild(materialNum).GetChild(j).gameObject.SetActive(false);
-            for(int j = 1; j < cakeManager.cakeDataList[i].materialCount.Length; j++){
+            /*for(int j = 1; j < cakeManager.cakeDataList[i].materialCount.Length; j++){
                 panel.GetChild(clickedNum).GetChild(materialNum).GetChild(j).gameObject.SetActive(true);
-                panel.GetChild(clickedNum).GetChild(materialNum).GetChild(j).GetChild(materialImgaeNum).GetComponent<Image>().sprite = null/*매터리얼 타입의 인덱스를 가진 과일 이미지*/;
+                panel.GetChild(clickedNum).GetChild(materialNum).GetChild(j).GetChild(materialImgaeNum).GetComponent<Image>().sprite = null매터리얼 타입의 인덱스를 가진 과일 이미지;
                 
             }
+            */
             panel.GetChild(clickedNum).GetChild(bakeTimeNum).GetComponent<Text>().text = $"{cakeManager.cakeDataList[i].bakeTime}초" ;
         }
 
