@@ -29,7 +29,7 @@ public class CsvToScriptableObject
             seed.itemImage = Resources.Load<Sprite>($"FruitImange/{seed.Name}");
             seed.itemType = int.Parse(splitData[5].ToString());
             seed.seedPrice = int.Parse(splitData[6].ToString());
-            //seed.fruitIdx = int.Parse(splitData[7].ToString());
+            seed.seedIdx = int.Parse(splitData[7].ToString()); //fruit idx
 
             //seed.sprite = Resources.Load<Sprite>($"FruitImange/{seed.name}"); //나중에 스프라이트 정보가 필요하닥면 추가 
 

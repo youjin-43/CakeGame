@@ -20,4 +20,4 @@ MonoBehaviour:
   itemType: 1
   seedPrice: 1000
   growTime: 0
-  seedIdx: 0
+  seedIdx: 1
