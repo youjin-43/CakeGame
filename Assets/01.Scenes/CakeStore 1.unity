@@ -7222,7 +7222,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2119bc230e6a8644fbd8d3bd90d7ac69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spritesToDisable: {fileID: 0}
+  spritesToDisable: {fileID: 1246324718}
   cakeDataList:
   - {fileID: 11400000, guid: 6d88e7322e9e3a54095aeb71ed6834e8, type: 2}
   - {fileID: 11400000, guid: e4e6d0bb27db1794e9c2df7bc92732da, type: 2}
