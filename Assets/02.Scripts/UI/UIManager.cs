@@ -17,6 +17,7 @@ public class UIManager : MonoBehaviour
             // instance가 비어있다면(null) 그곳에 자기 자신을 할당
             instance = this;
             Debug.Log("UIManager가 생성됐습니다");
+            DontDestroyOnLoad(gameObject); // 씬이 변경되어도 삭제되지 않도록
         }
         else
         {
@@ -41,26 +42,17 @@ public class UIManager : MonoBehaviour
 
     public GameObject RunStartButton; //가게 운영이 끝났을때 활성화 할 오브젝트
 
-    [Header("About EXP")]
-    public GameObject ExpBar;
-
     private void Start()
     {
         SetDatainUI();
-        setExpUI();
-    }
-
-    public void setExpUI()
-    {
-        ExpBar.GetComponent<Image>().fillAmount = ExpManager.instance.exp / ExpManager.instance.exp_max;
+        //setExpUI();
     }
 
     public void SetDatainUI()
     {
-        seasonText.text = GameManager.instance.season.ToString();
+        //seasonText.text = GameManager.instance.season.ToString();
         dateText.text = GameManager.instance.date.ToString();
-        moneyText.text = "Money : " + GameManager.instance.money;
-        popularityText.text = "Popularity : " + GameManager.instance.popularity;
+        moneyText.text = GameManager.instance.money.ToString();
         levelText.text = ExpManager.instance.level.ToString();
     }
 }

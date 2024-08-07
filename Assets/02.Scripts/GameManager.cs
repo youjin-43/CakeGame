@@ -29,7 +29,6 @@ public class GameManager : MonoBehaviour
             season = (Seasons)PlayerPrefs.GetInt("season");
             date = PlayerPrefs.GetInt("date");
             money = PlayerPrefs.GetInt("money"); //주어진 키로 저장된 값이 없으면 기본값을 반환
-            popularity = PlayerPrefs.GetInt("popularity");
 
         }
         else
@@ -54,11 +53,13 @@ public class GameManager : MonoBehaviour
     public Seasons season;
     public int date;
     public int money;
-    public int popularity;
 
     [Header("About Running")]
-    public float runTime; // 가게 runTime시간
+    public float runTime; // 현재 시간
+    public float MaxRunTime = 5f;
     public bool isRunning; //가게가 운영중인지 표시하는 변수
+
+    public GameObject RuntimeBar;
 
     void Update()
     {
@@ -67,9 +68,9 @@ public class GameManager : MonoBehaviour
         if (isRunning)
         {
             runTime += Time.deltaTime;
-            UIManager.instance.runningTimeText.text = "Time :" + (int)runTime;
+            RuntimeBar.GetComponent<Image>().fillAmount = runTime / MaxRunTime;
 
-            if (runTime >= 5.0f) // 우선 5초로 해놓음 
+            if (runTime >= MaxRunTime) 
             {
                 EndRunning();
             }
@@ -87,10 +88,11 @@ public class GameManager : MonoBehaviour
     //가게 운영 시작하는 함수 
     public void StartRunning()
     {
-        UIManager.instance.runningOverBoard.SetActive(false);
-        Debug.Log("정산화면 끄기 실행 완료 ");
+        UIManager.instance.runningOverBoard.SetActive(false); //정산화면 끄기
 
         date++;
+        UIManager.instance.dateText.text = date.ToString();//UI 적용 
+
         runTime = 0;
 
         isRunning = true;
@@ -121,7 +123,7 @@ public class GameManager : MonoBehaviour
         Debug.Log("getmoeny 함수 실행");
 
         money += 100;
-        UIManager.instance.moneyText.text = "Money : " + money;
+        UIManager.instance.moneyText.text = money.ToString();
         PlayerPrefs.SetInt("money", money); 
     }
 
