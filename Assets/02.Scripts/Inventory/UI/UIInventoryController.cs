@@ -125,7 +125,7 @@ public class UIInventoryController : MonoBehaviour
 
 
         filePath = Path.Combine(Application.persistentDataPath, "InventoryData.json"); // 데이터 경로 설정..
-        LoadInventoryData();
+        //LoadInventoryData();
 
         //PrepareUI();
         //PrepareInventoryData();
@@ -172,7 +172,7 @@ public class UIInventoryController : MonoBehaviour
         inventoryUI.gameObject.SetActive(false);
         seedButton.gameObject.SetActive(false);
         fruitButton.gameObject.SetActive(false);
-        itemSellPanel.gameObject.SetActive(false);  
+        itemSellPanel.gameObject.SetActive(false);
     }
 
 
@@ -202,7 +202,7 @@ public class UIInventoryController : MonoBehaviour
         // 임시 확인 코드
         if (Input.GetKeyDown(KeyCode.C))
         {
-            SaveInventoryData();
+            //SaveInventoryData();
             //LoadInventoryData();
         }
     }
@@ -231,7 +231,7 @@ public class UIInventoryController : MonoBehaviour
 
         inventoryData.seedInventoryData = seedInventoryData;
         inventoryData.fruitInventoryData = fruitInventoryData;
-        SaveInventoryData(); // 데이터 저장!  
+        //SaveInventoryData(); // 데이터 저장!  
     }
 
     public void MinusItem(InventoryItem item)
@@ -256,7 +256,7 @@ public class UIInventoryController : MonoBehaviour
 
         inventoryData.seedInventoryData = seedInventoryData;
         inventoryData.fruitInventoryData = fruitInventoryData;
-        SaveInventoryData(); // 데이터 저장!  
+        //SaveInventoryData(); // 데이터 저장!  
     }
 
     public void SellItem(int count, int price, int itemType)
@@ -287,7 +287,7 @@ public class UIInventoryController : MonoBehaviour
 
         inventoryData.seedInventoryData = seedInventoryData;
         inventoryData.fruitInventoryData = fruitInventoryData;
-        SaveInventoryData(); // 데이터 저장!  
+        //SaveInventoryData(); // 데이터 저장!  
     }
 
     private void SetItemSellPanel(int itemIndex)
@@ -298,7 +298,7 @@ public class UIInventoryController : MonoBehaviour
         itemSellPanel.SetItemInfo(item);
     }
 
-    
+
 
     // 인벤토리 변경 사항 처리 관련 함수
     private void UpdateInventoryUI(Dictionary<int, InventoryItem> curInventory)
@@ -360,12 +360,13 @@ public class UIInventoryController : MonoBehaviour
     }
 
     private void SetOpenSellButton()
-    { 
+    {
         if (curInventoryData.inventoryType == 1 || curInventoryData.inventoryType == 2)
         {
             // 현재 인벤토리 데이터가 가리키는 게 과일이랑 보석이면 판매 버튼이 뜰 수 있도록..
             inventoryUI.isPossible = true;
-        } else
+        }
+        else
         {
             inventoryUI.isPossible = false;
         }
@@ -580,5 +581,3 @@ public class UIInventoryController : MonoBehaviour
         }
     }
 }
-
-

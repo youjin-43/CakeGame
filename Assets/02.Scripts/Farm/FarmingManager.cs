@@ -15,23 +15,89 @@ using static UnityEditor.PlayerSettings;
 
 
 [Serializable]
-public class SaveData
+public class FarmingEnableZoneData
 {
-    // 농사 데이터 저장용 딕셔너리..
-    [SerializeField]
-    // Vector3Int 는 JSON 으로 직렬화가 안 된다고 한다.. 큰 사고다..
-    // 아.. 애초에 딕셔너리도 직렬화가 안된다고한다... 망햇따........ㅠ_ㅠ
-    // 어쩐지 계속 해도 저장이 안된다.....
-    // 아.... 어케 해야함...
-    // 아... 아침에 일어나서 다시 해야겠다..
-    public Dictionary<PosInt, SaveFarmingData> saveData = new Dictionary<PosInt, SaveFarmingData>();
-    [SerializeField]
-    public int farmLevel;
+    // 농사 가능 구역의 위치를 저장할 리스트..
+    public List<PosInt> farmingEnableZoneSaveData;
 }
 
 
+
 [Serializable]
-// 아예 따로 클래스 만들어서 값을 저장할 때 Vector3Int 대신 PosString 써야할 것 같다..
+// 딕셔너리를 클래스 형식으로 key, value 를 만들어서 구성하가ㅣ..
+// 다른 Dictionary 도 고려하여 제네릭 타입으로 만들기..
+public class DataDictionary<TKey, TValue>
+{
+    public TKey Key;
+    public TValue Value;
+}
+
+[Serializable]
+public class JsonDataArray<TKey, TValue>
+{
+    // 임의로 생성한 딕셔너리 값 저장용 리스트
+    public List<DataDictionary<TKey, TValue>> data;
+}
+
+public static class DictionaryJsonUtility
+{
+
+    /// <summary>
+    /// Dictionary를 Json으로 파싱하기
+    /// </summary>
+    /// <typeparam name="TKey">Dictionary Key값 형식</typeparam>
+    /// <typeparam name="TValue">Dictionary Value값 형식</typeparam>
+    /// <param name="jsonDicData"></param>
+    /// <returns></returns>
+    public static string ToJson<TKey, TValue>(Dictionary<TKey, TValue> jsonDicData, bool pretty = false)
+    {
+        List<DataDictionary<TKey, TValue>> dataList = new List<DataDictionary<TKey, TValue>>();
+        DataDictionary<TKey, TValue> dictionaryData;
+        foreach (TKey key in jsonDicData.Keys)
+        {
+            dictionaryData = new DataDictionary<TKey, TValue>();
+            dictionaryData.Key = key;
+            dictionaryData.Value = jsonDicData[key];
+            dataList.Add(dictionaryData);
+        }
+        JsonDataArray<TKey, TValue> arrayJson = new JsonDataArray<TKey, TValue>();
+        arrayJson.data = dataList;
+
+        return JsonUtility.ToJson(arrayJson, pretty);
+    }
+
+    /// <summary>
+    /// Json Data를 다시 Dictionary로 파싱하기
+    /// </summary>
+    /// <typeparam name="TKey">Dictionary Key값 형식</typeparam>
+    /// <typeparam name="TValue">Dictionary Value값 형식</typeparam>
+    /// <param name="jsonData">파싱되었던 데이터</param>
+    /// <returns></returns>
+
+    public static Dictionary<TKey, TValue> FromJson<TKey, TValue>(string jsonData)
+    {
+        JsonDataArray<TKey, TValue> arrayJson = JsonUtility.FromJson<JsonDataArray<TKey, TValue>>(jsonData);
+        List<DataDictionary<TKey, TValue>> dataList = arrayJson.data;
+
+        Dictionary<TKey, TValue> returnDictionary = new Dictionary<TKey, TValue>();
+
+
+        for (int i = 0; i < dataList.Count; i++)
+        {
+            DataDictionary<TKey, TValue> dictionaryData = dataList[i];
+
+            returnDictionary.Add(dictionaryData.Key, dictionaryData.Value);
+            //returnDictionary[dictionaryData.Key] = dictionaryData.Value;
+        }
+
+        return returnDictionary;
+    }
+}
+
+
+
+[Serializable]
+// 아예 따로 클래스 만들어서 값을 저장할 때 Vector3Int 대신 PosInt 써야할 것 같다..
 public class PosInt
 {
     [SerializeField]
@@ -42,7 +108,7 @@ public class PosInt
     public int z;
 }
 
- 
+
 // 데이터 저장 클래스
 [Serializable]
 public class SaveFarmingData
@@ -99,6 +165,12 @@ class FarmingData
 
     [SerializeField]
     public string currentState = "None"; // 현재 상태(초기에는 아무것도 안 한 상태니까 None 으로.. -> plow: 밭 갈린 상태, plant: 씨앗 심은 상태, harvest: 다 자란 상태)
+
+
+    public void SetData()
+    {
+        plowEnableState = true;
+    }
 }
 
 
@@ -109,6 +181,7 @@ public class FarmingManager : MonoBehaviour
     public SeedContainer seedContainer; // 현재 가진 씨앗을 가져오기 위해 필요한 변수(씨앗 컨테이너 게임 오브젝트 할당해줄 것)
     public FruitContainer fruitContainer; // 수확한 과일을 저장하기 위해 필요한 변수(과일 컨테이너 게임 오브젝트 할당해줄 것)
     public UIInventoryController inventoryController; // 인벤토리 관리하기 위해 필요한 변수(인벤토리 매니저 게임 오브젝트 할당해줄 것) 
+    public Canvas canvas;
 
     // 아이템 스크립터블 오브젝트를 저장해놓기..
     public FruitItemSO[] fruitItems; // [0]: 사과, [1]: 바나나, [2]: 체리, [3]: 오렌지, [4]: 딸기
@@ -152,15 +225,12 @@ public class FarmingManager : MonoBehaviour
 
     // 데이터 저장
     [Header("Save Data")]
-    private string filePath; // 데이터 저장 경로..
-    public SaveData saveFarmingData = new SaveData();
+    private string farmingDataFilePath; // 농사 데이터 저장 경로..
 
-    
 
     public void SaveFarmingData()
     {
         Dictionary<PosInt, SaveFarmingData> tempDic = new Dictionary<PosInt, SaveFarmingData>();
-
         foreach (var item in farmingData)
         {
             Debug.Log(item.Key + "저장할겁니다!!");
@@ -173,7 +243,8 @@ public class FarmingManager : MonoBehaviour
                 z = item.Key.z
             };
 
-            SaveFarmingData temp = new SaveFarmingData { 
+            SaveFarmingData temp = new SaveFarmingData
+            {
                 plowEnableState = farmingData[item.Key].plowEnableState,
                 plantEnableState = farmingData[item.Key].plantEnableState,
                 harvestEnableState = farmingData[item.Key].harvestEnableState,
@@ -184,11 +255,15 @@ public class FarmingManager : MonoBehaviour
             // 농사 땅 위에 씨앗이 없을 때 진입..
             if (farmingData[item.Key].seed == null)
             {
+                Debug.Log("씨앗 없어여..");
+
                 temp.seedOnTile = false;
             }
             // 농사 땅 위에 씨앗 있을 때 진입..
             else
             {
+                Debug.Log("씨앗 있어여..");
+
                 temp.seedOnTile = true; // 땅에 씨앗 심어져있는지 여부 판단 정보 저장..
                 temp.seedIdx = farmingData[item.Key].seed.seedData.seedIdx; // 씨앗 인덱스 저장..
                 temp.currentTime = farmingData[item.Key].seed.currentTime; // 자라기 까지 남은 시간 저장..
@@ -205,22 +280,14 @@ public class FarmingManager : MonoBehaviour
         }
 
 
-        SaveData saveData = new SaveData
-        {
-            saveData = tempDic,
-            farmLevel = farmLevel,
-        };
-
-
-        // Json 직렬화 하기
-        string json = JsonUtility.ToJson(saveData, true);
+        string json = DictionaryJsonUtility.ToJson(tempDic, true);
         Debug.Log(json);
-
         Debug.Log("데이터 저장 완료!");
+
 
         // 외부 폴더에 접근해서 Json 파일 저장하기
         // Application.persistentDataPath: 특정 운영체제에서 앱이 사용할 수 있도록 허용한 경로
-        File.WriteAllText(filePath, json);
+        File.WriteAllText(farmingDataFilePath, json);
     }
 
 
@@ -239,11 +306,9 @@ public class FarmingManager : MonoBehaviour
             // 경로에 파일이 있으면 Json 을 다시 오브젝트로 변환한다.
             string json = File.ReadAllText(path);
             Debug.Log(json);
-
-            SaveData saveData = JsonUtility.FromJson<SaveData>(json);
-            Dictionary<PosInt, SaveFarmingData> tempDic = saveData.saveData;
-
+            Dictionary<PosInt, SaveFarmingData> tempDic = DictionaryJsonUtility.FromJson<PosInt, SaveFarmingData>(json);
             Debug.Log(tempDic.Count + "!!!!!!!!!!!!!!!!!!!!1");
+
 
             foreach (var item in tempDic)
             {
@@ -254,7 +319,7 @@ public class FarmingManager : MonoBehaviour
                 switch (tempDic[item.Key].currentState)
                 {
                     // 현재 농사 땅 상태에 맞는 버튼으로 설정해주기..
-                    
+
                     case "None":
                         farmingData[pos].stateButton = farmingData[pos].buttons[0];
                         farmTilemap.SetTile(pos, grassTile); // 타일을 아무것도 안 한 상태로 변경(키 값이 농사땅의 pos 임)
@@ -306,7 +371,9 @@ public class FarmingManager : MonoBehaviour
 
     private void Awake()
     {
-        filePath = Path.Combine(Application.persistentDataPath, "FarmingData.json"); // 데이터 경로 설정..
+        // 데이터 저장 경로 설정..
+        farmingDataFilePath = Path.Combine(Application.persistentDataPath, "FarmingData.json"); // 데이터 경로 설정..
+
 
         farmingData = new Dictionary<Vector3Int, FarmingData>(); // 딕셔너리 생성
         clickPosition = Vector2.zero;
@@ -319,6 +386,17 @@ public class FarmingManager : MonoBehaviour
             if (!farmEnableZoneTilemap.HasTile(pos)) continue;
 
             SetFarmingData(pos); // FarmingData 타입 인스턴스의 정보를 세팅해주는 함수.
+        }
+
+
+
+        // 농사 땅 레벨 데이터 불러오기..
+        farmLevel = PlayerPrefs.GetInt("FarmLevel");
+        // 농사 땅 레벨 데이터를 불러온 다음에 레벨 데이터에 맞게끔 땅 업그레이드 해주기.. 
+        while (farmLevel > 0)
+        {
+            SetFarmSize();
+            farmLevel--;
         }
 
 
@@ -343,7 +421,7 @@ public class FarmingManager : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             // 땅을 왼쪽 마우스키로 눌렀을 때, 땅의 현재 상태를 파악한 후 버튼 등 전반적인 UI 조정하는 것과 관련된 로직 함수..
-            FarmingSystemPC(); 
+            FarmingSystemPC();
         }
 
 
@@ -362,7 +440,7 @@ public class FarmingManager : MonoBehaviour
         // 확인용 로직..
         if (Input.GetKeyDown(KeyCode.W))
             SaveFarmingData();
-    } 
+    }
 
 
     private void FarmingSystemPC()
@@ -384,7 +462,7 @@ public class FarmingManager : MonoBehaviour
         clickPosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
         // 게임 월드 위치를 타일 맵의 타일 셀 위치로 변환
         cellPosition = farmTilemap.WorldToCell(clickPosition);
-        Debug.Log(cellPosition);
+
 
 
         foreach (Vector3Int pos in farmingData.Keys)
@@ -550,9 +628,11 @@ public class FarmingManager : MonoBehaviour
         Vector3 worldPos = farmTilemap.CellToWorld(pos);
         // 월드 좌표를 스크린 좌표로 바꿔서 저장
         Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
+
+
         // 버튼의 좌표 설정
         button.transform.position = screenPos;
-        button.transform.position += new Vector3(0, 50, 0);
+        //button.transform.position += new Vector3(0, 50, 0);
 
         return button;
     }
@@ -629,9 +709,10 @@ public class FarmingManager : MonoBehaviour
     public void BuySeed(int count, int idx)
     {
         // 돈이 부족하면 씨앗 못사!
-        if (GameManager.instance.money < seedContainer.prefabs[idx].GetComponent<Seed>().seedData.seedPrice * count) {
+        if (GameManager.instance.money < seedContainer.prefabs[idx].GetComponent<Seed>().seedData.seedPrice * count)
+        {
             Debug.Log("돈 없어!!!");
-            return; 
+            return;
         }
 
         // 구매하려는 씨앗의 개수만큼 InventoryItem 구조체의 인스턴스를 만들기..
@@ -651,7 +732,8 @@ public class FarmingManager : MonoBehaviour
     public void SellFruit(int count, int idx)
     {
         // 만약 판매하려고 하는 과일의 개수가 현재 과일의 개수보다 적으면 그냥 빠져나가도록..
-        if (fruitContainer.fruitCount[idx] < count) {
+        if (fruitContainer.fruitCount[idx] < count)
+        {
             Debug.Log("과일이 부족해!!!");
             return;
         }
@@ -674,7 +756,7 @@ public class FarmingManager : MonoBehaviour
         PlayerPrefs.SetInt("money", GameManager.instance.money); // 현재 돈 저장
     }
 
-    public void SetFarmingData(Vector3Int pos) 
+    public void SetFarmingData(Vector3Int pos)
     {
         // 이 함수는 FarmingManager 클래스의 Start 함수와 UpgradeFarmSize 함수에서 사용할 것..
 
@@ -685,6 +767,7 @@ public class FarmingManager : MonoBehaviour
         // 아니면 딕셔너리에 등록
         // 유니티에서는 new 를 쓰려면 class 가 MonoBehaviour 를 상속 받으면 안 됨.
         farmingData[pos] = new FarmingData();
+        farmingData[pos].SetData();
         farmingData[pos].buttons = new Button[3]; // [0]: plow 버튼, [1]: plant 버튼, [2]: harvest 버튼
 
         // 각 타일마다 세 개의 버튼을 가지고 시작하도록..
@@ -715,6 +798,78 @@ public class FarmingManager : MonoBehaviour
         farmingData[pos].stateButton = farmingData[pos].buttons[0];
     }
 
+
+    public void SetFarmSize()
+    {
+        // Awake 함수에서 호출할 함수
+        // 불러온 농장 레벨에 따라 호출 횟수가 달라짐..
+
+        // 땅의 크기를 업그레이드 하는 함수
+
+        BoundsInt bounds = farmEnableZoneTilemap.cellBounds; // 농사 가능 구역 타일맵의 현재 크기 가져오기
+
+        // 새로 확장할 영역 좌표 계산 로직..
+        Debug.Log(bounds.xMin);
+
+        int minX = bounds.xMin - expansionSize;
+        int maxX = bounds.xMax + expansionSize;
+        int minY = bounds.yMin - expansionSize;
+        int maxY = bounds.yMax + expansionSize;
+
+        for (int i = minX; i < maxX; i++)
+        {
+            for (int j = minY; j < maxY; j++)
+            {
+                // 테투리 부분만 경계타일 까는 로직
+                // max 값은 1 이 더 더해져있기 때문에 이를 고려해서 조건식 짜야함.
+                // 그래서 maxX, maxY 일 때는 i, j 에 1 을 더해줌..
+                if (i == minX || i + 1 == maxX)
+                    farmTilemap.SetTile(new Vector3Int(i, j, 0), grassTile);
+                if (j == minY || j + 1 == maxY)
+                    farmTilemap.SetTile(new Vector3Int(i, j, 0), grassTile);
+
+                Vector3Int pos = new Vector3Int(i, j, 0);
+
+                // 농사 가능 구역 타일맵에 타일이 없으면 진입
+                if (!farmEnableZoneTilemap.HasTile(pos))
+                {
+                    farmEnableZoneTilemap.SetTile(pos, grassTile);
+                }
+            }
+        }
+
+
+        // 경계 타일맵 깔기 위한 로직
+        bounds = farmEnableZoneTilemap.cellBounds; // 업데이트된 농사 가능 구역 타일맵의 현재 크기 가져오기
+        minX = bounds.xMin - 1;
+        maxX = bounds.xMax + 1;
+        minY = bounds.yMin - 1;
+        maxY = bounds.yMax + 1;
+
+        Debug.Log("maxX: " + maxX + " maxY: " + maxY);
+        Debug.Log("minX: " + minX + " minY: " + minY);
+
+        for (int i = minX; i < maxX; i++)
+        {
+            for (int j = minY; j < maxY; j++)
+            {
+                // 테투리 부분만 경계타일 까는 로직
+                // max 값은 1 이 더 더해져있기 때문에 이를 고려해서 조건식 짜야함.
+                // 그래서 maxX, maxY 일 때는 i, j 에 1 을 더해줌..
+                if (i == minX || i + 1 == maxX)
+                    farmTilemap.SetTile(new Vector3Int(i, j, 0), borderTile);
+                if (j == minY || j + 1 == maxY)
+                    farmTilemap.SetTile(new Vector3Int(i, j, 0), borderTile);
+            }
+        }
+
+
+        // 농사 가능 구역 타일맵의 타일들을 모두 돌면서..
+        foreach (Vector3Int pos in farmEnableZoneTilemap.cellBounds.allPositionsWithin)
+        {
+            SetFarmingData(pos); // 새로운 농사 가능 구역의 타일 정보를 딕셔너리에 저장..
+        }
+    }
 
     public void UpgradeFarmSize()
     {
@@ -759,7 +914,7 @@ public class FarmingManager : MonoBehaviour
             }
         }
 
-        
+
         // 경계 타일맵 깔기 위한 로직
         bounds = farmEnableZoneTilemap.cellBounds; // 업데이트된 농사 가능 구역 타일맵의 현재 크기 가져오기
         minX = bounds.xMin - 1;
@@ -777,9 +932,9 @@ public class FarmingManager : MonoBehaviour
                 // 테투리 부분만 경계타일 까는 로직
                 // max 값은 1 이 더 더해져있기 때문에 이를 고려해서 조건식 짜야함.
                 // 그래서 maxX, maxY 일 때는 i, j 에 1 을 더해줌..
-                if (i == minX || i+1 == maxX)
+                if (i == minX || i + 1 == maxX)
                     farmTilemap.SetTile(new Vector3Int(i, j, 0), borderTile);
-                if (j == minY || j+1 == maxY)
+                if (j == minY || j + 1 == maxY)
                     farmTilemap.SetTile(new Vector3Int(i, j, 0), borderTile);
             }
         }
@@ -791,7 +946,9 @@ public class FarmingManager : MonoBehaviour
             SetFarmingData(pos); // 새로운 농사 가능 구역의 타일 정보를 딕셔너리에 저장..
         }
 
+
         farmLevel++; // 농장 레벨 증가
+        PlayerPrefs.SetInt("FarmLevel", farmLevel); // 농장 레벨 저장..
         Debug.Log("농장을 업그레이드 했다!");
     }
 }
