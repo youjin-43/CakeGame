@@ -17,6 +17,8 @@ public class CakeShowcaseManager : MonoBehaviour
     public GameObject scrollViewContent;
     public int cakeCountNum;
     public int lockedNum;
+    public int placeButtonNum;
+    public int placeButtonTextNum;
     public int placeButtonImageNum;
     public int cakePlaceNum = 4;
 
@@ -37,7 +39,7 @@ public class CakeShowcaseManager : MonoBehaviour
             cakeShowcases[i].GetComponent<CakeShowcase>().storeManager = this.gameObject;
             cakeShowcases[i].GetComponent<CakeShowcase>().cakeShowcaseIndex = i;
         }
-        for (int i = 0; i < cakeShowcasePlace.transform.childCount; i++)
+        for (int i = 0; i < cakePlaceNum; i++)
         {
             int index = i; // 로컬 변수로 캡처
             Button placeButton = cakeShowcasePlace.transform.GetChild(i).GetComponent<Button>();
@@ -119,12 +121,14 @@ public class CakeShowcaseManager : MonoBehaviour
             panel.GetChild(lockedNum).gameObject.SetActive(cakeManager.cakeDataList[i].isLocked);
             panel.GetComponent<Button>().interactable = !cakeManager.cakeDataList[i].isLocked;
         }
-        for (int i = 0; i < cakeShowcasePlace.transform.childCount; i++)
+        for (int i = 0; i < cakePlaceNum; i++)
         {
-            GameObject placeButton = cakeShowcasePlace.transform.GetChild(i).GetChild(placeButtonImageNum).gameObject;
+            GameObject placeButton = cakeShowcasePlace.transform.GetChild(i).GetChild(placeButtonNum).gameObject;
+            GameObject PlaceText = cakeShowcasePlace.transform.GetChild(i).GetChild(placeButtonTextNum).gameObject;
             CakeShowcase cakeShowcase = cakeShowcases[cakeShowcaseIndex].GetComponent<CakeShowcase>();
             placeButton.SetActive(cakeShowcase.isCakeSelected[i]);
-            Image placeButtonImage = placeButton.GetComponent<Image>();
+            PlaceText.SetActive(!cakeShowcase.isCakeSelected[i]);
+            Image placeButtonImage = placeButton.transform.GetChild(placeButtonImageNum).GetComponent<Image>();
             placeButtonImage.sprite = cakeManager.cakeDataList[cakeShowcase.cakeType[i]].itemImage;
         }
     }

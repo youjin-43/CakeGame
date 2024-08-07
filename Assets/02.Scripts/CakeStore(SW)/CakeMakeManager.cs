@@ -17,6 +17,7 @@ public class CakeMakeManager : MonoBehaviour
     public int costNum;
     public int materialNum;
     public int materialImgaeNum;
+    public int materialCountNum;
     public int bakeTimeNum;
     public int buttonNum;
     public int cakeMakerIndex;
@@ -137,13 +138,14 @@ public class CakeMakeManager : MonoBehaviour
             panel.GetComponent<Button>().interactable = !cakeManager.cakeDataList[i].isLocked;
             panel.GetChild(clickedNum).gameObject.SetActive(false);
             panel.GetChild(clickedNum).GetChild(costNum).GetComponent<Text>().text = $"{cakeManager.cakeDataList[i].cakeCost}";
-            for(int j = 1; j < panel.GetChild(clickedNum).GetChild(materialNum).childCount; j++) panel.GetChild(clickedNum).GetChild(materialNum).GetChild(j).gameObject.SetActive(false);
-            /*for(int j = 1; j < cakeManager.cakeDataList[i].materialCount.Length; j++){
-                panel.GetChild(clickedNum).GetChild(materialNum).GetChild(j).gameObject.SetActive(true);
-                panel.GetChild(clickedNum).GetChild(materialNum).GetChild(j).GetChild(materialImgaeNum).GetComponent<Image>().sprite = null매터리얼 타입의 인덱스를 가진 과일 이미지;
-                
+            for(int j = 0; j < panel.GetChild(clickedNum).GetChild(materialNum).childCount; j++) panel.GetChild(clickedNum).GetChild(materialNum).GetChild(j).gameObject.SetActive(false);
+            for(int j = 0; j < cakeManager.cakeDataList[i].materialCount.Length; j++){
+                var material = panel.GetChild(clickedNum).GetChild(materialNum).GetChild(j);
+                material.gameObject.SetActive(true);
+                material.GetChild(materialImgaeNum).GetComponent<Image>().sprite = null;//materialType값을 가진 과일 이미지
+                material.GetChild(materialCountNum).GetComponent<Text>().text = $"{cakeManager.cakeDataList[i].materialCount[j]}/{0/*materialType의 과일 수*/}";
             }
-            */
+            
             panel.GetChild(clickedNum).GetChild(bakeTimeNum).GetComponent<Text>().text = $"{cakeManager.cakeDataList[i].bakeTime}초" ;
         }
 
