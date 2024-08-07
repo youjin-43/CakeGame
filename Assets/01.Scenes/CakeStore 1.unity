@@ -6943,19 +6943,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9011108925836840852, guid: 389e25e9a9fe01944a642cad5e6b0ee7, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9011108925836840852, guid: 389e25e9a9fe01944a642cad5e6b0ee7, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9011108925836840852, guid: 389e25e9a9fe01944a642cad5e6b0ee7, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 38.2117
       objectReference: {fileID: 0}
     - target: {fileID: 9011108925836840852, guid: 389e25e9a9fe01944a642cad5e6b0ee7, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -33.177902
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -7161,14 +7161,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09162568fa8356a43ba8873add36315f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spritesToDisable: {fileID: 1246324718}
   cakeMakersPool: {fileID: 1213587073}
   cakeMakerPanel: {fileID: 1454436840}
   scrollViewContent: {fileID: 1672258583}
   cakeMakers: []
+  cakeImageNum: 0
+  cakeNameNum: 0
   cakeCountNum: 2
-  clickedNum: 4
   lockedNum: 3
+  clickedNum: 4
+  costNum: 0
+  materialNum: 0
+  materialImgaeNum: 0
+  bakeTimeNum: 0
   buttonNum: 3
   cakeMakerIndex: 0
   timers: {fileID: 999088369}
@@ -7217,12 +7222,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2119bc230e6a8644fbd8d3bd90d7ac69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spritesToDisable: {fileID: 0}
   cakeDataList:
   - {fileID: 11400000, guid: 6d88e7322e9e3a54095aeb71ed6834e8, type: 2}
   - {fileID: 11400000, guid: e4e6d0bb27db1794e9c2df7bc92732da, type: 2}
   - {fileID: 11400000, guid: 3e79b25d03e0bac43981f254da8b2c4e, type: 2}
   - {fileID: 11400000, guid: aea4690d5c70b674ca40736154234bfc, type: 2}
   - {fileID: 11400000, guid: f93080eb7c5940e44bb131b2cd115e22, type: 2}
+  cakeCounts: 
 --- !u!1 &304153279
 GameObject:
   m_ObjectHideFlags: 0
@@ -10844,6 +10851,7 @@ GameObject:
   - component: {fileID: 728617360}
   - component: {fileID: 728617359}
   - component: {fileID: 728617362}
+  - component: {fileID: 728617363}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -10943,6 +10951,18 @@ MonoBehaviour:
   limitDown: -7
   limitLeft: -10
   limitRight: 10
+--- !u!114 &728617363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 728617358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4478302e1f748845ab78c9e0d099dfc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &743856351
 GameObject:
   m_ObjectHideFlags: 0
@@ -17470,10 +17490,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07450911c584842bbbb00f874abb666d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ExpBar: {fileID: 610274919}
-  level: 1
-  exp: 0
-  exp_max: 100
 --- !u!1 &1274167053
 GameObject:
   m_ObjectHideFlags: 0
@@ -20325,7 +20341,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 314791260}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
