@@ -9022,7 +9022,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0.00012207031, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 300, y: 300}
   m_Pivot: {x: 1, y: 0}
 --- !u!114 &744321506
@@ -14309,19 +14309,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9011108925836840852, guid: 389e25e9a9fe01944a642cad5e6b0ee7, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9011108925836840852, guid: 389e25e9a9fe01944a642cad5e6b0ee7, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9011108925836840852, guid: 389e25e9a9fe01944a642cad5e6b0ee7, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 38.2117
       objectReference: {fileID: 0}
     - target: {fileID: 9011108925836840852, guid: 389e25e9a9fe01944a642cad5e6b0ee7, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -33.177902
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -23314,6 +23314,7 @@ MonoBehaviour:
   seedContainer: {fileID: 56286054}
   fruitContainer: {fileID: 634117040}
   inventoryController: {fileID: 28181379}
+  canvas: {fileID: 0}
   fruitItems:
   - {fileID: 11400000, guid: cdec94432ad7f57499a766c32855dc47, type: 2}
   - {fileID: 11400000, guid: 42a8cc1acabdbe94693fb926029b5507, type: 2}
@@ -23348,8 +23349,6 @@ MonoBehaviour:
   plantSeedPanel: {fileID: 276346255}
   selectedSeedIdx: 0
   clickedSelectedSeedButton: 0
-  saveFarmingData:
-    farmLevel: 0
 --- !u!4 &1817601061
 Transform:
   m_ObjectHideFlags: 0
@@ -24929,9 +24928,10 @@ MonoBehaviour:
   season: 0
   date: 0
   money: 50000
-  popularity: 0
   runTime: 0
+  MaxRunTime: 5
   isRunning: 0
+  RuntimeBar: {fileID: 0}
 --- !u!4 &1984134016
 Transform:
   m_ObjectHideFlags: 0
