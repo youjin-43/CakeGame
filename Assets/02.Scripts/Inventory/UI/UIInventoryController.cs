@@ -125,7 +125,7 @@ public class UIInventoryController : MonoBehaviour
 
 
         filePath = Path.Combine(Application.persistentDataPath, "InventoryData.json"); // 데이터 경로 설정..
-        //LoadInventoryData();
+        LoadInventoryData();
 
         //PrepareUI();
         //PrepareInventoryData();
@@ -202,7 +202,7 @@ public class UIInventoryController : MonoBehaviour
         // 임시 확인 코드
         if (Input.GetKeyDown(KeyCode.C))
         {
-            //SaveInventoryData();
+            SaveInventoryData();
             //LoadInventoryData();
         }
     }
@@ -231,7 +231,7 @@ public class UIInventoryController : MonoBehaviour
 
         inventoryData.seedInventoryData = seedInventoryData;
         inventoryData.fruitInventoryData = fruitInventoryData;
-        //SaveInventoryData(); // 데이터 저장!  
+        SaveInventoryData(); // 데이터 저장!  
     }
 
     public void MinusItem(InventoryItem item)
@@ -256,7 +256,7 @@ public class UIInventoryController : MonoBehaviour
 
         inventoryData.seedInventoryData = seedInventoryData;
         inventoryData.fruitInventoryData = fruitInventoryData;
-        //SaveInventoryData(); // 데이터 저장!  
+        SaveInventoryData(); // 데이터 저장!  
     }
 
     public void SellItem(int count, int price, int itemType)
@@ -287,7 +287,7 @@ public class UIInventoryController : MonoBehaviour
 
         inventoryData.seedInventoryData = seedInventoryData;
         inventoryData.fruitInventoryData = fruitInventoryData;
-        //SaveInventoryData(); // 데이터 저장!  
+        SaveInventoryData(); // 데이터 저장!  
     }
 
     private void SetItemSellPanel(int itemIndex)

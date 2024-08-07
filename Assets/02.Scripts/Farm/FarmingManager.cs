@@ -225,12 +225,36 @@ public class FarmingManager : MonoBehaviour
 
     // 데이터 저장
     [Header("Save Data")]
-    private string farmingDataFilePath; // 농사 데이터 저장 경로..
+    private string filePath; // 데이터 저장 경로..
     
 
     public void SaveFarmingData()
     {
+        List<PosInt> farmingEnableZoneList = new List<PosInt>();
+        // 현재 농사 가능 구역의 셀을 모두 돌면서 위치 저장..
+        foreach (var item in farmEnableZoneTilemap.cellBounds.allPositionsWithin) 
+        {
+            PosInt tmp = new PosInt
+            {
+                x = item.x,
+                y = item.y,
+                z = item.z
+            };
+
+            farmingEnableZoneList.Add(tmp);
+        }
+
+
+        FarmingEnableZoneData farmingEnableZoneData = new FarmingEnableZoneData();
+        farmingEnableZoneData.farmingEnableZoneSaveData = farmingEnableZoneList;
+        string farmingEnableZoneDataJson = JsonUtility.ToJson(farmingEnableZoneData, true); // Json 으로 만들기..
+        Debug.Log("농사 가능 구역 데이터 정보: " + farmingEnableZoneDataJson);
+
+
+
+
         Dictionary<PosInt, SaveFarmingData> tempDic = new Dictionary<PosInt, SaveFarmingData>();
+
         foreach (var item in farmingData)
         {
             Debug.Log(item.Key + "저장할겁니다!!");
@@ -286,7 +310,8 @@ public class FarmingManager : MonoBehaviour
 
         // 외부 폴더에 접근해서 Json 파일 저장하기
         // Application.persistentDataPath: 특정 운영체제에서 앱이 사용할 수 있도록 허용한 경로
-        File.WriteAllText(farmingDataFilePath, json);
+        File.WriteAllText(filePath, json);
+        File.WriteAllText(filePath, farmingEnableZoneDataJson);
     }
 
 
@@ -305,6 +330,8 @@ public class FarmingManager : MonoBehaviour
             // 경로에 파일이 있으면 Json 을 다시 오브젝트로 변환한다.
             string json = File.ReadAllText(path);
             Debug.Log(json);
+
+
             Dictionary<PosInt, SaveFarmingData> tempDic = DictionaryJsonUtility.FromJson<PosInt, SaveFarmingData>(json);
             Debug.Log(tempDic.Count + "!!!!!!!!!!!!!!!!!!!!1");
 
@@ -370,12 +397,25 @@ public class FarmingManager : MonoBehaviour
 
     private void Awake()
     {
-        // 데이터 저장 경로 설정..
-        farmingDataFilePath = Path.Combine(Application.persistentDataPath, "FarmingData.json"); // 데이터 경로 설정..
-
+        filePath = Path.Combine(Application.persistentDataPath, "FarmingData.json"); // 데이터 경로 설정..
 
         farmingData = new Dictionary<Vector3Int, FarmingData>(); // 딕셔너리 생성
         clickPosition = Vector2.zero;
+
+
+
+        // 농사 가능 구역 위치 정보 데이터 가져옴..
+        string json = File.ReadAllText(filePath);
+        List<PosInt> farmingEnableZoneDataList = JsonUtility.FromJson<List<PosInt>>(json);
+        foreach (var item in farmingEnableZoneDataList)
+        {
+            // 저장해놓은 농사 가능 구역 위치를 모두 돌면서 타일맵에 타일이 없으면 새로 만들어주기..
+            Vector3Int tmp = new Vector3Int(item.x, item.y, item.z);
+            if (!farmEnableZoneTilemap.HasTile(tmp))
+            {
+                farmEnableZoneTilemap.SetTile(tmp, grassTile);
+            }
+        }
 
 
 
@@ -385,17 +425,6 @@ public class FarmingManager : MonoBehaviour
             if (!farmEnableZoneTilemap.HasTile(pos)) continue;
 
             SetFarmingData(pos); // FarmingData 타입 인스턴스의 정보를 세팅해주는 함수.
-        }
-
-
-
-        // 농사 땅 레벨 데이터 불러오기..
-        farmLevel = PlayerPrefs.GetInt("FarmLevel");
-        // 농사 땅 레벨 데이터를 불러온 다음에 레벨 데이터에 맞게끔 땅 업그레이드 해주기.. 
-        while (farmLevel > 0)
-        {
-            SetFarmSize();
-            farmLevel--;
         }
 
 
@@ -796,78 +825,6 @@ public class FarmingManager : MonoBehaviour
     }
 
 
-    public void SetFarmSize()
-    {
-        // Awake 함수에서 호출할 함수
-        // 불러온 농장 레벨에 따라 호출 횟수가 달라짐..
-
-        // 땅의 크기를 업그레이드 하는 함수
-
-        BoundsInt bounds = farmEnableZoneTilemap.cellBounds; // 농사 가능 구역 타일맵의 현재 크기 가져오기
-
-        // 새로 확장할 영역 좌표 계산 로직..
-        Debug.Log(bounds.xMin);
-
-        int minX = bounds.xMin - expansionSize;
-        int maxX = bounds.xMax + expansionSize;
-        int minY = bounds.yMin - expansionSize;
-        int maxY = bounds.yMax + expansionSize;
-
-        for (int i = minX; i < maxX; i++)
-        {
-            for (int j = minY; j < maxY; j++)
-            {
-                // 테투리 부분만 경계타일 까는 로직
-                // max 값은 1 이 더 더해져있기 때문에 이를 고려해서 조건식 짜야함.
-                // 그래서 maxX, maxY 일 때는 i, j 에 1 을 더해줌..
-                if (i == minX || i + 1 == maxX)
-                    farmTilemap.SetTile(new Vector3Int(i, j, 0), grassTile);
-                if (j == minY || j + 1 == maxY)
-                    farmTilemap.SetTile(new Vector3Int(i, j, 0), grassTile);
-
-                Vector3Int pos = new Vector3Int(i, j, 0);
-
-                // 농사 가능 구역 타일맵에 타일이 없으면 진입
-                if (!farmEnableZoneTilemap.HasTile(pos))
-                {
-                    farmEnableZoneTilemap.SetTile(pos, grassTile);
-                }
-            }
-        }
-
-
-        // 경계 타일맵 깔기 위한 로직
-        bounds = farmEnableZoneTilemap.cellBounds; // 업데이트된 농사 가능 구역 타일맵의 현재 크기 가져오기
-        minX = bounds.xMin - 1;
-        maxX = bounds.xMax + 1;
-        minY = bounds.yMin - 1;
-        maxY = bounds.yMax + 1;
-
-        Debug.Log("maxX: " + maxX + " maxY: " + maxY);
-        Debug.Log("minX: " + minX + " minY: " + minY);
-
-        for (int i = minX; i < maxX; i++)
-        {
-            for (int j = minY; j < maxY; j++)
-            {
-                // 테투리 부분만 경계타일 까는 로직
-                // max 값은 1 이 더 더해져있기 때문에 이를 고려해서 조건식 짜야함.
-                // 그래서 maxX, maxY 일 때는 i, j 에 1 을 더해줌..
-                if (i == minX || i + 1 == maxX)
-                    farmTilemap.SetTile(new Vector3Int(i, j, 0), borderTile);
-                if (j == minY || j + 1 == maxY)
-                    farmTilemap.SetTile(new Vector3Int(i, j, 0), borderTile);
-            }
-        }
-
-
-        // 농사 가능 구역 타일맵의 타일들을 모두 돌면서..
-        foreach (Vector3Int pos in farmEnableZoneTilemap.cellBounds.allPositionsWithin)
-        {
-            SetFarmingData(pos); // 새로운 농사 가능 구역의 타일 정보를 딕셔너리에 저장..
-        }
-    }
-
     public void UpgradeFarmSize()
     {
         // 일단 임시로 만원으로 해놨다..
@@ -943,9 +900,7 @@ public class FarmingManager : MonoBehaviour
             SetFarmingData(pos); // 새로운 농사 가능 구역의 타일 정보를 딕셔너리에 저장..
         }
 
-
         farmLevel++; // 농장 레벨 증가
-        PlayerPrefs.SetInt("FarmLevel", farmLevel); // 농장 레벨 저장..
         Debug.Log("농장을 업그레이드 했다!");
     }
 }
