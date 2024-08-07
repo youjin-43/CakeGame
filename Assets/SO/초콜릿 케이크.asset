@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c47a622da81b4d44b2592a6db0b8ac8, type: 3}
+  m_Name: "\uCD08\uCF5C\uB9BF \uCF00\uC774\uD06C"
+  m_EditorClassIdentifier: 
+  <IsStackable>k__BackingField: 1
+  <MaxStackSize>k__BackingField: 64
+  <Name>k__BackingField: "\uCD08\uCF5C\uB9BF \uCF00\uC774\uD06C"
+  <Description>k__BackingField: 
+  <itemImage>k__BackingField: {fileID: 346917882, guid: 0d67431d64dca4e40b901dedb5732a88, type: 3}
+  itemType: 3
+  cakeCost: 150
+  bakeTime: 3
+  cakePrice: 700
+  materialType: 01000000
+  materialCount: 01000000
+  isLocked: 1
+  cakeIdx: 1
