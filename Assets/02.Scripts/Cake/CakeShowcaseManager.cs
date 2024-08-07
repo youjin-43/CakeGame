@@ -76,7 +76,7 @@ public class CakeShowcaseManager : MonoBehaviour
         cakeManager.DecreaseCakeCount(index);
         SetCake(cakeShowcaseIndex);
 
-        gameObject.GetComponent<CakeMakeManager>().DisableSprites(false);
+        cakeManager.DisableSprites(false);
         cakeShowcaseMenu.SetActive(false);
 
         UpdateUI();
@@ -84,7 +84,7 @@ public class CakeShowcaseManager : MonoBehaviour
 
     public void OpenPanel(int index)
     {
-        gameObject.GetComponent<CakeMakeManager>().DisableSprites(true);
+        cakeManager.DisableSprites(true);
         cakeShowcasePlace.SetActive(true);
         cakeShowcaseIndex = index;
         UpdateUI();
@@ -96,7 +96,7 @@ public class CakeShowcaseManager : MonoBehaviour
         for (int i = 0; i < cakePlaceNum; i++)
         {
             cakeShowcase.cakeImages[i].SetActive(cakeShowcase.isCakeSelected[i]);
-            cakeShowcase.cakeImages[i].GetComponent<SpriteRenderer>().sprite = cakeManager.cakeDataList[cakeShowcase.cakeType[i]].cakeImage;
+            cakeShowcase.cakeImages[i].GetComponent<SpriteRenderer>().sprite = cakeManager.cakeDataList[cakeShowcase.cakeType[i]].itemImage;
         }
     }
 
@@ -124,7 +124,7 @@ public class CakeShowcaseManager : MonoBehaviour
             CakeShowcase cakeShowcase = cakeShowcases[cakeShowcaseIndex].GetComponent<CakeShowcase>();
             placeButton.SetActive(cakeShowcase.isCakeSelected[i]);
             Image placeButtonImage = placeButton.GetComponent<Image>();
-            placeButtonImage.sprite = cakeManager.cakeDataList[cakeShowcase.cakeType[i]].cakeImage;
+            placeButtonImage.sprite = cakeManager.cakeDataList[cakeShowcase.cakeType[i]].itemImage;
         }
     }
 }
