@@ -1,13 +1,10 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-using Newtonsoft.Json;
 
 public class CakeManager : MonoBehaviour
 {
-    public GameObject spritesToDisable;
     public List<CakeSO> cakeDataList; // Unity Editor에서 설정
-    public int[] cakeCounts; // 케이크 개수를 관리하는 배열
     private string filePath;
     private int unlockedIndex = 0;
 
@@ -26,31 +23,8 @@ public class CakeManager : MonoBehaviour
         }
     }
 
-    public void CloseMenu(GameObject menu)
-    {
-        DisableSprites(false);
-        menu.SetActive(false);
-    }
-
-    public void DisableSprites(bool isActive)
-    {
-        for (int i = 0; i < spritesToDisable.transform.childCount; i++)
-        {
-            for (int j = 0; j < spritesToDisable.transform.GetChild(i).childCount; j++)
-            {
-                Collider2D collider = spritesToDisable.transform.GetChild(i).GetChild(j).GetComponent<Collider2D>();
-                if (collider != null)
-                {
-                    collider.enabled = !isActive;
-                }
-            }
-        }
-    }
-
     void InitializeCakeStatus()
     {
-        cakeCounts = new int[cakeDataList.Count];
-
         foreach (var cakeData in cakeDataList)
         {
             if (cakeData.cakeIdx == 0)
@@ -61,6 +35,7 @@ public class CakeManager : MonoBehaviour
             {
                 cakeData.isLocked = true;
             }
+            cakeData.cakeCount = 0;
         }
     }
 
@@ -79,53 +54,51 @@ public class CakeManager : MonoBehaviour
     {
         if (index >= 0 && index < cakeDataList.Count)
         {
-            cakeCounts[index]++;
-            Debug.Log("케이크 " + index + " 보유 수: " + cakeCounts[index]);
+            cakeDataList[index].cakeCount++;
+            Debug.Log("케이크 " + index + " 보유 수: " + cakeDataList[index].cakeCount);
             SaveCakeData();
         }
     }
 
     public void DecreaseCakeCount(int index)
     {
-        if (index >= 0 && index < cakeDataList.Count && cakeCounts[index] > 0)
+        if (index >= 0 && index < cakeDataList.Count && cakeDataList[index].cakeCount > 0)
         {
-            cakeCounts[index]--;
-            Debug.Log("케이크 " + index + " 보유 수: " + cakeCounts[index]);
+            cakeDataList[index].cakeCount--;
+            Debug.Log("케이크 " + index + " 보유 수: " + cakeDataList[index].cakeCount);
             SaveCakeData();
         }
     }
 
-    public void UnlockCake(int index)
+    public void UnlockCake()
     {
-        if (index >= 0 && index < cakeDataList.Count && cakeDataList[index].isLocked)
+        if (unlockedIndex + 1 < cakeDataList.Count && cakeDataList[unlockedIndex + 1].isLocked)
         {
-            cakeDataList[index].isLocked = false;
+            cakeDataList[unlockedIndex + 1].isLocked = false;
+            unlockedIndex++;
             SaveCakeData();
-            Debug.Log("케이크 잠금 해제됨: " + cakeDataList[index].Name);
+            Debug.Log("케이크 잠금 해제됨: " + cakeDataList[unlockedIndex].cakeName);
         }
         else
         {
-            Debug.LogWarning("잠금 해제 실패: 유효하지 않은 인덱스 또는 이미 잠금 해제된 케이크.");
+            Debug.LogWarning("더 이상 잠금 해제할 케이크가 없습니다.");
         }
     }
 
     private void SaveCakeData()
     {
         List<CakeDataSerializable> serializableList = new List<CakeDataSerializable>();
-        for (int i = 0; i < cakeDataList.Count; i++)
+        foreach (var cakeData in cakeDataList)
         {
-            CakeSO cakeData = cakeDataList[i];
             CakeDataSerializable serializable = new CakeDataSerializable
             {
-                cakeName = cakeData.name,
+                cakeName = cakeData.cakeName,
                 cakeCost = cakeData.cakeCost,
                 bakeTime = cakeData.bakeTime,
                 cakePrice = cakeData.cakePrice,
-                isLocked = cakeData.isLocked,
                 cakeIdx = cakeData.cakeIdx,
-                cakeCount = cakeCounts[i],
-                materialType = cakeData.materialType,
-                materialCount = cakeData.materialCount
+                cakeCount = cakeData.cakeCount,
+                isLocked = cakeData.isLocked
             };
             serializableList.Add(serializable);
         }
@@ -136,25 +109,16 @@ public class CakeManager : MonoBehaviour
             unlockedIndex = this.unlockedIndex
         };
 
-        string json = JsonConvert.SerializeObject(dataSave, Formatting.Indented);
+        string json = JsonUtility.ToJson(dataSave, true);
         File.WriteAllText(filePath, json);
     }
 
     private void LoadCakeData()
     {
-        // Initialize cake data from ScriptableObject
-        cakeCounts = new int[cakeDataList.Count];
-        for (int i = 0; i < cakeDataList.Count; i++)
-        {
-            CakeSO cakeData = cakeDataList[i];
-            cakeCounts[i] = 0; // 초기 케이크 개수는 0으로 설정
-            cakeData.isLocked = (cakeData.cakeIdx != 0); // 첫 번째 케이크만 잠금 해제
-        }
-
         if (File.Exists(filePath))
         {
             string json = File.ReadAllText(filePath);
-            CakeDataSave dataSave = JsonConvert.DeserializeObject<CakeDataSave>(json);
+            CakeDataSave dataSave = JsonUtility.FromJson<CakeDataSave>(json);
             List<CakeDataSerializable> serializableList = dataSave.cakeDataList;
 
             foreach (var serializable in serializableList)
@@ -162,49 +126,13 @@ public class CakeManager : MonoBehaviour
                 CakeSO cakeData = cakeDataList.Find(cake => cake.cakeIdx == serializable.cakeIdx);
                 if (cakeData != null)
                 {
-                    serializable.cakeName = cakeData.name;
-                    serializable.cakeCost = cakeData.cakeCost;
-                    serializable.bakeTime = cakeData.bakeTime;
-                    serializable.cakePrice = cakeData.cakePrice;
-                    serializable.isLocked = cakeData.isLocked;
-                    serializable.cakeIdx = cakeData.cakeIdx;
-                    serializable.materialType = cakeData.materialType;
-                    serializable.materialCount = cakeData.materialCount;
-                    serializable.cakeCount = cakeCounts[cakeData.cakeIdx];
+                    cakeData.cakeCount = serializable.cakeCount;
+                    cakeData.isLocked = serializable.isLocked;
                 }
             }
 
             this.unlockedIndex = dataSave.unlockedIndex;
         }
-        else
-        {
-            // JSON 파일이 없을 때 기본값으로 초기화하고 저장
-            InitializeCakeStatus();
-            SaveCakeData();
-        }
-    }
-
-    public void AddCakeData(CakeSO cakeSO)
-    {
-        if (cakeDataList == null)
-        {
-            cakeDataList = new List<CakeSO>();
-        }
-
-        if (!cakeDataList.Contains(cakeSO))
-        {
-            cakeDataList.Add(cakeSO);
-            Debug.Log($"Added {cakeSO.Name} to CakeDataList");
-        }
-    }
-
-    public void ResetCakeData(){
-        cakeDataList = new List<CakeSO>();
-    }
-
-    private void OnApplicationQuit()
-    {
-        SaveCakeData();
     }
 
     [System.Serializable]
@@ -214,11 +142,9 @@ public class CakeManager : MonoBehaviour
         public int cakeCost;
         public int bakeTime;
         public int cakePrice;
-        public int[] materialType;
-        public int[] materialCount;
-        public bool isLocked;
         public int cakeIdx;
         public int cakeCount;
+        public bool isLocked;
     }
 
     [System.Serializable]
