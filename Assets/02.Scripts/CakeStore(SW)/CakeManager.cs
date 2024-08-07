@@ -170,7 +170,7 @@ public class CakeManager : MonoBehaviour
                     serializable.cakeIdx = cakeData.cakeIdx;
                     serializable.materialType = cakeData.materialType;
                     serializable.materialCount = cakeData.materialCount;
-                    serializable.cakeCount = cakeCounts[cakeData.cakeIdx];
+                    cakeCounts[cakeData.cakeIdx] = serializable.cakeCount;
                 }
             }
 

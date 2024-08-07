@@ -60,7 +60,7 @@ public class CakeShowcaseManager : MonoBehaviour
     void IsClickedMenuSelect(int index)
     {
         CakeShowcase cakeShowcase = cakeShowcases[cakeShowcaseIndex].GetComponent<CakeShowcase>();
-        if (cakeManager.cakeDataList[index].cakeCount == 0)
+        if (cakeManager.cakeCounts[index] == 0)
         {
             Debug.Log("케이크 수가 부족합니다.");
             return;
@@ -112,7 +112,7 @@ public class CakeShowcaseManager : MonoBehaviour
     {
         for (int i = 0; i < scrollViewContent.transform.childCount; i++)
         {
-            int cakeCount = cakeManager.cakeDataList[i].cakeCount;
+            int cakeCount = cakeManager.cakeCounts[i];
             Transform panel = scrollViewContent.transform.GetChild(i);
             panel.GetChild(cakeCountNum).GetComponent<Text>().text = "보유 수: " + cakeCount;
             panel.GetChild(lockedNum).gameObject.SetActive(cakeManager.cakeDataList[i].isLocked);
