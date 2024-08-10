@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement; //씬 관련 라이브러리 
 
 public class UIManager : MonoBehaviour
 {
@@ -32,20 +33,39 @@ public class UIManager : MonoBehaviour
 
 
     [Header("About UI")]
-    public GameObject runningOverBoard; //가게 운영이 끝났을때 활성화 할 오브젝트 
-    public Text runningTimeText;//현재 시간을 표시할 텍스트 컴포넌트
-    public Text seasonText;
+    public GameObject runningOverBoard; //가게 운영이 끝났을때 활성화 할 오브젝트
+
     public Text dateText;
     public Text moneyText;//현재 돈을 표시할 텍스트 컴포넌트
-    public Text popularityText;//현재 돈을 표시할 텍스트 컴포넌트
     public Text levelText;
 
     public GameObject RunStartButton; //가게 운영이 끝났을때 활성화 할 오브젝트
 
+    [Header("About EXP")]
+    public GameObject ExpBar;
+
+
+    
     private void Start()
     {
-        SetDatainUI();
-        //setExpUI();
+
+        
+    }
+
+    public void setUIObjects()
+    {
+        Debug.Log("SetDatainUI 실행됨 ");
+
+        runningOverBoard = GameObject.Find("EndBoard");
+        if(runningOverBoard != null) runningOverBoard.gameObject.SetActive(false);
+
+        dateText = GameObject.Find("DateText").GetComponent<Text>();
+        moneyText = GameObject.Find("MoneyText").GetComponent<Text>();
+        levelText = GameObject.Find("LevelText").GetComponent<Text>();
+
+        RunStartButton = GameObject.Find("RunStartButoon");
+
+        ExpBar = GameObject.Find("ExpBar");
     }
 
     public void SetDatainUI()
@@ -54,5 +74,10 @@ public class UIManager : MonoBehaviour
         dateText.text = GameManager.instance.date.ToString();
         moneyText.text = GameManager.instance.money.ToString();
         levelText.text = ExpManager.instance.level.ToString();
+    }
+
+    public void SetExpBarUI()
+    {
+        ExpBar.GetComponent<Image>().fillAmount = ExpManager.instance.exp / ExpManager.instance.exp_max;
     }
 }
