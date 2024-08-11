@@ -141,13 +141,13 @@ public class CakeSOGeneratorEditor : EditorWindow
                 var materialIdxList = entry["materialIdx"].Split('/');
                 var materialCountList = entry["materialCount"].Split('/');
 
-                cake.materialType = new int[materialIdxList.Length];
-                cake.materialCount = new int[materialCountList.Length];
+                cake.materialIdxs = new int[materialIdxList.Length];
+                cake.materialCounts = new int[materialCountList.Length];
 
                 for (int j = 0; j < materialIdxList.Length; j++)
                 {
-                    cake.materialType[j] = int.Parse(materialIdxList[j]);
-                    cake.materialCount[j] = int.Parse(materialCountList[j]);
+                    cake.materialIdxs[j] = int.Parse(materialIdxList[j]);
+                    cake.materialCounts[j] = int.Parse(materialCountList[j]);
                 }
 
                 string assetPath = $"{outputFolder}/{cake.Name}.asset";
