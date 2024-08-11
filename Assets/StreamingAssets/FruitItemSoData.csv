@@ -1,0 +1,6 @@
+IsStackable,MaxStackSize,Name,Description,itemImage,itemType,fruitPrice,fruitIdx
+TRUE,64,사과,맛있는 사과다.,,1,1000,0
+TRUE,64,바나나,맛있는 바나나다.,,1,1000,1
+TRUE,64,체리,맛있는 체리다.,,1,1000,2
+TRUE,64,오렌지,맛있는 오렌지다.,,1,1000,3
+TRUE,64,딸기,맛있는 딸기다.,,1,1000,4
