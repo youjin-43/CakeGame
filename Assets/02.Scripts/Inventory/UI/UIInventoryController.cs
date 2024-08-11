@@ -50,6 +50,15 @@ public class UIInventoryController : MonoBehaviour
     public static UIInventoryController instance; // 싱글톤 이용하기 위한 변수..
 
 
+
+    // 과일의 개수를 이용하기 위해서 과일의 개수를 저장할 배열 선언
+    [Header("Fruit Count")]
+    public int[] fruitCount;
+    // 아이템 스크립터블 오브젝트를 저장해놓기..
+    public FruitItemSO[] fruitItems; // [0]: 사과, [1]: 바나나, [2]: 체리, [3]: 오렌지, [4]: 딸기
+
+
+
     // 농장의 씨앗, 과일 컨테이너 게임 오브젝트 참조
     [Header("Farm GameObject")]
     [SerializeField]
@@ -125,10 +134,11 @@ public class UIInventoryController : MonoBehaviour
 
 
         filePath = Path.Combine(Application.persistentDataPath, "InventoryData.json"); // 데이터 경로 설정..
-        //LoadInventoryData();
 
-        //PrepareUI();
-        //PrepareInventoryData();
+
+        fruitCount = new int[fruitItems.Length];
+        // 시작할 때 한번 과일 컨테이너 개수 반영한다음 시작..
+        SetFruitInventoryToFruitContainer(); // 현재 인벤토리의 과일 개수를 과일 개수 저장하는 배열에 반영..
     }
 
 
@@ -245,6 +255,7 @@ public class UIInventoryController : MonoBehaviour
             case 1:
                 // 과일
                 fruitInventoryData.MinusItem(item);
+                SetFruitInventoryToFruitContainer(); // 현재 인벤토리의 과일 개수를 과일 개수 저장하는 배열에 반영..
                 break;
             case 2:
                 // 보석
@@ -269,6 +280,7 @@ public class UIInventoryController : MonoBehaviour
                 // 현재 마우스로 클릭한 아이템의 인덱스 요소를 판매하려는 아이템의 수만큼 감소시키기.. 
                 fruitInventoryData.MinusItemAt(inventoryUI.currentMouseClickIndex, count);
                 GameManager.instance.money += price; // 판매 가격만큼 돈을 더해줌..
+                SetFruitInventoryToFruitContainer(); // 현재 인벤토리의 과일 개수를 과일 개수 저장하는 배열에 반영..
 
                 break;
             case 2:
@@ -358,6 +370,37 @@ public class UIInventoryController : MonoBehaviour
                 break;
         }
     }
+
+    public void ResetFruitContainer()
+    {
+        // 모든 요소의 값으르 0으로 리셋해주기..
+        for (int i = 0; i < fruitCount.Length; i++)
+        {
+            fruitCount[i] = 0;
+        }
+    }
+
+    public void SetFruitContainer(Dictionary<int, InventoryItem> curInventory)
+    {
+        // curInventory 에서 키값은, 인벤토리 속에서 해당 아이템의 인덱스 번호임
+        // 현재 인벤토리의 내용을 가져올 때 비어있는 아이템 칸은 제외하고 가져옴.
+        // 즉, 인벤토리 속 비어있는 아이템 칸이 있다면 가져온 아이템 딕셔너리의 내용은 [0]: 사과, [2]: 바나나, [5]: 오렌지 이럴 가능성이 있음
+        // 그래서 key 가 1, 2, 3, 4, 5... 이런식으로 순차적으로 온다는 보장이 없으므로 그냥 키값들을 가져와서 반복문 도는 것..
+        foreach (int idx in curInventory.Keys)
+        {
+            fruitCount[((FruitItemSO)(curInventory[idx].item)).fruitIdx] += curInventory[idx].quantity; // 해당 아이템의 아이템 인덱스에 맞는 요소의 값을 증가시켜줌..
+        }
+    }
+
+    private void SetFruitInventoryToFruitContainer()
+    {
+        // 인벤토리 매니저의 과일 카운트 배열을 관리하기 위한 함수..
+
+        Dictionary<int, InventoryItem> fruitInventory;
+        fruitInventory = fruitInventoryData.GetCurrentInventoryState();
+        SetFruitContainer(fruitInventory);
+    }
+
 
     private void SetOpenSellButton()
     {
@@ -491,6 +534,7 @@ public class UIInventoryController : MonoBehaviour
             inventoryUI.UpdateDescription(itemIndex, item.itemImage, item.Name, item.Description);
         }
     }
+
 
     private void HandleSwapItems(int index1, int index2)
     {

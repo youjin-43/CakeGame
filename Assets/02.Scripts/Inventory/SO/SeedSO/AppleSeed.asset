@@ -17,6 +17,8 @@ MonoBehaviour:
   <Name>k__BackingField: "\uC0AC\uACFC\uC528\uC557"
   <Description>k__BackingField: "\uC0AC\uACFC\uC528\uC557\uC774\uB2E4."
   <itemImage>k__BackingField: {fileID: 21300000, guid: d6672a8cafca87e4c9172142c61cbb4a, type: 3}
+  itemType: 0
   seedPrice: 100
   growTime: 10
   seedIdx: 0
+  growDay: 2

@@ -17,4 +17,9 @@ public class SeedItemSO : ItemSO
 
     [SerializeField]
     public int seedIdx; // 씨앗 인덱스
+
+
+    // 이제 growTime 안 쓰고 growDay 쓸 것..
+    [SerializeField]
+    public int growDay; // 다 자라는데 걸리는 일수
 }
