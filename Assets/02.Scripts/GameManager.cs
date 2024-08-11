@@ -24,6 +24,8 @@ public class GameManager : MonoBehaviour
             Debug.Log("게임매니저가 생성됐습니다");
             DontDestroyOnLoad(gameObject); // 씬이 변경되어도 삭제되지 않도록 s
 
+            SceneManager.sceneLoaded += OnSceneLoaded; // 씬이 로딩될 때마다 함수를 호출하기위해 
+
             //이전 데이터 가져오기
             Debug.Log("게임매니저에서 기본 데이터를 로드함");
             season = (Seasons)PlayerPrefs.GetInt("season");
@@ -82,6 +84,17 @@ public class GameManager : MonoBehaviour
             ExpManager.instance.getExp(10);
         }
 
+    }
+
+    // 이 함수는 매 씬마다 호출됨.
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        Debug.Log("OnSceneLoaded : " + scene.name);
+        Debug.Log("mode : " + mode);
+
+        UIManager.instance.setUIObjects();
+        UIManager.instance.SetDatainUI();
+        UIManager.instance.SetExpBarUI();
     }
 
 
