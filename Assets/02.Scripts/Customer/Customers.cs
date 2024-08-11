@@ -4,24 +4,24 @@ using UnityEngine;
 
 public class Customers : MonoBehaviour
 {
-    private List<Vector2> pathPoints;   // 이동 경로 포인트들
-    private Vector2 pathLine;           // 줄 서는 최종 위치
+    private List<Vector2> pathPoints;   // 이동 경로
+    private Vector2 pathLine;
     private float moveSpeed;            // 이동 속도
-    private float lineSpacing;          // 줄 서기 간격
+    private float lineSpacing;          // 줄서기 간격
     private float sideSpacing;          // 옆 간격
-    private int currentPointIndex = 0;  // 현재 경로 인덱스
-    private Vector2 targetPosition;     // 현재 목표 위치
-    private bool isMoving = true;       // 이동 중인지 여부
-    private CustomersManager customersManager;  // 고객 매니저 참조
-    private Transform frontCustomer, firstCustomer;  // 앞 고객, 첫 고객 참조
-    private LineType lineType;          // 현재 줄 서기 상태
+    private int currentPointIndex = 0;
+    private Vector2 targetPosition;
+    private bool isMoving = true;
+    private CustomersManager customersManager;
+    private Transform frontCustomer, firstCustomer;
+    private LineType lineType;
 
     enum LineType
     {
-        None,    // 줄 서지 않음
-        Start,   // 줄 서기 시작
-        During,  // 줄 서는 중
-        End      // 줄 서기 완료
+        None,
+        Start,
+        During,
+        End
     }
 
     public void Initialize(List<Vector2> pathPoints, Vector2 pathLine, float moveSpeed, float lineSpacing, float sideSpacing, CustomersManager manager)
@@ -33,7 +33,6 @@ public class Customers : MonoBehaviour
         this.sideSpacing = sideSpacing;
         this.customersManager = manager;
 
-        // 초기 목표 위치 설정
         if (pathPoints.Count > 0)
         {
             targetPosition = pathPoints[currentPointIndex];
@@ -44,11 +43,10 @@ public class Customers : MonoBehaviour
     {
         if (isMoving)
         {
-            MoveAlongPath();  // 경로를 따라 이동
+            MoveAlongPath();
         }
         else
         {
-            // 현재 줄 서기 상태에 따라 동작
             switch (lineType)
             {
                 case LineType.Start:
@@ -66,14 +64,14 @@ public class Customers : MonoBehaviour
 
     void MoveAlongPath()
     {
-        // 목표 위치에 도달하지 않은 경우 이동
         if (Vector2.Distance(transform.position, targetPosition) > 0.01f)
         {
+            // 현재 위치에서 타겟 위치로 부드럽게 이동
             transform.position = Vector2.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
         }
         else
         {
-            // 다음 경로 포인트로 전환
+            // 다음 지점으로 타겟 변경
             currentPointIndex++;
             if (currentPointIndex < pathPoints.Count)
             {
@@ -81,7 +79,7 @@ public class Customers : MonoBehaviour
             }
             else
             {
-                // 마지막 경로에 도달한 경우 줄 서기 시작
+
                 isMoving = false;
                 lineType = LineType.Start;
                 frontCustomer = customersManager.GetFrontCustomer(this);
@@ -94,28 +92,26 @@ public class Customers : MonoBehaviour
     {
         if (frontCustomer != null)
         {
-            // 첫 고객의 옆으로 이동 위치 계산 (아이소매트릭 환경을 고려)
-            Vector2 firstPosition = (Vector2)firstCustomer.position + new Vector2(2 * sideSpacing, -sideSpacing);
+            // 옆으로 이동하는 위치를 계산
+            Vector2 firstPosition = (Vector2)firstCustomer.position + ((2*Vector2.right+Vector2.down) * sideSpacing);
             if (Vector2.Distance(transform.position, firstPosition) > 0.01f)
             {
                 transform.position = Vector2.MoveTowards(transform.position, firstPosition, moveSpeed * Time.deltaTime);
             }
             else
             {
-                lineType = LineType.During;  // 옆으로 이동 완료 후 줄 서는 중으로 전환
+                // 옆으로 이동한 후, 줄 서는 중으로 상태 변경
+                lineType = LineType.During;
             }
         }
         else
         {
-            // 첫 고객의 경우 최종 줄 서는 위치로 이동
             if (Vector2.Distance(transform.position, pathLine) > 0.01f)
             {
                 transform.position = Vector2.MoveTowards(transform.position, pathLine, moveSpeed * Time.deltaTime);
             }
-            else
-            {
-                lineType = LineType.During;  // 줄 서는 중 상태로 전환
-            }
+            // 줄의 첫 번째 고객인 경우 바로 During으로 넘어갑니다.
+            else lineType = LineType.During;
         }
     }
 
@@ -123,20 +119,22 @@ public class Customers : MonoBehaviour
     {
         if (frontCustomer != null)
         {
-            // 앞 고객의 뒤로 이동 위치 계산
-            Vector2 lastPosition = (Vector2)frontCustomer.position + new Vector2(2 * sideSpacing, -sideSpacing) + new Vector2(2 * lineSpacing, sideSpacing);
+            // 줄 서는 위치를 계산
+            Vector2 EndPosition = (Vector2)frontCustomer.position + ((2*Vector2.right+Vector2.up) * lineSpacing); // 앞 Customers 위치에서 간격을 둠
+            Vector2 lastPosition = EndPosition + ((2*Vector2.right+Vector2.down) * sideSpacing);
             if (Vector2.Distance(transform.position, lastPosition) > 0.01f)
             {
                 transform.position = Vector2.MoveTowards(transform.position, lastPosition, moveSpeed * Time.deltaTime);
             }
             else
             {
-                lineType = LineType.End;  // 줄 서기 완료 상태로 전환
+                // 줄 서기 완료 후 End 상태로 변경
+                lineType = LineType.End;
             }
         }
         else
         {
-            lineType = LineType.End;  // 첫 고객은 바로 줄 서기 완료
+            lineType = LineType.End; // 첫 번째 고객은 바로 줄 서기를 완료
         }
     }
 
@@ -144,24 +142,21 @@ public class Customers : MonoBehaviour
     {
         if (frontCustomer != null)
         {
-            // 줄 서기 완료 후 대기 위치 유지
-            Vector2 endPosition = (Vector2)frontCustomer.position + new Vector2(2 * sideSpacing, -sideSpacing) + new Vector2(2 * lineSpacing, sideSpacing);
-            if (Vector2.Distance(transform.position, endPosition) > 0.01f)
+            Vector2 EndPosition = (Vector2)frontCustomer.position + ((2*Vector2.right+Vector2.up) * lineSpacing); // 앞 Customers 위치에서 간격을 둠
+            if (Vector2.Distance(transform.position, EndPosition) > 0.01f)
             {
-                transform.position = Vector2.MoveTowards(transform.position, endPosition, moveSpeed * Time.deltaTime);
-            }
+                transform.position = Vector2.MoveTowards(transform.position, EndPosition, moveSpeed * Time.deltaTime);
+            }// 줄 서기 완료 후 추가적인 동작을 하지 않음
             else
             {
-                lineType = LineType.None;  // 줄 서기 동작 종료
+                lineType = LineType.None;
             }
+
         }
         else
         {
-            lineType = LineType.None;  // 첫 고객의 경우 바로 종료
+            // 줄의 첫 번째 고객인 경우 바로 During으로 넘어갑니다.
+            lineType = LineType.None;
         }
-    }
-    void RandomMove()
-    {
-        
     }
 }
