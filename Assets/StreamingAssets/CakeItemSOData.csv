@@ -1,0 +1,6 @@
+IsStackable,MaxStackSize,Name,Description,itemImage,itemType,cakeCost,bakeTime,cakePrice,materialIdx,materialCount,isLock,cakeIdx
+TRUE,64,딸기 케이크,,Assets/04.Images/StrawberryCake.png,3,100,3,500,0/1,1/1,FALSE,0
+TRUE,64,초콜릿 케이크,,Assets/04.Images/ChocolateCake.png,3,150,3,700,1,1,TRUE,1
+TRUE,64,티라미수,,Assets/04.Images/Tiramisu.png,3,200,3,1000,2,1,TRUE,2
+TRUE,64,치즈 케이크,,Assets/04.Images/CheeseCake.png,3,300,3,1500,3,1,TRUE,3
+TRUE,64,레인보우 케이크,,Assets/04.Images/RainbowCake.png,3,400,3,2000,4,1,TRUE,4
