@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class UIInventoryItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IPointerClickHandler, IDropHandler, IDragHandler
+public class UIInventoryItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IPointerClickHandler, IDropHandler
 {
     [SerializeField]
     public Image itemImage;
@@ -111,41 +111,6 @@ public class UIInventoryItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        // 모든 터치는 고유의 아이디를 갖는다고 함.
-        // 즉, 0보다 크거나 같으면 터치니까 조건문으로 터치인지 아닌지 판별
-        if (eventData.pointerId >= 0) 
-        {
-            Debug.Log("Touch!");
-            touchCount++;
-
-            if (touchCount >= 2)
-            {
-                // 아이템을 파는 뒷면을 보여주는 로직이 들어갈 것..
-
-                touchCount = 0;
-            }
-            Debug.Log(touchCount);
-        } else
-        {
-            // 이건 마우스로 일단 확인하기 위함..
-            Debug.Log("Touch!");
-            touchCount++;
-            Debug.Log(touchCount);
-
-            if (touchCount >= 2)
-            {
-                // 아이템을 파는 뒷면을 보여주는 로직이 들어갈 것..
-
-                touchCount = 0;
-            }
-            Debug.Log(touchCount);
-        }
-
         OnItemClicked?.Invoke(this);
-    }
-
-    public void OnDrag(PointerEventData eventData)
-    {
-        Debug.Log("움직이는 중~~");
     }
 }

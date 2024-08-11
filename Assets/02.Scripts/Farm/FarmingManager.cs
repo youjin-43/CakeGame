@@ -8,18 +8,11 @@ using System.Net;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using static UnityEditor.PlayerSettings;
 
-
-
-[Serializable]
-public class FarmingEnableZoneData
-{
-    // 농사 가능 구역의 위치를 저장할 리스트..
-    public List<PosInt> farmingEnableZoneSaveData;
-}
 
 
 
@@ -87,7 +80,6 @@ public static class DictionaryJsonUtility
             DataDictionary<TKey, TValue> dictionaryData = dataList[i];
 
             returnDictionary.Add(dictionaryData.Key, dictionaryData.Value);
-            //returnDictionary[dictionaryData.Key] = dictionaryData.Value;
         }
 
         return returnDictionary;
@@ -128,14 +120,17 @@ public class SaveFarmingData
     [SerializeField]
     public int seedIdx; // 씨앗 인덱스 저장(종류 저장하기 위함)..
     [SerializeField]
-    public float currentTime; // 씨앗을 심은 뒤로 흐른 시간 저장
-    [SerializeField]
     public bool isGrown; // 씨앗이 다 자랐는지 안자랐는지 여부 저장..
+
+
+    [SerializeField]
+    // 씨앗 마다 자라기까지 걸리는 일수가 있어서 다르게 자라도록?_?
+    public int curDay; // 씨앗 심고 지난 시간(씬 전환 될 때마다 1씩 증가하는 식으로 하면 될 것 같다)
 
 
     public void PrintData()
     {
-        Debug.Log(seedOnTile + " " + plowEnableState + " " + plantEnableState + " " + harvestEnableState + " " + currentState + " " + seedIdx + " " + currentTime + " " + isGrown);
+        Debug.Log("씨앗 있어여?: " + seedOnTile + " " + plowEnableState + " " + plantEnableState + " " + harvestEnableState + " " + currentState + " " + seedIdx + ", 일수: " + curDay + " " + isGrown);
     }
 }
 
@@ -144,9 +139,6 @@ public class SaveFarmingData
 [Serializable]
 class FarmingData
 {
-    [SerializeField]
-    public Seed seed; // 타일이 가지는 씨앗 정보
-    //public bool seedOnTile; // 타일 위에 씨앗이 있는지 여부 확인용(씨앗이 있으면 밭을 갈 수 없음)
     [SerializeField]
     public bool plowEnableState; // 밭을 갈 수 있는 상태인지 여부 확인용(밭이 안 갈린 상태)
     [SerializeField]
@@ -165,6 +157,21 @@ class FarmingData
 
     [SerializeField]
     public string currentState = "None"; // 현재 상태(초기에는 아무것도 안 한 상태니까 None 으로.. -> plow: 밭 갈린 상태, plant: 씨앗 심은 상태, harvest: 다 자란 상태)
+
+
+
+    [SerializeField]
+    public int seedIdx = -1; // 그러면 이제 씨앗 인덱스도 저장해야 할듯(아무것도 안 심어져 있는 상태는 -1을 값으로 가지도록)..
+    [SerializeField]
+    public bool seedOnTile; // 그럼 이제 그냥 Seed 클래스 사용하지 말고 bool 값으로 씨앗이 있는지 여부 판단하는 게 좋을 듯..
+    [SerializeField]
+    public bool isGrown; // 다 자랐는지 여부도 이제 얘가 저장하도록 하는게..
+    // 이제 시간이 아니라 일수로 관리하도록 수정할 것..
+    // 근데 이러면 딱히 시간 안 더해줘도 되니까 씨앗도 그냥 ScriptableObject 클래스로만 관리해야 좋을 것 같은데
+    // 원래는 시간 더해줘야 하니까 Monobehaviour 클래스를 상속받아야 했던 거고..
+    [SerializeField]
+    // 씨앗 마다 자라기까지 걸리는 일수가 있어서 다르게 자라도록?_?
+    public int curDay; // 씨앗 심고 지난 일수(씬 전환 될 때마다 1씩 증가하는 식으로 하면 될 것 같다)
 
 
     public void SetData()
@@ -228,6 +235,7 @@ public class FarmingManager : MonoBehaviour
     private string farmingDataFilePath; // 농사 데이터 저장 경로..
 
 
+
     public void SaveFarmingData()
     {
         Dictionary<PosInt, SaveFarmingData> tempDic = new Dictionary<PosInt, SaveFarmingData>();
@@ -252,29 +260,22 @@ public class FarmingManager : MonoBehaviour
             };
 
 
-            // 농사 땅 위에 씨앗이 없을 때 진입..
-            if (farmingData[item.Key].seed == null)
-            {
-                Debug.Log("씨앗 없어여..");
 
-                temp.seedOnTile = false;
+            // 이렇게 바꿀거임..
+
+            // 농사 땅 위에 씨앗이 없을 때 진입..
+            if (farmingData[item.Key].seedOnTile == false)
+            {
+                temp.seedOnTile = farmingData[item.Key].seedOnTile;
             }
             // 농사 땅 위에 씨앗 있을 때 진입..
             else
             {
-                Debug.Log("씨앗 있어여..");
-
-                temp.seedOnTile = true; // 땅에 씨앗 심어져있는지 여부 판단 정보 저장..
-                temp.seedIdx = farmingData[item.Key].seed.seedData.seedIdx; // 씨앗 인덱스 저장..
-                temp.currentTime = farmingData[item.Key].seed.currentTime; // 자라기 까지 남은 시간 저장..
-
-                // 만약 씨앗 다 자랐으면..
-                if (farmingData[item.Key].seed.isGrown)
-                {
-                    temp.isGrown = true; // 씨앗 다 자란 상태를 변수에 저장..
-                }
+                temp.seedOnTile = farmingData[item.Key].seedOnTile;
+                temp.seedIdx = farmingData[item.Key].seedIdx;
+                temp.curDay = farmingData[item.Key].curDay;
+                temp.isGrown = farmingData[item.Key].isGrown;
             }
-
             tempDic.Add(pos, temp);
             tempDic[pos].PrintData();
         }
@@ -349,15 +350,14 @@ public class FarmingManager : MonoBehaviour
                 farmingData[pos].currentState = tempDic[item.Key].currentState;
 
 
-                // 저장당시 농사 땅 위에 씨앗 있었으면 씨앗 데이터 설정해주기..
+                // 이렇게 수정할거임!!
+                // 저장 당시 농사 땅 위에 씨앗 있었으면 씨앗 데이터 설정해주기..
                 if (tempDic[item.Key].seedOnTile)
                 {
-                    // 씨앗 데이터 가져와서 데이터에 맞는 씨앗 생성해주기..
-                    farmingData[pos].seed = seedContainer.GetSeed(tempDic[item.Key].seedIdx).GetComponent<Seed>();
-
-                    // 기존 씨앗 데이터 적용..
-                    farmingData[pos].seed.currentTime = tempDic[item.Key].currentTime;
-                    farmingData[pos].seed.isGrown = tempDic[item.Key].isGrown;
+                    farmingData[pos].seedOnTile = tempDic[item.Key].seedOnTile;
+                    farmingData[pos].seedIdx = tempDic[item.Key].seedIdx;
+                    farmingData[pos].curDay = tempDic[item.Key].curDay;
+                    farmingData[pos].isGrown = tempDic[item.Key].isGrown;
                 }
             }
         }
@@ -391,7 +391,7 @@ public class FarmingManager : MonoBehaviour
 
 
         // 농사 땅 레벨 데이터 불러오기..
-        farmLevel = PlayerPrefs.GetInt("FarmLevel");
+        //farmLevel = PlayerPrefs.GetInt("FarmLevel");
         // 농사 땅 레벨 데이터를 불러온 다음에 레벨 데이터에 맞게끔 땅 업그레이드 해주기.. 
         while (farmLevel > 0)
         {
@@ -400,8 +400,46 @@ public class FarmingManager : MonoBehaviour
         }
 
 
-
         LoadFarmingData(); // 데이터 가져오기..
+    }
+
+
+    private void Start()
+    {
+        // LoadFarmingData 로 데이터를 가져왔으므로 이제 가능
+        // 농사 땅을 전부 돌면서 씨앗이 심어져 있으면 일수 증가시킴..
+        foreach (var item in farmingData)
+        {
+            // 만약 씨앗이 심어져 있으면
+            if (farmingData[item.Key].seedOnTile)
+            {
+                Debug.Log("씨앗이 심어져있어용~");
+
+                // 씨앗이 심긴 후 지난 일수가 씨앗이 다 자라는데 걸리는 일수랑 같으면
+                if (farmingData[item.Key].curDay == seedItems[farmingData[item.Key].seedIdx].growDay - 1)
+                {
+                    Debug.Log("다 자랐어용!");
+
+                    // 다 자랐음을 표시하기 위해 isGrown 의 값을 true 로 변경해주기..
+                    farmingData[item.Key].isGrown = true;
+                }
+                // 씨앗이 심긴 후 지난 일수가 씨앗이 다 자라는데 걸리는 일수보다 작으면
+                else if (farmingData[item.Key].curDay < seedItems[farmingData[item.Key].seedIdx].growDay - 1)
+                {
+                    Debug.Log("다 안 자랐어용!");
+
+                    // 일수를 증가시켜주기..
+                    farmingData[item.Key].curDay++;
+                }
+            }
+            else
+            {
+                Debug.Log("씨앗이 안 심어져있어용~");
+            }
+        }
+
+        // 저장하기
+        SaveFarmingData(); // 변경 사항 생겼으니까 저장해주기..
     }
 
 
@@ -425,7 +463,7 @@ public class FarmingManager : MonoBehaviour
         }
 
 
-        GrowTimeUpdate(); // 과일이 다 자라기까지 남은 시간 업데이트 해주는 함수..
+        //GrowTimeUpdate(); // 과일이 다 자라기까지 남은 시간 업데이트 해주는 함수..
         CheckGrowedFruit(); // 과일이 다 자랐는지 확인하고, 다 자랐으면 그에 맞는 행동을 하도록 해주는 함수..
 
 
@@ -478,17 +516,18 @@ public class FarmingManager : MonoBehaviour
                 else
                 {
                     // 씨앗이 안 심어져 있을 때 또는 씨앗이 다 자랐을 때 버튼 뜰 수 있도록
-                    if (farmingData[cellPosition].seed == null || (farmingData[cellPosition].seed.isGrown))
+                    if (farmingData[cellPosition].seedOnTile == false || farmingData[cellPosition].isGrown)
                     {
                         farmingData[cellPosition].stateButton.gameObject.SetActive(true);
                     }
                     // 씨앗이 자라는 중이면 남은 시간 나타내는 판넬 뜨도록
-                    else if (!farmingData[cellPosition].seed.isGrown)
+                    else if (!farmingData[cellPosition].isGrown)
                     {
                         // 판넬 위치를 현재 클릭한 타일 위치로..
                         growTimePanel.transform.position = mainCamera.WorldToScreenPoint(farmTilemap.CellToWorld(cellPosition)) + new Vector3(0, 50, 0);
                         growTimePanel.SetActive(true);
-                        growTimeText.text = "남은시간\n" + (int)(farmingData[cellPosition].seed.seedData.growTime - farmingData[cellPosition].seed.currentTime);
+
+                        growTimeText.text = "남은일수\n" + (seedItems[farmingData[cellPosition].seedIdx].growDay - farmingData[cellPosition].curDay);
                     }
                 }
             }
@@ -541,17 +580,18 @@ public class FarmingManager : MonoBehaviour
                     else
                     {
                         // 씨앗이 안 심어져 있을 때 또는 씨앗이 다 자랐을 때 버튼 뜰 수 있도록
-                        if (farmingData[cellPosition].seed == null || (farmingData[cellPosition].seed.isGrown))
+                        if (farmingData[cellPosition].seedOnTile == false || farmingData[cellPosition].isGrown)
                         {
                             farmingData[cellPosition].stateButton.gameObject.SetActive(true);
                         }
                         // 씨앗이 자라는 중이면 남은 시간 나타내는 판넬 뜨도록
-                        else if (!farmingData[cellPosition].seed.isGrown)
+                        else if (!farmingData[cellPosition].isGrown)
                         {
                             // 판넬 위치를 현재 클릭한 타일 위치로..
                             growTimePanel.transform.position = mainCamera.WorldToScreenPoint(farmTilemap.CellToWorld(cellPosition)) + new Vector3(0, 50, 0);
                             growTimePanel.SetActive(true);
-                            growTimeText.text = "남은시간\n" + (int)(farmingData[cellPosition].seed.seedData.growTime - farmingData[cellPosition].seed.currentTime);
+
+                            growTimeText.text = "남은일수\n" + (seedItems[farmingData[cellPosition].seedIdx].growDay - farmingData[cellPosition].curDay);
                         }
                     }
                 }
@@ -563,11 +603,13 @@ public class FarmingManager : MonoBehaviour
 
     private void GrowTimeUpdate()
     {
-        // 자라는데 남은 시간이 계속 업데이트 되어야 하므로..
-        if (farmEnableZoneTilemap.HasTile(cellPosition) && farmingData[cellPosition].seed != null)
+        // 이 함수는 씬이 전환될 때마다 호출되도록 하면 될 것 같다..
+
+        // 농사 땅 위에 씨앗이 있으면
+        if (farmEnableZoneTilemap.HasTile(cellPosition) && farmingData[cellPosition].seedOnTile)
         {
-            if (!farmingData[cellPosition].seed.isGrown)
-                growTimeText.text = "남은시간\n" + (int)(farmingData[cellPosition].seed.seedData.growTime - farmingData[cellPosition].seed.currentTime);
+            if (!farmingData[cellPosition].isGrown)
+                growTimeText.text = growTimeText.text = "남은일수\n" + (seedItems[farmingData[cellPosition].seedIdx].growDay - farmingData[cellPosition].curDay);
             else
                 growTimePanel.SetActive(false); // 다 자라면 남은시간 나타내는 판넬 꺼지도록..
         }
@@ -577,9 +619,11 @@ public class FarmingManager : MonoBehaviour
     {
         foreach (Vector3Int pos in farmingData.Keys)
         {
-            if (farmingData[pos].seed != null)
+            // 씨앗이 농사 땅 위에 있으면
+            if (farmingData[pos].seedOnTile)
             {
-                if (farmingData[pos].seed.isGrown)
+                // 만약 다 자랐으면
+                if (farmingData[pos].isGrown)
                 {
                     farmTilemap.SetTile(pos, harvestTile); // 타일을 과일이 다 자란 상태로 변경
                     farmingData[pos].harvestEnableState = true; // 작물 수확할 수 있는 상태
@@ -632,7 +676,7 @@ public class FarmingManager : MonoBehaviour
 
         // 버튼의 좌표 설정
         button.transform.position = screenPos;
-        //button.transform.position += new Vector3(0, 50, 0);
+        button.transform.position += new Vector3(0, 50, 0);
 
         return button;
     }
@@ -649,6 +693,10 @@ public class FarmingManager : MonoBehaviour
         farmingData[pos].stateButton.gameObject.SetActive(false); // 버튼 한 번 눌렀으니까 꺼지도록..
 
         farmingData[pos].stateButton = farmingData[pos].buttons[1]; // plant 버튼으로 변경..
+
+
+        // 저장하기
+        SaveFarmingData();
     }
 
     public void OpenPlantSeedPanel(Vector3Int pos)
@@ -664,15 +712,19 @@ public class FarmingManager : MonoBehaviour
         // 씨앗을 심는 함수
         // 이 함수는 씨앗 선택창에서 씨앗 버튼 눌렀을 때 호출되도록..
 
-        farmingData[pos].seed = seedContainer.GetSeed(seedIdx).GetComponent<Seed>();
-
+        farmingData[pos].seedIdx = seedIdx; // 씨앗 인덱스 설정해주기
+        farmingData[pos].seedOnTile = true; // 씨앗을 심었으니까 true 로 값 변경해주기..
         farmTilemap.SetTile(pos, plantTile); // 타일 모습을 씨앗 심은 상태로 바꿔주기
-        farmingData[pos].plantEnableState = true; // 씨앗을 심을 수 없는 상태를 나타내기 위해 false 로 변경
+        farmingData[pos].plantEnableState = false; // 씨앗을 심을 수 없는 상태를 나타내기 위해 false 로 변경
         farmingData[pos].currentState = "plant"; // 씨앗 심은 상태니까 plant 로 바꿔주기
 
         farmingData[pos].stateButton = farmingData[pos].buttons[2]; // harvest 버튼을 가지고 있도록..
 
         clickedSelectedSeedButton = false; // 한 번 심고 난 다음에 바로 변수값 false 로 바꿔주기
+
+
+        // 저장하기
+        SaveFarmingData();
     }
 
     public void HarvestTile(Vector3Int pos)
@@ -688,10 +740,10 @@ public class FarmingManager : MonoBehaviour
         //fruitContainer.fruitCount[farmingData[pos].seed.seedData.seedIdx]++; // 씨앗의 인덱스와 같은 과일의 수 증가시키기
 
 
-        // 구매하려는 씨앗의 개수만큼 InventoryItem 구조체의 인스턴스를 만들기..
+        // 수확하려는 과일의 개수만큼 InventoryItem 구조체의 인스턴스를 만들기..
         InventoryItem tempItem = new InventoryItem()
         {
-            item = fruitItems[farmingData[pos].seed.seedData.seedIdx],
+            item = fruitItems[farmingData[pos].seedIdx],
             quantity = 1,
         };
         inventoryController.AddItem(tempItem); // 새로 생성한 인벤토리 아이템을 인벤토리 데이터에 추가해주기..
@@ -699,10 +751,17 @@ public class FarmingManager : MonoBehaviour
 
         farmingData[pos].stateButton.gameObject.SetActive(false); // 버튼 한 번 눌렀으니까 꺼지도록..
         farmingData[pos].stateButton = farmingData[pos].buttons[0]; // plow 버튼을 가지고 있도록..
+        farmingData[pos].seedOnTile = false; // 수확했으니까 seedOnTile 변수의 값을 다시 false 로 설정해주기..
+        farmingData[pos].seedIdx = -1; // 씨앗 인덱스 다시 -1로 바꿔주기..
+        farmingData[pos].curDay = 0; // 씨앗 심은 후 지난 일자 다시 0으로 바꿔주기..
+        farmingData[pos].isGrown = false; // 이제 땅에 아무것도 없으므로 isGrown 값도 false 로 바꿔주기..
 
-        farmingData[pos].seed = null; // 수확 완료 했으니까 타일의 seed 변수를 다시 null 로 설정해주기..
 
-        farmTilemap.SetTile(pos, grassTile); // 타일 모습을 초기 상태의로 바꿔주기
+        farmTilemap.SetTile(pos, grassTile); // 타일 모습을 초기 상태로 바꿔주기
+
+
+        // 저장하기
+        SaveFarmingData();
     }
 
 
