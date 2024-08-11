@@ -16,7 +16,7 @@ MonoBehaviour:
   <MaxStackSize>k__BackingField: 64
   <Name>k__BackingField: "\uD2F0\uB77C\uBBF8\uC218"
   <Description>k__BackingField: 
-  <itemImage>k__BackingField: {fileID: -1354531874, guid: 0d67431d64dca4e40b901dedb5732a88, type: 3}
+  <itemImage>k__BackingField: {fileID: -1570345225, guid: 0d67431d64dca4e40b901dedb5732a88, type: 3}
   itemType: 3
   cakeCost: 200
   bakeTime: 3
