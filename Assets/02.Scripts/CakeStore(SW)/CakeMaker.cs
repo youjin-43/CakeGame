@@ -47,7 +47,7 @@ public class CakeMaker : MonoBehaviour
     {
         if (!isMakingCake)
         {
-            storeManager.GetComponent<CakeMakeManager>().OpenPanel(cakeMakerIndex);
+            storeManager.GetComponent<CakeMakerController>().OpenPanel(cakeMakerIndex);
         }
     }
 
@@ -87,7 +87,7 @@ public class CakeMaker : MonoBehaviour
 
     public void CompleteCake()
     {
-        storeManager.GetComponent<CakeMakeManager>().CompleteCake(currentCakeIndex);
+        storeManager.GetComponent<CakeMakerController>().CompleteCake(currentCakeIndex);
         timerUI.SetActive(false);
         isMakingCake = false;
         isMakeComplete = false;
