@@ -301,10 +301,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1503374310}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 100, y: -100}
-  m_SizeDelta: {x: 160, y: 160}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &12255371
 MonoBehaviour:
@@ -471,6 +471,13 @@ MonoBehaviour:
   seedButton: {fileID: 315390537}
   fruitButton: {fileID: 1773025084}
   inventoryOpenButton: {fileID: 0}
+  fruitCount: 
+  fruitItems:
+  - {fileID: 11400000, guid: cdec94432ad7f57499a766c32855dc47, type: 2}
+  - {fileID: 11400000, guid: 42a8cc1acabdbe94693fb926029b5507, type: 2}
+  - {fileID: 11400000, guid: a2576668bf4713841b2aa0870c71022a, type: 2}
+  - {fileID: 11400000, guid: db99d362f9e8fba42a202e19142bcd2a, type: 2}
+  - {fileID: 11400000, guid: aed95d68b3f35d4469a9490bb7118295, type: 2}
   seedContainer: {fileID: 56286054}
   fruitContainer: {fileID: 634117040}
   initialItems: []
@@ -2888,10 +2895,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 347261117}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1120.8243, y: 740}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &310441133
 MonoBehaviour:
@@ -19347,8 +19354,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 1070, y: 220}
-  m_SizeDelta: {x: -1800.9601, y: -1010}
+  m_AnchoredPosition: {x: 760, y: 220}
+  m_SizeDelta: {x: -2040, y: -1010}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1627595724
 MonoBehaviour:
