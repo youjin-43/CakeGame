@@ -378,8 +378,11 @@ public class FarmingManager : MonoBehaviour
         farmingData = new Dictionary<Vector3Int, FarmingData>(); // 딕셔너리 생성
         clickPosition = Vector2.zero;
 
+    }
 
 
+    private void Start()
+    {
         // 농사 가능 구역만 farmingData 에 저장할 것임.
         foreach (Vector3Int pos in farmEnableZoneTilemap.cellBounds.allPositionsWithin)
         {
@@ -401,11 +404,16 @@ public class FarmingManager : MonoBehaviour
 
 
         LoadFarmingData(); // 데이터 가져오기..
-    }
 
 
-    private void Start()
-    {
+
+
+
+
+
+
+
+
         // LoadFarmingData 로 데이터를 가져왔으므로 이제 가능
         // 농사 땅을 전부 돌면서 씨앗이 심어져 있으면 일수 증가시킴..
         foreach (var item in farmingData)

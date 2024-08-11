@@ -5,9 +5,14 @@ public class CameraResolution : MonoBehaviour
     private int ScreenSizeX = 0;
     private int ScreenSizeY = 0;
 
-    void Start()
+    void Awake()
     {
         RescaleCamera();
+    }
+
+    void Start()
+    {
+        
     }
 
     void Update()
