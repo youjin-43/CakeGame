@@ -52,8 +52,6 @@ public class CakeMakerController : MonoBehaviour
             cakeMaker.timerSprites = timerSprites;
             cakeMaker.completedSprite = completedSprite;
             cakeMaker.cakeMakerIndex = i;
-            cakeMaker.cakeMakerPanel = cakeMakerPanel;
-            cakeMaker.storeManager = this.gameObject;
 
             InitializeTimerButton(cakeMaker.timerUI, i);
         }
@@ -110,7 +108,7 @@ public class CakeMakerController : MonoBehaviour
     {
         if (!AreMaterialsEnough(index)) // 재료가 충분한지 확인
         {
-            Debug.Log("재료가 부족합니다.");
+            Debug.Log("제작이 불가능합니다.");
             return;
         }
 
@@ -123,9 +121,9 @@ public class CakeMakerController : MonoBehaviour
     bool AreMaterialsEnough(int index)
     {
         var cakeData = cakeManager.cakeDataList[index];
-        var fruitCounts = cakeManager.fruitContainer.fruitCount;
+        var fruitCounts = UIInventoryController.instance.fruitCount;
         
-        if(cakeManager.gameManager.money < cakeData.cakeCost)
+        if(GameManager.instance.money < cakeData.cakeCost)
         {
             Debug.Log("돈이 부족합니다.");
             return false;
@@ -135,7 +133,7 @@ public class CakeMakerController : MonoBehaviour
         {
             if (fruitCounts[cakeData.materialIdxs[i]] < cakeData.materialCounts[i])
             {
-                Debug.Log($"재료({cakeData.materialIdxs[i]})가 부족합니다.");
+                Debug.Log($"재료({UIInventoryController.instance.fruitItems[cakeData.materialIdxs[i]].Name})가 {cakeData.materialCounts[i]-fruitCounts[cakeData.materialIdxs[i]]}개 부족합니다.");
                 return false;
             }
         }
@@ -145,15 +143,16 @@ public class CakeMakerController : MonoBehaviour
     void UseMaterials(int index)
 {
     var cakeData = cakeManager.cakeDataList[index];
-    var inventory = cakeManager.inventoryManager.fruitInventoryData;
+    var inventory = UIInventoryController.instance.fruitInventoryData;
 
 
-    cakeManager.gameManager.money -= cakeData.cakeCost;
+    GameManager.instance.money -= cakeData.cakeCost;
     for (int i = 0; i < cakeData.materialIdxs.Length; i++)
     {
         // InventoryItem을 가져오고, 그 안에서 ItemSO 타입의 아이템을 추출합니다.
         InventoryItem inventoryItem = inventory.GetItemAt(cakeData.materialIdxs[i]);
         ItemSO itemSO = inventoryItem.item;  // ItemSO 추출
+        Debug.Log("Item = "+ itemSO.name);
 
         // MinusItem 메서드에 ItemSO와 감소할 수량을 전달합니다.
         inventory.MinusItem(itemSO, cakeData.materialCounts[i]);
@@ -219,6 +218,7 @@ public class CakeMakerController : MonoBehaviour
 
     void UpdateMaterialPanel(Transform materialPanel, CakeSO cakeSO)
     {
+        materialPanel.gameObject.SetActive(true);
         for (int j = 0; j < materialPanel.childCount; j++)
         {
             materialPanel.GetChild(j).gameObject.SetActive(false);
@@ -228,8 +228,9 @@ public class CakeMakerController : MonoBehaviour
         {
             var material = materialPanel.GetChild(j);
             material.gameObject.SetActive(true);
-            material.GetChild(materialImgaeNum).GetComponent<Image>().sprite = null; // 재료 이미지 참조 (현재 참조 불가능)
-            //material.GetChild(materialCountNum).GetComponent<Text>().text = $"{cakeSO.materialCount[j]}/{cakeManager.fruitContainer.fruitCount[cakeSO.materialType[j]]}";
+            material.GetChild(materialImgaeNum).GetComponent<Image>().sprite = UIInventoryController.instance.fruitItems[cakeSO.materialIdxs[j]].itemImage; // 재료 이미지 참조
+            material.GetChild(materialCountNum).GetComponent<Text>().text = $"{cakeSO.materialCounts[j]}/{UIInventoryController.instance.fruitCount[cakeSO.materialIdxs[j]]}";
         }
+        
     }
 }

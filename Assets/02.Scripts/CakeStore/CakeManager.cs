@@ -3,33 +3,48 @@ using System.IO;
 using UnityEngine;
 using Newtonsoft.Json;
 using Inventory.Model;
+using UnityEngine.SceneManagement;
 
 // 케이크 전반적인 관리 및 다른 매니저 참조
 public class CakeManager : MonoBehaviour
 {
-    // 게임 매니저 및 인벤토리 매니저와 같은 다른 매니저들을 참조
-    public GameManager gameManager;
-    public UIInventoryController inventoryManager;
-    public FruitContainer fruitContainer;
+    public CakeShowcaseController cakeShowcaseController;
+    public CakeMakerController cakeMakerController;
     public GameObject spritesToDisable;  // 케이크 제작 중 비활성화할 스프라이트 그룹
     public List<CakeSO> cakeDataList;    // 케이크 데이터를 저장하는 리스트 (Unity Editor에서 설정)
     public int[] cakeCounts;             // 각 케이크의 개수를 관리하는 배열
     private string filePath;             // 케이크 데이터 저장 파일 경로
-    private int unlockedIndex = 0;       // 잠금 해제된 케이크의 마지막 인덱스
-
+    public static CakeManager instance;
     void Awake()
     {
-        // 다른 매니저들 초기화
-        gameManager = FindObjectOfType<GameManager>();
-        inventoryManager = FindObjectOfType<UIInventoryController>();
-        fruitContainer = FindObjectOfType<FruitContainer>();
+        // 싱글톤 변수 instance가 비어있는가?
+        if (instance == null)
+        {
+            // instance가 비어있다면(null) 그곳에 자기 자신을 할당
+            instance = this;
+            Debug.Log("게임매니저가 생성됐습니다");
+            DontDestroyOnLoad(gameObject); // 씬이 변경되어도 삭제되지 않도록 s
 
+            SceneManager.sceneLoaded += OnSceneLoaded; // 씬이 로딩될 때마다 함수를 호출하기위해 
+
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
         // 데이터 저장 파일 경로 설정
         filePath = Path.Combine(Application.persistentDataPath, "cakeData.json");
         Debug.Log("Save file path: " + filePath);
 
         // 케이크 데이터 로드
         LoadCakeData();
+        cakeShowcaseController = GetComponent<CakeShowcaseController>();
+        cakeMakerController = GetComponent<CakeMakerController>();
     }
 
     // 메뉴 닫기 및 스프라이트 재활성화
@@ -66,18 +81,6 @@ public class CakeManager : MonoBehaviour
             CakeSO cakeData = cakeDataList[i];
             cakeCounts[i] = 0; // 초기 케이크 개수는 0으로 설정
             cakeData.isLocked = (cakeData.cakeIdx != 0); // 첫 번째 케이크만 잠금 해제
-        }
-    }
-
-    // 잠금 해제된 마지막 케이크 인덱스를 초기화
-    void InitializeUnlockIndex()
-    {
-        for (int i = 0; i < cakeDataList.Count; i++)
-        {
-            if (!cakeDataList[i].isLocked)
-            {
-                unlockedIndex = i;
-            }
         }
     }
 
@@ -124,7 +127,6 @@ public class CakeManager : MonoBehaviour
         CakeDataSave dataSave = new CakeDataSave
         {
             cakeDataList = SerializeCakeDataList(), // 케이크 데이터 직렬화
-            unlockedIndex = this.unlockedIndex
         };
 
         // JSON 파일로 저장
@@ -137,7 +139,7 @@ public class CakeManager : MonoBehaviour
     {
         // 기본값으로 초기화
         cakeCounts = new int[cakeDataList.Count];
-        InitializeCakeStatus(); 
+        InitializeCakeStatus();
 
         if (File.Exists(filePath))
         {
@@ -145,7 +147,6 @@ public class CakeManager : MonoBehaviour
             string json = File.ReadAllText(filePath);
             CakeDataSave dataSave = JsonConvert.DeserializeObject<CakeDataSave>(json);
             DeserializeCakeDataList(dataSave.cakeDataList);
-            this.unlockedIndex = dataSave.unlockedIndex;
         }
         else
         {

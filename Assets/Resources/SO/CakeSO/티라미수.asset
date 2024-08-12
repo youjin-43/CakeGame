@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7c47a622da81b4d44b2592a6db0b8ac8, type: 3}
-  m_Name: "\uCD08\uCF5C\uB9BF \uCF00\uC774\uD06C"
+  m_Name: "\uD2F0\uB77C\uBBF8\uC218"
   m_EditorClassIdentifier: 
   <IsStackable>k__BackingField: 1
   <MaxStackSize>k__BackingField: 64
-  <Name>k__BackingField: "\uCD08\uCF5C\uB9BF \uCF00\uC774\uD06C"
+  <Name>k__BackingField: "\uD2F0\uB77C\uBBF8\uC218"
   <Description>k__BackingField: 
-  <itemImage>k__BackingField: {fileID: 21300000, guid: 1e0cc07f9bf3446769fc2ccd9027b7ba, type: 2}
+  <itemImage>k__BackingField: {fileID: 21300000, guid: 42ad414e1a6c249ac9ac15c923ff50d7, type: 2}
   itemType: 3
-  cakeCost: 200
+  cakeCost: 150
   bakeTime: 3
-  cakePrice: 1000
-  materialIdxs: 02000000
-  materialCounts: 01000000
+  cakePrice: 700
+  materialIdxs: 
+  materialCounts: 
   cakeCount: 0
   isLocked: 1
-  cakeIdx: 2
+  cakeIdx: 1

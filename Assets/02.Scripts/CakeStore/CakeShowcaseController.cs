@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -50,7 +51,6 @@ public class CakeShowcaseController : MonoBehaviour
         {
             cakeShowcases[i] = cakeShowcasePool.transform.GetChild(i).gameObject;
             var showcaseComponent = cakeShowcases[i].GetComponent<CakeShowcase>();
-            showcaseComponent.storeManager = this.gameObject;
             showcaseComponent.cakeShowcaseIndex = i;
         }
     }
@@ -118,8 +118,8 @@ public class CakeShowcaseController : MonoBehaviour
         cakeShowcasePlace.SetActive(true);     // 케이크 쇼케이스 위치 활성화
         cakeShowcaseIndex = index;             // 선택된 쇼케이스 인덱스 저장
         UpdateUI();                            // UI 업데이트
-    }
 
+    }
     // UI 갱신 및 업데이트 메서드
     private void RefreshUI(int index)
     {
@@ -188,7 +188,7 @@ public class CakeShowcaseController : MonoBehaviour
         int showcaseIndex = int.Parse(locateIndex[0]);
         int showcasePlaceIndex = int.Parse(locateIndex[1]);
 
-        cakeManager.gameManager.money += cakeManager.cakeDataList[cakeIndex].cakePrice;
+        GameManager.instance.money += cakeManager.cakeDataList[cakeIndex].cakePrice;
 
         CakeShowcase cakeShowcase = cakeShowcases[showcaseIndex].GetComponent<CakeShowcase>();
         cakeShowcase.isCakeSelected[showcasePlaceIndex] = false;
