@@ -24,7 +24,7 @@ public class DataManager : MonoBehaviour
             DontDestroyOnLoad(gameObject); // 씬이 변경되어도 삭제되지 않도록
 
             Debug.Log("csv파일을 데이터 데이블 딕셔너리로 저장(in Awake();) ");
-            tableDic.Add(CSVDatas.QuestTable, CSVReader(Application.dataPath + "/StreamingAssets/Quest.csv"));
+            //tableDic.Add(CSVDatas.QuestTable, CSVReader(Application.dataPath + "/StreamingAssets/Quest.csv"));
             tableDic.Add(CSVDatas.EventTable, CSVReader(Application.dataPath + "/StreamingAssets/DialogTmp.csv"));
         }
         else
@@ -40,8 +40,8 @@ public class DataManager : MonoBehaviour
 
     public enum CSVDatas
     {
-        QuestTable,
-        SeedTable,
+        //QuestTable,
+        //SeedTable,
         EventTable
     }
 
