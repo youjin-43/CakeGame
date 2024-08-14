@@ -4,108 +4,83 @@ using UnityEngine.UI;
 
 public class CakeMaker : MonoBehaviour
 {
-    public int cakeMakerIndex;
-    public GameObject timerUI;
+    public int cakeMakerIndex; // 케이커 메이커 번호
+    private SpriteRenderer timerUI; // 타이머 오브젝트
     public Sprite[] timerSprites; // 0.2초마다 순환할 4개의 이미지
     public Sprite completedSprite; // 제작 완료 시 설정할 이미지
-
     private int currentCakeIndex;
     private bool isMakingCake;
     private bool isMakeComplete;
-    private Image timerImage;
-    private float totalMakeTime;
-    private float elapsedTime;
+    private float cakeBakeTime;
+    private float passedTime;
 
     void Start()
     {
-        timerImage = timerUI.transform.GetComponent<Image>();
-        timerImage.sprite = timerSprites[0];
-        timerUI.SetActive(false);
+        InitializeCakeMaker();
+    }
+    void InitializeCakeMaker() // 상태를 초기화함.
+    {
+        timerUI = transform.GetChild(0).GetComponent<SpriteRenderer>();
         isMakingCake = false;
         isMakeComplete = false;
+        UpdateColliders();
     }
-
-    void Update()
-    {
-    }
-
-    void UpdateTimerPosition()
-    {
-        Canvas canvas = timerUI.GetComponentInParent<Canvas>();
-        // CakeMaker 오브젝트의 월드 공간 위치를 뷰포트 좌표로 변환
-        Vector3 viewportPos = Camera.main.WorldToViewportPoint(transform.position);
-
-        // 뷰포트 좌표를 캔버스의 스크린 좌표로 변환
-        Vector2 screenPos;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            canvas.GetComponent<RectTransform>(),
-            new Vector2(viewportPos.x * Screen.width, viewportPos.y * Screen.height),
-            Camera.main,
-            out screenPos);
-
-        // Timer UI의 RectTransform 위치를 설정
-        timerUI.GetComponent<RectTransform>().anchoredPosition = screenPos; // 필요에 따라 오프셋 조정
-
-    }
-
     void OnMouseDown()
     {
-        if (!isMakingCake)
+        if (!isMakingCake) // 케이크 제작 중 아닐 시
         {
-            CakeManager.instance.GetComponent<CakeMakerController>().OpenPanel(cakeMakerIndex);
+            // 케이크 메이커 패널 활성화
+            CakeManager.instance.cakeMakerController.OpenPanel(cakeMakerIndex);
+        }
+        else if (isMakeComplete) // 케이크 제작 완료 시
+        {
+            isMakingCake = false;
+            isMakeComplete = false;
+            UpdateColliders();
+            // 케이크 제작 완료 호출
+            CakeManager.instance.GetComponent<CakeMakerController>().CompleteCake(currentCakeIndex);
         }
     }
 
-    public void StartMakingCake(int index, int cakeMakeTime)
+    public void StartMakingCake(int index, int BakeTime)
     {
         currentCakeIndex = index;
-        totalMakeTime = cakeMakeTime;
-        elapsedTime = 0f;
-        StartCoroutine(TimerRoutine(cakeMakeTime));
-        StartCoroutine(SpriteChangeRoutine());
+        cakeBakeTime = BakeTime;
+        passedTime = 0f;
+        isMakingCake = true;
+        UpdateColliders();
+        StartCoroutine(TimerRoutine());
+        StartCoroutine(TimerImageChangeRoutine());
     }
 
-    IEnumerator TimerRoutine(int cakeMakeTime)
+    IEnumerator TimerRoutine() // 케이크 제작 시간 후 케이크 제작 완료
     {
-        isMakingCake = true;
-        timerUI.SetActive(true);
-        UpdateTimerPosition();
-        while (elapsedTime < cakeMakeTime)
+        while (passedTime < cakeBakeTime) //제작 완료 시간까지 루틴을 반복
         {
-            elapsedTime += Time.deltaTime;
+            passedTime += Time.deltaTime;
             yield return null;
         }
         isMakeComplete = true;
-        timerImage.sprite = completedSprite; // 제작 완료 이미지로 변경
+        timerUI.sprite = completedSprite; // 제작 완료 이미지로 변경
     }
 
-    IEnumerator SpriteChangeRoutine()
+    IEnumerator TimerImageChangeRoutine() // 케이크 제작 동안 타이머 이미지 변경
     {
-        int spriteIndex = 0;
-        while (elapsedTime < totalMakeTime)
+        int spriteIndex = 0; //이미지 초기화
+
+        while (passedTime < cakeBakeTime)  //제작 완료 시간까지 루틴을 반복
         {
-            timerImage.sprite = timerSprites[spriteIndex];
+            timerUI.sprite = timerSprites[spriteIndex];
             spriteIndex = (spriteIndex + 1) % timerSprites.Length;
             yield return new WaitForSeconds(0.2f);
         }
     }
 
-    public void CompleteCake()
+    public void UpdateColliders() // 타이머와 오븐의 콜리더를 설정 
+    // !!!!!!!반드시 isMakingCake 값의 변화 이후에 와야함.!!!!!!!
     {
-        CakeManager.instance.GetComponent<CakeMakerController>().CompleteCake(currentCakeIndex);
-        timerUI.SetActive(false);
-        isMakingCake = false;
-        isMakeComplete = false;
-        timerImage.sprite = timerSprites[0]; // 처음 이미지로 리셋
-    }
-
-    public bool IsMakeComplete()
-    {
-        return isMakeComplete;
-    }
-
-    public bool TimerUIActive()
-    {
-        return timerUI.activeSelf;
+        timerUI.gameObject.SetActive(isMakingCake);
+        GetComponent<PolygonCollider2D>().enabled = !isMakingCake;
+        GetComponent<BoxCollider2D>().enabled = isMakingCake;
     }
 }
