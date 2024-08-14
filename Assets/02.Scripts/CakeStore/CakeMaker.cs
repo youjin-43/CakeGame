@@ -9,12 +9,12 @@ public class CakeMaker : MonoBehaviour
     public Sprite[] timerSprites; // 0.2초마다 순환할 4개의 이미지
     public Sprite completedSprite; // 제작 완료 시 설정할 이미지
     private int currentCakeIndex;
-    private bool isMakingCake;
+    public bool isMakingCake;
     private bool isMakeComplete;
     private float cakeBakeTime;
     private float passedTime;
 
-    void Start()
+    void Awake()
     {
         InitializeCakeMaker();
     }

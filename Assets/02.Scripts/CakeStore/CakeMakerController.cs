@@ -31,13 +31,14 @@ public class CakeMakerController : MonoBehaviour
     }
 
     public Transform cakeMakersPool;        // 케이크 메이커 가져올 곳 
-    public GameObject[] cakeMakers;          // 케이크 메이커 배열
+    private GameObject[] cakeMakers;          // 케이크 메이커 배열
     public Sprite[] timerSprites;            // 타이머 변화 이미지 배열
     public Sprite completedSprite;           // 타이머 완료 시 이미지
 
     private int cakeMakerIndex;              // 현재 선택된 케이크 메이커의 인덱스
 
     private CakeManager cakeManager;         // 케이크 매니저 참조
+    private CakeUIController cakeUIController;
 
     void Start()
     {
@@ -45,13 +46,13 @@ public class CakeMakerController : MonoBehaviour
     }
     void InitializeCakeMakerController()
     {   
+        cakeManager = CakeManager.instance;   // 케이크 매니저 초기화
+        cakeUIController = CakeUIController.instance;
         cakeMakerPanel.SetActive(true);
         cakeMakerScrollViewContent = cakeMakerPanel.GetComponentInChildren<HorizontalLayoutGroup>().transform;
-        cakeManager = CakeManager.instance;   // 케이크 매니저 초기화
-        cakeManager.CloseMenu(cakeMakerPanel);     // 케이크 메이커 패널 비활성화
-        Debug.Log("InitializeCakeMakerController");
         InitializeCakeMakers();               // 케이크 메이커 초기화
         SetUpButtons();                       // 버튼 설정
+        cakeUIController.CloseMenu(cakeMakerPanel);     // 케이크 메이커 패널 비활성화
     }
     void InitializeCakeMakers() // 케이크 메이커들을 초기화
     {
@@ -81,7 +82,7 @@ public class CakeMakerController : MonoBehaviour
     }
     public void OpenPanel(int index) //케이크메이커를 눌렀을 때 패널 활성화
     {
-        cakeManager.DisableSprites(true); // 스프라이트 비활성화
+        cakeUIController.DisableSprites(true); // 스프라이트 비활성화
         cakeMakerPanel.SetActive(true);   // 케이크 메이커 패널 활성화
         cakeMakerIndex = index;           // 현재 케이크 메이커 인덱스 설정
         UpdateUI();                       // UI 업데이트
@@ -122,7 +123,7 @@ public class CakeMakerController : MonoBehaviour
             ItemSO itemSO = inventory.GetItemAt(cakeData.materialIdxs[i]).item;  // ItemSO 추출
             inventory.MinusItem(itemSO, cakeData.materialCounts[i]);             // ItemSO 감소 
         }
-        cakeManager.CloseMenu(cakeMakerPanel);                        // 케이크 메이커 패널 비활성화        
+        cakeUIController.CloseMenu(cakeMakerPanel);                        // 케이크 메이커 패널 비활성화        
         cakeMakers[cakeMakerIndex].GetComponent<CakeMaker>().         // 케이크 제작 시작
         StartMakingCake(index, cakeManager.cakeSODataList[index].bakeTime);
     }

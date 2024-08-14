@@ -9,37 +9,46 @@ public class CakeShowcaseController : MonoBehaviour
 {
     // 필드 선언
     public Transform cakeShowcasePool;        // 케이크 쇼케이스 풀을 담는 게임 오브젝트
-    public GameObject[] cakeShowcases;         // 케이크 쇼케이스 배열
+    private GameObject[] cakeShowcases;         // 케이크 쇼케이스 배열
     public GameObject cakeShowcasePlace;       // 케이크 쇼케이스 위치를 담는 게임 오브젝트
     public GameObject cakeShowcaseMenu;        // 케이크 쇼케이스 메뉴 오브젝트
-    public Transform CakeShowcaseScrollViewContent;       // 스크롤 뷰의 콘텐츠
-
-    // 인덱스 및 기타 변수
-    public int cakeImageNum = 0;               // 케이크 수량 UI 요소의 인덱스
-    public int cakeNameNum = 1;
-    public int cakeCountNum = 2;               // 케이크 수량 UI 요소의 인덱스
-    public int cakePriceNum = 3;
-    public int lockedNum = 5;                  // 잠금 상태 UI 요소의 인덱스
-    public int placeButtonNum = 1;             // 위치 버튼의 인덱스
-    public int placeButtonTextNum = 0;         // 위치 버튼 텍스트의 인덱스
-    public int placeButtonImageNum = 0;        // 위치 버튼 이미지의 인덱스
-    public int cakePlaceNum = 4;               // 케이크 쇼케이스의 위치 수
-
+    private Transform cakeShowcaseScrollViewContent;       // 스크롤 뷰의 콘텐츠
+    private enum PlacePanelElements
+    {
+        Text = 0,
+        Image = 1
+    }
+    private enum MenuPanelElements
+    {
+        Image = 0,
+        Name = 1,
+        Count = 2,
+        Price = 3,
+        Locked = 5
+    }
     private int cakeShowcasePlaceIndex;        // 현재 선택된 케이크 쇼케이스 위치 인덱스
     private int cakeShowcaseIndex;             // 현재 선택된 케이크 쇼케이스 인덱스
-
+    private int cakePlaceNum;
     private CakeManager cakeManager;           // 케이크 매니저 참조
+    private CakeUIController cakeUIController;
 
     void Start()
     {
         InitializeCakeShowcaseController();
     }
     void InitializeCakeShowcaseController()
-    {   // 케이크 매니저 초기화
+    {
+        // 케이크 매니저 초기화
         cakeManager = CakeManager.instance;
+        cakeUIController = CakeUIController.instance;
+
+        cakeShowcaseMenu.SetActive(true);
+        cakeShowcaseScrollViewContent = cakeShowcaseMenu.GetComponentInChildren<HorizontalLayoutGroup>().transform;
+
         // 케이크 쇼케이스 패널 비활성화
-        cakeManager.CloseMenu(cakeShowcasePlace);
-        cakeManager.CloseMenu(cakeShowcaseMenu);
+        cakeUIController.CloseMenu(cakeShowcasePlace);
+        cakeUIController.CloseMenu(cakeShowcaseMenu);
+        cakePlaceNum = cakeManager.cakePlaceNum;
         // 케이크 쇼케이스 및 버튼 초기화
         InitializeShowcases();
         SetUpButtons();
@@ -56,6 +65,7 @@ public class CakeShowcaseController : MonoBehaviour
         {
             cakeShowcases[i] = cakeShowcasePool.GetChild(i).gameObject;
             cakeShowcases[i].GetComponent<CakeShowcase>().cakeShowcaseIndex = i;
+            UpdateShowcaseUI(i);               // 쇼케이스 UI 업데이트
         }
     }
 
@@ -70,17 +80,17 @@ public class CakeShowcaseController : MonoBehaviour
         }
 
         // 메뉴 선택 버튼 설정
-        for (int i = 0; i < CakeShowcaseScrollViewContent.childCount; i++)
+        for (int i = 0; i < cakeShowcaseScrollViewContent.childCount; i++)
         {
             int index = i; // 로컬 변수로 캡처
-            cakeManager.SetupButton(CakeShowcaseScrollViewContent.GetChild(i).GetComponent<Button>(), () => OnMenuSelect(index));
+            cakeManager.SetupButton(cakeShowcaseScrollViewContent.GetChild(i).GetComponent<Button>(), () => OnMenuSelect(index));
         }
     }
 
     // 패널 열기 메서드
     public void OpenPanel(int index)
     {
-        cakeManager.DisableSprites(true);      // 스프라이트 비활성화
+        cakeUIController.DisableSprites(true);      // 스프라이트 비활성화
         cakeShowcasePlace.SetActive(true);     // 케이크 쇼케이스 위치 활성화
         cakeShowcaseIndex = index;             // 선택된 쇼케이스 인덱스 저장
         UpdateUI();                            // UI 업데이트
@@ -117,8 +127,8 @@ public class CakeShowcaseController : MonoBehaviour
         cakeShowcase.isCakeSelected[cakeShowcasePlaceIndex] = true;
         cakeShowcase.cakeType[cakeShowcasePlaceIndex] = index;
         cakeManager.MinusCakeCount(index);
-        cakeManager.CloseMenu(cakeShowcaseMenu);
-        UpdateShowcaseUI(index);               // 쇼케이스 UI 업데이트
+        cakeUIController.CloseMenu(cakeShowcaseMenu);
+        UpdateShowcaseUI(cakeShowcaseIndex);               // 쇼케이스 UI 업데이트
     }
     // 주어진 케이크 인덱스에 해당하는 케이크 위치를 찾는 메서드
     public string[] CakeFind(int cakeIndex)
@@ -166,7 +176,7 @@ public class CakeShowcaseController : MonoBehaviour
         cakeShowcase.isCakeSelected[showcasePlaceIndex] = false;
         UpdateShowcaseUI(showcaseIndex);               // 쇼케이스 UI 업데이트
     }
-    
+
     // 특정 쇼케이스 UI를 업데이트하는 메서드
     public void UpdateShowcaseUI(int index)
     {
@@ -190,32 +200,33 @@ public class CakeShowcaseController : MonoBehaviour
 
     // 전체 UI를 업데이트하는 메서드
     public void UpdateUI()
-    { 
+    {
         // 케이크 쇼케이스 위치 패널 업데이트
         for (int i = 0; i < cakePlaceNum; i++)
         {
-            GameObject placeButton = cakeShowcasePlace.transform.GetChild(i).GetChild(placeButtonNum).gameObject;
-            GameObject placeText = cakeShowcasePlace.transform.GetChild(i).GetChild(placeButtonTextNum).gameObject;
+            GameObject placeText = cakeShowcasePlace.transform.GetChild(i).GetChild((int)PlacePanelElements.Text).gameObject;
+            GameObject placeImage = cakeShowcasePlace.transform.GetChild(i).GetChild((int)PlacePanelElements.Image).gameObject;
             CakeShowcase cakeShowcase = cakeShowcases[cakeShowcaseIndex].GetComponent<CakeShowcase>();
 
-            placeButton.SetActive(cakeShowcase.isCakeSelected[i]);
             placeText.SetActive(!cakeShowcase.isCakeSelected[i]);
+            placeImage.SetActive(cakeShowcase.isCakeSelected[i]);
 
             if (cakeShowcase.isCakeSelected[i])
             {
-                Image placeButtonImage = placeButton.transform.GetChild(placeButtonImageNum).GetComponent<Image>();
+                Image placeButtonImage = placeImage.GetComponent<Image>();
                 placeButtonImage.sprite = cakeManager.cakeSODataList[cakeShowcase.cakeType[i]].itemImage;
             }
         }
         // 케이크 쇼케이스 메뉴 패널 업데이트
-        for (int i = 0; i < CakeShowcaseScrollViewContent.childCount; i++)
+        for (int i = 0; i < cakeShowcaseScrollViewContent.childCount; i++)
         {
-            Transform cakeShowcasePanel = CakeShowcaseScrollViewContent.GetChild(i);
+            Transform cakeShowcasePanel = cakeShowcaseScrollViewContent.GetChild(i);
             var cakeSO = cakeManager.cakeSODataList[i];
 
-            cakeShowcasePanel.GetChild(cakeImageNum).GetComponent<Image>().sprite = cakeSO.itemImage;
-            cakeShowcasePanel.GetChild(cakeCountNum).GetComponent<Text>().text = "보유 수: " + cakeManager.cakeCounts[i];
-            cakeShowcasePanel.GetChild(lockedNum).gameObject.SetActive(cakeSO.isLocked);
+            cakeShowcasePanel.GetChild((int)MenuPanelElements.Image).GetComponent<Image>().sprite = cakeSO.itemImage;
+            cakeShowcasePanel.GetChild((int)MenuPanelElements.Count).GetComponent<Text>().text = "보유 수: " + cakeManager.cakeCounts[i];
+            cakeShowcasePanel.GetChild((int)MenuPanelElements.Price).GetComponent<Text>().text = cakeSO.cakePrice.ToString();
+            cakeShowcasePanel.GetChild((int)MenuPanelElements.Locked).gameObject.SetActive(cakeSO.isLocked);
             cakeShowcasePanel.GetComponent<Button>().interactable = !cakeSO.isLocked;
         }
     }

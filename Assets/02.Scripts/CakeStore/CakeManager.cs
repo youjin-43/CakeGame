@@ -11,12 +11,12 @@ public class CakeManager : MonoBehaviour
 {
     public CakeShowcaseController cakeShowcaseController;
     public CakeMakerController cakeMakerController;
-    public GameObject spritesToDisable;  // 케이크 제작 중 비활성화할 스프라이트 그룹
     public List<CakeSO> cakeSODataList;    // 케이크 데이터를 저장하는 리스트 (Unity Editor에서 설정)
     public int[] cakeCounts;             // 각 케이크의 개수를 관리하는 배열
     private string filePath;             // 케이크 데이터 저장 파일 경로
     public static CakeManager instance;
     public int totalCakeNum = 5;
+    public int cakePlaceNum = 4;
     void Awake()
     {
         // 싱글톤 변수 instance가 비어있는가?
@@ -47,17 +47,9 @@ public class CakeManager : MonoBehaviour
 
         // 케이크 데이터 로드
         LoadCakeData();
-        cakeShowcaseController = GetComponent<CakeShowcaseController>();
-        cakeMakerController = GetComponent<CakeMakerController>();
+        cakeShowcaseController = FindObjectOfType<CakeShowcaseController>();
+        cakeMakerController = FindObjectOfType<CakeMakerController>();
         totalCakeNum = cakeSODataList.Count;
-
-    }
-
-    // 메뉴 닫기 및 스프라이트 재활성화
-    public void CloseMenu(GameObject menu)
-    {
-        DisableSprites(false);
-        menu.SetActive(false);
     }
 
     public void SetupButton(Button button, UnityEngine.Events.UnityAction action)
@@ -65,23 +57,6 @@ public class CakeManager : MonoBehaviour
         if (button != null)
         {
             button.onClick.AddListener(action);
-        }
-    }
-    
-    // 스프라이트의 콜라이더를 활성화/비활성화
-    public void DisableSprites(bool isActive)
-    {
-        Collider2D[] colliders = spritesToDisable.transform.GetComponentsInChildren<Collider2D>();
-        for (int i = 0; i < colliders.Length; i++)
-        {
-            if (colliders[i] != null)
-            {
-                colliders[i].enabled = !isActive;
-                if(colliders[i].GetComponent<CakeMaker>() != null && !isActive)
-                {
-                    colliders[i].GetComponent<CakeMaker>().UpdateColliders();
-                }
-            }
         }
     }
 

@@ -10,18 +10,19 @@ public class CakeShowcase : MonoBehaviour
     public bool[] isCakeSelected;
     public int[] cakeType;
     public int cakeShowcaseIndex;
-    void Start(){
-        
-        CakeShowcaseController cakeShowcaseController = CakeManager.instance.cakeShowcaseController;
-        isCakeSelected = new bool[cakeShowcaseController.cakePlaceNum];
-        cakeType = new int[cakeShowcaseController.cakePlaceNum];
-        cakeImages = new GameObject[cakeShowcaseController.cakePlaceNum];
-        for (int i = 0; i < cakeShowcaseController.cakePlaceNum; i++){
+    void Awake(){
+        InitializeCakeMaker();
+    }
+    void InitializeCakeMaker()
+    {
+        isCakeSelected = new bool[CakeManager.instance.cakePlaceNum];
+        cakeType = new int[CakeManager.instance.cakePlaceNum];
+        cakeImages = new GameObject[CakeManager.instance.cakePlaceNum];
+        for (int i = 0; i < CakeManager.instance.cakePlaceNum; i++){
             isCakeSelected[i] = false;
             cakeType[i] = 0;
             cakeImages[i] = transform.GetChild(i).gameObject;
         }
-        cakeShowcaseController.UpdateShowcaseUI(cakeShowcaseIndex);
     }
     void OnMouseDown()
     {
