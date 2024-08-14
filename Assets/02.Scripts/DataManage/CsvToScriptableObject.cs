@@ -3,9 +3,9 @@ using UnityEditor;
 using System.IO;
 public class CsvToScriptableObject
 {
-    private static string SeedCSVPath = Application.dataPath + "/StreamingAssets/SeedItemSoData.csv";
-    private static string FruitCSVPath = Application.dataPath + "/StreamingAssets/FruitItemSoData.csv";
-    private static string CakeCSVPath = Application.dataPath + "/StreamingAssets/CakeItemSoData.csv";
+    private static string SeedCSVPath = Application.dataPath + "/08.Data/SeedItemSOData.csv";
+    private static string FruitCSVPath = Application.dataPath + "/08.Data/FruitItemSOData.csv";
+    private static string CakeCSVPath = Application.dataPath + "/08.Data/CakeItemSOData.csv";
 
     [MenuItem("Utilities/Generate Seed")]
     public static void GenerateSeed()
