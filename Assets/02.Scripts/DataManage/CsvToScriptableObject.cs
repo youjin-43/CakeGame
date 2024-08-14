@@ -3,7 +3,8 @@ using UnityEditor;
 using System.IO;
 public class CsvToScriptableObject
 {
-    private static string SeedCSVPath = Application.dataPath + "/StreamingAssets/FruitItemSoData.csv";
+    private static string SeedCSVPath = Application.dataPath + "/StreamingAssets/SeedItemSoData.csv";
+    private static string FruitCSVPath = Application.dataPath + "/StreamingAssets/FruitItemSoData.csv";
     private static string CakeCSVPath = Application.dataPath + "/StreamingAssets/CakeItemSoData.csv";
 
     [MenuItem("Utilities/Generate Seed")]
@@ -23,14 +24,45 @@ public class CsvToScriptableObject
             seed.MaxStackSize = int.Parse(splitData[1].ToString());
             seed.Name = splitData[2].ToString();
             seed.Description = splitData[3].ToString();
-            seed.itemImage = (Sprite)AssetDatabase.LoadAssetAtPath($"Assets/04.Images/FruitImange/{seed.Name}.png", typeof(Sprite));
+            seed.itemImage = (Sprite)AssetDatabase.LoadAssetAtPath($"Assets/ImportedAsset/FarmAsset/SeedSprite/{seed.Name}.png", typeof(Sprite));
             seed.itemType = int.Parse(splitData[5].ToString());
 
             //SeedItemSO 변수 
             seed.seedPrice = int.Parse(splitData[6].ToString());
-            seed.seedIdx = int.Parse(splitData[7].ToString()); //csv파일에는 fruit idx로 명시 돼있음 
+            seed.seedIdx = int.Parse(splitData[7].ToString());
+            seed.growDay = int.Parse(splitData[8].ToString()); 
+            
 
-            AssetDatabase.CreateAsset(seed, $"Assets/Resources/SO/SeedSO/{seed.Name}.asset");
+            AssetDatabase.CreateAsset(seed, $"Assets/SO/SeedSO/{seed.Name}.asset");
+        }
+        AssetDatabase.SaveAssets();
+    }
+
+    [MenuItem("Utilities/Generate Fruit")]
+    public static void GenerateFruit()
+    {
+        string[] allLines = File.ReadAllLines(FruitCSVPath);
+
+        for (int i = 1; i < allLines.Length; i++)
+        {
+            string Oneline = allLines[i];
+            string[] splitData = Oneline.Split(',');
+
+            FruitItemSO fruit = ScriptableObject.CreateInstance<FruitItemSO>();
+
+            //ItemSO 변수
+            fruit.IsStackable = (splitData[0].ToString() == "TRUE") ? true : false;
+            fruit.MaxStackSize = int.Parse(splitData[1].ToString());
+            fruit.Name = splitData[2].ToString();
+            fruit.Description = splitData[3].ToString();
+            fruit.itemImage = (Sprite)AssetDatabase.LoadAssetAtPath($"Assets/04.Images/FruitImange/{fruit.Name}.png", typeof(Sprite));
+            fruit.itemType = int.Parse(splitData[5].ToString());
+
+            //SeedItemSO 변수 
+            fruit.fruitPrice = int.Parse(splitData[6].ToString());
+            fruit.fruitIdx = int.Parse(splitData[7].ToString()); //csv파일에는 fruit idx로 명시 돼있음 
+
+            AssetDatabase.CreateAsset(fruit, $"Assets/SO/FruitSO/{fruit.Name}.asset");
         }
         AssetDatabase.SaveAssets();
     }
@@ -74,7 +106,7 @@ public class CsvToScriptableObject
 
             cake.itemImage = (Sprite)AssetDatabase.LoadAssetAtPath($"Assets/04.Images/CakeImage/{cake.cakeIdx}.asset", typeof(Sprite));
 
-            AssetDatabase.CreateAsset(cake, $"Assets/Resources/SO/CakeSO/{cake.Name}.asset");
+            AssetDatabase.CreateAsset(cake, $"Assets/SO/CakeSO/{cake.Name}.asset");
         }
         AssetDatabase.SaveAssets();
     }

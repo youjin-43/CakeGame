@@ -1,0 +1,6 @@
+IsStackable,MaxStackSize,Name,Description,itemImage,itemType,seedPrice,seedIdx,growDay
+TRUE,64,사과씨앗,사과씨앗이다.,,0,100,0,2
+TRUE,64,바나나씨앗,바나나씨앗이다.,,0,100,1,2
+TRUE,64,체리씨앗,체리씨앗이다.,,0,100,2,2
+TRUE,64,오렌지씨앗,오렌지씨앗이다.,,0,100,3,2
+TRUE,64,딸기씨앗,딸기씨앗이다.,,0,100,4,2
