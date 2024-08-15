@@ -40,8 +40,6 @@ public class DataManager : MonoBehaviour
 
     public enum CSVDatas
     {
-        //QuestTable,
-        //SeedTable,
         EventTable
     }
 

@@ -31,9 +31,6 @@ public class QuestManager : MonoBehaviour
         }
     }
 
-
-    //public DataTable QuestDT;
-
     public GameObject QuestBoard; // 정확히는 새로운 퀘스트 UI 프리팹이 들어갈 content
     public GameObject QuestUIprefab;
 
@@ -47,15 +44,12 @@ public class QuestManager : MonoBehaviour
 
     private void Start()
     {
-        //QuestDT = DataManager.instance.tableDic[DataManager.CSVDatas.QuestTable];
-        //Debug.Log("QuestDT.Rows.Count :" + QuestDT.Rows.Count + " - 퀘스트 매니저에서 성공적으로 데이터 테이블을 할당받음!");
-
         //데이터 패스 설정
         SavePath = Application.persistentDataPath + "/Quest/";
         saveFilePath = SavePath + "HavingQuests.json";
 
-        LoadQuestdataBase();
-        LoadHavingQuestsList();
+        LoadQuestdataBase(); //전체 퀘스트 정보 로드 
+        LoadHavingQuestsList(); // 현재 가지고 있는 퀘스트 정보 로드 
     }
 
     //현재 가지고 있는 퀘스트 정보를 업데이트하여 새로 저장하는 함수 
@@ -68,6 +62,7 @@ public class QuestManager : MonoBehaviour
         Debug.Log("HavingQuestsData Save Success: " + saveFilePath);
     }
 
+    //현재 가지고 있는 퀘스트 정보를 로딩하는 함수 
     public void LoadHavingQuestsList()
     {
         if (!File.Exists(saveFilePath))
@@ -81,6 +76,7 @@ public class QuestManager : MonoBehaviour
         havingQuests = JsonUtility.FromJson<HavingQuests>(saveFile);
     }
 
+    //모든 퀘스트 정보를 로딩하는 함수 
     public void LoadQuestdataBase()
     {
         string QuestjsonText = File.ReadAllText(QuestjsonPath);
@@ -92,42 +88,23 @@ public class QuestManager : MonoBehaviour
 
     public void GenQuest()
     {
-
-        //int randNum = Random.Range(0, QuestDT.Rows.Count);
+        //모든 퀘스트 중 랜덤으로 번호를 하나 뽑아 새로 생성할 퀘스트 결정 
         int randNum = Random.Range(0, questDB.QuestList.Count);
         Debug.Log("NewQuestNum : " + randNum);
 
-        //int questID = int.Parse(QuestDT.Rows[randNum][0].ToString());
-        //int questCategory= int.Parse(QuestDT.Rows[randNum][1].ToString());
-        //string explaneText= QuestDT.Rows[randNum][2].ToString();
-        //int deadline= int.Parse(QuestDT.Rows[randNum][3].ToString());
-        //int clearValue= int.Parse(QuestDT.Rows[randNum][4].ToString());
-        //int reward1= int.Parse(QuestDT.Rows[randNum][5].ToString());
-        //int reward1Amount= int.Parse(QuestDT.Rows[randNum][6].ToString());
-
-        //Quest newQuest = new Quest(questID, questCategory, explaneText, deadline, clearValue, reward1, reward1Amount);
-        //Debug.Log("퀘스트 객체 생성 완료 questID : " + questID + ", explaneText : " + explaneText);
-
+        //현재 가지고 있는 퀘스트에 추가 
         havingQuests.HavingQuestList.Add(questDB.QuestList[randNum]);
-        UpdateCurrnetQuestList();
+        UpdateCurrnetQuestList(); // 현재 퀘스트 정보 저장 
 
 
         //퀘스트창에 퀘스트 추가 
         GameObject temp = Instantiate(QuestUIprefab);
-        temp.transform.SetParent(QuestBoard.transform);
+        //temp.transform.SetParent(QuestBoard.transform);
 
-        //SetQuestUItext(temp, newQuest);
-        temp.transform.Find("Title").GetComponent<Text>().text = questDB.QuestList[randNum].ExplaneText;
+
+        //temp.transform.Find("Title").GetComponent<Text>().text = questDB.QuestList[randNum].ExplaneText;
 
     }
-
-    //public void SetQuestUItext(GameObject questUI, Quest quest)
-    //{
-    //    //Debug.Log(questUI.transform.GetChild(0).name);
-    //    questUI.transform.Find("Title").GetComponent<Text>().text = quest.ExplaneText;
-    //    //다른건 나중에 ..
-
-    //}
 
     [System.Serializable]
     public class QuestDB
