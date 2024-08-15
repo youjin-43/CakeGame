@@ -20,13 +20,13 @@ public class CakeShowcase : MonoBehaviour
         cakeImages = new GameObject[CakeManager.instance.cakePlaceNum];
         for (int i = 0; i < CakeManager.instance.cakePlaceNum; i++){
             isCakeSelected[i] = false;
-            cakeType[i] = 0;
+            cakeType[i] = -1;
             cakeImages[i] = transform.GetChild(i).gameObject;
         }
     }
     void OnMouseDown()
     {
-        CakeManager.instance.GetComponent<CakeShowcaseController>().OpenPanel(cakeShowcaseIndex);
+        CakeManager.instance.cakeShowcaseController.OpenPanel(cakeShowcaseIndex);
     }
     public void GetBack()
     {

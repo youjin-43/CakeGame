@@ -131,10 +131,9 @@ public class CakeShowcaseController : MonoBehaviour
         UpdateShowcaseUI(cakeShowcaseIndex);               // 쇼케이스 UI 업데이트
     }
     // 주어진 케이크 인덱스에 해당하는 케이크 위치를 찾는 메서드
-    public string[] CakeFind(int cakeIndex)
+    public List<int> CakeFindIndex(int cakeIndex)
     {
-        List<string> cakeIndexes = new List<string>();
-
+        List<int> cakeShowcaseIndexes = new List<int>();
         // 모든 쇼케이스 및 위치를 순회하며 케이크 위치를 찾음
         for (int i = 0; i < cakeShowcases.Length; i++)
         {
@@ -144,37 +143,46 @@ public class CakeShowcaseController : MonoBehaviour
             {
                 if (cakeShowcase.cakeType[j] == cakeIndex)
                 {
-                    cakeIndexes.Add($"{i},{j}");
+                    cakeShowcaseIndexes.Add(cakeShowcase.cakeShowcaseIndex);
                 }
             }
         }
-
-        return cakeIndexes.ToArray();
-    }
-
-    // 케이크 판매 메서드
-    public void CakeSell(int cakeIndex)
-    {
-        string[] foundCakeIndex = CakeFind(cakeIndex);
-
-        // 케이크 위치가 없을 경우 처리
-        if (foundCakeIndex.Length == 0)
+        if (cakeShowcaseIndexes.Count > 0)
         {
-            Debug.LogWarning("해당 케이크를 찾을 수 없습니다.");
-            return;
+            return cakeShowcaseIndexes;
         }
-
-        int r = UnityEngine.Random.Range(0, foundCakeIndex.Length);
-        string[] locateIndex = foundCakeIndex[r].Split(',');
-
-        int showcaseIndex = int.Parse(locateIndex[0]);
-        int showcasePlaceIndex = int.Parse(locateIndex[1]);
-
-        GameManager.instance.money += cakeManager.cakeSODataList[cakeIndex].cakePrice;
-
+        else
+        {
+            return null;
+        }
+    }
+    public List<int> CakeFindPlace(int showcaseIndex, int cakeIndex)
+    {
+        List<int> cakeShowcasePlaceIndexes = new List<int>();
         CakeShowcase cakeShowcase = cakeShowcases[showcaseIndex].GetComponent<CakeShowcase>();
-        cakeShowcase.isCakeSelected[showcasePlaceIndex] = false;
-        UpdateShowcaseUI(showcaseIndex);               // 쇼케이스 UI 업데이트
+        for (int i = 0; i < cakePlaceNum; i++)
+        {
+            if (cakeShowcase.cakeType[i] == cakeIndex)
+            {
+                cakeShowcasePlaceIndexes.Add(i);
+            }
+        }
+        if (cakeShowcasePlaceIndexes.Count > 0)
+        {
+            return cakeShowcasePlaceIndexes;
+        }
+        else
+        {
+            return null;
+        }
+    }
+    // 케이크 판매 메서드
+    public void CakeSell(int ShowcaseIndex, int ShowcasePlaceIndex)
+    {
+        CakeShowcase cakeShowcase = cakeShowcases[ShowcaseIndex].GetComponent<CakeShowcase>();
+        cakeShowcase.isCakeSelected[ShowcasePlaceIndex] = false;
+        UpdateShowcaseUI(ShowcaseIndex);
+        Debug.Log("케이크를 선택하였습니다.");
     }
 
     // 특정 쇼케이스 UI를 업데이트하는 메서드
