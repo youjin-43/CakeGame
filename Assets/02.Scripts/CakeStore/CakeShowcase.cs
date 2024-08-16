@@ -10,7 +10,7 @@ public class CakeShowcase : MonoBehaviour
     public bool[] isCakeSelected;
     public int[] cakeType;
     public int cakeShowcaseIndex;
-    void OnEnable(){
+    void Start(){
         InitializeCakeMaker();
     }
     void InitializeCakeMaker()
