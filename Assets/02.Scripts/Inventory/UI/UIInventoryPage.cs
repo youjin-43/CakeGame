@@ -32,6 +32,8 @@ public class UIInventoryPage : MonoBehaviour
     [SerializeField]
     public Button sellButton; // 아이템 판매 버튼
     [SerializeField]
+    public Button exitButton; // 아이템 끄기 버튼
+    [SerializeField]
     public int currentMouseClickIndex = -1; // 현재 마우스로 클릭한 아이템의 인덱스..
     [SerializeField]
     public bool isPossible = false;
@@ -244,10 +246,12 @@ public class UIInventoryPage : MonoBehaviour
     public void Show()
     {
         transform.gameObject.SetActive(true);
+        exitButton.gameObject.SetActive(true);
     }
 
     public void Hide()
     {
         transform.gameObject.SetActive(false);
+        exitButton.gameObject.SetActive(false);
     }
 }

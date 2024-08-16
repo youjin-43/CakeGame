@@ -22,7 +22,7 @@ public class InventoryData
 
 
 
-public class UIInventoryController : MonoBehaviour
+public class UIInventoryManager : MonoBehaviour
 {
     // 인벤토리 컨트롤러에서는 인벤토리 UI 와 실제 인벤토리 데이터의 정보를 이용해서 상호작용 하도록 함..
     [SerializeField]
@@ -47,7 +47,7 @@ public class UIInventoryController : MonoBehaviour
     public Button inventoryOpenButton; // 인벤토리를 켜고 닫는 버튼..
 
     [SerializeField]
-    public static UIInventoryController instance; // 싱글톤 이용하기 위한 변수..
+    public static UIInventoryManager instance; // 싱글톤 이용하기 위한 변수..
 
 
 
@@ -74,6 +74,9 @@ public class UIInventoryController : MonoBehaviour
     [SerializeField]
     public ItemSellPanel itemSellPanel; // 아이템 판매 판넬
 
+
+    [Header("Close Farm Interaction Button")]
+    public GameObject buttonParentGameObject; // 인벤토리 UI 띄우면 버튼 안 보이도록 하기 위함..
 
 
     [Header("Save Data")]
@@ -105,6 +108,7 @@ public class UIInventoryController : MonoBehaviour
     SceneManager.sceneLoaded 이벤트를 구독하여 씬이 로드될 때 필요한 초기화 작업을 수행할 수 있습니다. 
 
      */
+
 
 
     void Awake()
@@ -143,6 +147,39 @@ public class UIInventoryController : MonoBehaviour
 
 
 
+    public void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            if (inventoryUI.isActiveAndEnabled == false)
+            {
+                SetCurInventoryDataSeed(); // 인벤토리 창 켜질때는 씨앗을 기준으로 켜지도록..
+                buttonParentGameObject.SetActive(false); // 농사 버튼 다 안 보이도록..
+                inventoryUI.Show();
+            }
+            else
+            {
+                buttonParentGameObject.SetActive(true); // 농사 버튼 다시 다 보이도록..
+                inventoryUI.Hide();
+            }
+
+
+            seedButton.gameObject.SetActive(inventoryUI.isActiveAndEnabled);
+            fruitButton.gameObject.SetActive(inventoryUI.isActiveAndEnabled);
+            inventoryUI.ResetDescription(); // 설명창 리셋해주기.. 
+            inventoryUI.sellButtonPanel.gameObject.SetActive(false); // 판매 버튼 판넬도 꺼주기..
+        }
+
+
+        // 임시 확인 코드
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            //SaveInventoryData();
+            //LoadInventoryData();
+        }
+    }
+
+
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         // 씬이 완전히 로드될 때까지 기다린 후 코루틴 시작..
@@ -167,54 +204,36 @@ public class UIInventoryController : MonoBehaviour
         // 씬을 전환하면 이 클래스가 참조하고 있던 게임오브젝트들이 날아감..
         // 그래서 현재 씬에서 타입에 맞는 게임오브젝트를 찾아서 연결해줄것..
         // 씬에서 필요한 게임 오브젝트 찾기
-        inventoryUI = FindObjectOfType<UIInventoryPage>();
-        itemSellPanel = FindObjectOfType<ItemSellPanel>();
+        // 부모가 활성화 되어 있으면 활성화 되어 있지 않은 자식도 찾을수 있다고 해서 활성화 끄고 시작한 게임 오브젝트의
+        // 부모를 먼저 찾은 다음 자식을 찾아서 넣어줌!!
+        // 이제 끄고 시작해도 괜찮!!
+        inventoryUI = GameObject.Find("InGameMenu").transform.Find("Inventory").GetComponent<UIInventoryPage>();
+        itemSellPanel = GameObject.Find("InventoryCanvas").transform.Find("SellItemPanel").GetComponent<ItemSellPanel>();
 
-        // ?. 를 이용해서 null 인지 아닌지 판단함..
-        // seedContainer 랑 fruitcontainer 는 농장 씬에만 있도록 할거라서 다른 씬에서는 값이 null 로 설정되어 있을 것..
-        seedButton = GameObject.Find("SeedButton")?.GetComponent<Button>();
-        fruitButton = GameObject.Find("FruitButton")?.GetComponent<Button>();
+        seedButton = GameObject.Find("InventoryUI").transform.Find("SeedButton").GetComponent<Button>();
+        fruitButton = GameObject.Find("InventoryUI").transform.Find("FruitButton").GetComponent<Button>();
+        // GameObject 는 GetComponent 로 찾는게 아니라 그냥 gameObject 쓰면 됨..
+        buttonParentGameObject = GameObject.Find("FarmButtonUICanvas").transform.Find("PlowPlantHarvestButtonsParent").gameObject;
+
+
+        //// ?. 를 이용해서 null 인지 아닌지 판단함..
+        //// seedContainer 랑 fruitcontainer 는 농장 씬에만 있도록 할거라서 다른 씬에서는 값이 null 로 설정되어 있을 것..
         seedContainer = GameObject.Find("SeedContainer")?.GetComponent<SeedContainer>();
         fruitContainer = GameObject.Find("FruitContainer")?.GetComponent<FruitContainer>();
+
         inventoryOpenButton = GameObject.Find("InventoryOpenButton")?.GetComponent<Button>();
+
 
         // 일단 다 끈 상태로 시작..
         inventoryUI.gameObject.SetActive(false);
+        inventoryUI.exitButton.gameObject.SetActive(false);
         seedButton.gameObject.SetActive(false);
         fruitButton.gameObject.SetActive(false);
         itemSellPanel.gameObject.SetActive(false);
-    }
 
 
-
-    public void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.I))
-        {
-            if (inventoryUI.isActiveAndEnabled == false)
-            {
-                SetCurInventoryDataSeed(); // 인벤토리 창 켜질때는 씨앗을 기준으로 켜지도록..
-                inventoryUI.Show();
-            }
-            else
-            {
-                inventoryUI.Hide();
-            }
-
-            // 인벤토리 창이 켜졌는지 여부에 따라 씨앗, 과일 인벤토리창 선택 버튼도 켜질지 꺼질지 결정..
-            seedButton.gameObject.SetActive(inventoryUI.isActiveAndEnabled);
-            fruitButton.gameObject.SetActive(inventoryUI.isActiveAndEnabled);
-            inventoryUI.ResetDescription(); // 설명창 리셋해주기.. 
-            inventoryUI.sellButtonPanel.gameObject.SetActive(false); // 판매 버튼 판넬도 꺼주기..
-        }
-
-
-        // 임시 확인 코드
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            //SaveInventoryData();
-            //LoadInventoryData();
-        }
+        // 인벤토리 끄기 버튼에 함수 연결..
+        inventoryUI.exitButton.onClick.AddListener(OpenInventoryUI);
     }
 
 
@@ -478,16 +497,17 @@ public class UIInventoryController : MonoBehaviour
         inventoryUI.OnSwapItems += HandleSwapItems;
     }
 
-
     private void OpenInventoryUI()
     {
         if (inventoryUI.isActiveAndEnabled == false)
         {
             SetCurInventoryDataSeed(); // 인벤토리 창 켜질때는 씨앗을 기준으로 켜지도록..
+            buttonParentGameObject.SetActive(false); // 농사 버튼 다 안 보이도록.. 
             inventoryUI.Show();
         }
         else
         {
+            buttonParentGameObject.SetActive(true); // 농사 버튼 다시 다 보이도록..
             inventoryUI.Hide();
         }
 

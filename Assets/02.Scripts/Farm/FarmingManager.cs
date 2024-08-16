@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -12,6 +13,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using static UnityEditor.PlayerSettings;
+using Random = UnityEngine.Random;
 
 
 
@@ -114,6 +116,8 @@ public class SaveFarmingData
     [SerializeField]
     public bool harvestEnableState; // 작물이 다 자란 상태인지 여부 확인용
     [SerializeField]
+    public bool failedState; // 농작물이 망한 상태인지 여부 확인용
+    [SerializeField]
     public string currentState; // 농사 땅 상태..
 
     // 씨앗 데이터
@@ -145,6 +149,8 @@ class FarmingData
     public bool plantEnableState; // 씨앗을 심을 수 있는 상태인지 여부 확인용
     [SerializeField]
     public bool harvestEnableState; // 작물이 다 자란 상태인지 여부 확인용
+    [SerializeField]
+    public bool failedState; // 농작물이 망한 상태인지 여부 확인용
 
 
     /*
@@ -153,10 +159,10 @@ class FarmingData
      => 일반적인 경우는 UI 요소들은 직렬화에서 제외한다고 함..
      */
     [NonSerialized] public Button stateButton; // 타일을 누르면 타일 위에 뜨도록 하는 버튼
-    [NonSerialized] public Button[] buttons; // [0]: plow 버튼, [1]: plant 버튼, [2]: harvest 버튼
+    [NonSerialized] public Button[] buttons; // [0]: plow 버튼, [1]: plant 버튼, [2]: harvest 버튼, [3]: failed 버튼
 
     [SerializeField]
-    public string currentState = "None"; // 현재 상태(초기에는 아무것도 안 한 상태니까 None 으로.. -> plow: 밭 갈린 상태, plant: 씨앗 심은 상태, harvest: 다 자란 상태)
+    public string currentState = "None"; // 현재 상태(초기에는 아무것도 안 한 상태니까 None 으로.. -> plow: 밭 갈린 상태, plant: 씨앗 심은 상태, harvest: 다 자란 상태, failed: 망한 상태)
 
 
 
@@ -187,7 +193,9 @@ public class FarmingManager : MonoBehaviour
     public Camera mainCamera; // 마우스 좌표를 게임 월드 좌표로 변환하기 위해 필요한 변수(카메라 오브젝트 할당해줄 것)
     public SeedContainer seedContainer; // 현재 가진 씨앗을 가져오기 위해 필요한 변수(씨앗 컨테이너 게임 오브젝트 할당해줄 것)
     public FruitContainer fruitContainer; // 수확한 과일을 저장하기 위해 필요한 변수(과일 컨테이너 게임 오브젝트 할당해줄 것)
-    public UIInventoryController inventoryController; // 인벤토리 관리하기 위해 필요한 변수(인벤토리 매니저 게임 오브젝트 할당해줄 것) 
+    public UIInventoryManager inventoryController; // 인벤토리 관리하기 위해 필요한 변수(인벤토리 매니저 게임 오브젝트 할당해줄 것) 
+    public AnimalInteractionManager animalInteractionManager; // 너구리 미니 게임을 관리하기 위해 필요한 변수(애니멀 인터랙션 매니저 게임 오브젝트 할당해줄 것)
+    public GameObject farmButtonsParent;
     public Canvas canvas;
 
     // 아이템 스크립터블 오브젝트를 저장해놓기..
@@ -201,6 +209,7 @@ public class FarmingManager : MonoBehaviour
     public TileBase farmTile; // 밭 간 후 상태
     public TileBase plantTile; // 씨앗 심은 후 상태
     public TileBase harvestTile; // 과일 다 자란 상태
+    public TileBase failedTile; // 땅 망한 상태
     public Vector3Int prevSelectTile; // 이전 클릭된 타일
 
     [Header("Tilemap")]
@@ -209,7 +218,7 @@ public class FarmingManager : MonoBehaviour
 
     [Header("Farm interaction Button")]
     // 버튼을 프리팹으로 만들어 놓은 다음 동적으로 생성해서 쓸 것.
-    public GameObject[] buttonPrefabs; // [0]: plow 버튼, [1]: plant 버튼, [2]: harvest 버튼
+    public GameObject[] buttonPrefabs; // [0]: plow 버튼, [1]: plant 버튼, [2]: harvest 버튼, [3]: failed 버튼
     public GameObject buttonParent; // 버튼 생성할 때 부모 지정하기 위한 변수
 
     [Header("Farm interaction Panel")]
@@ -256,6 +265,7 @@ public class FarmingManager : MonoBehaviour
                 plowEnableState = farmingData[item.Key].plowEnableState,
                 plantEnableState = farmingData[item.Key].plantEnableState,
                 harvestEnableState = farmingData[item.Key].harvestEnableState,
+                failedState = farmingData[item.Key].failedState,
                 currentState = farmingData[item.Key].currentState
             };
 
@@ -340,6 +350,11 @@ public class FarmingManager : MonoBehaviour
                         farmingData[pos].stateButton = farmingData[pos].buttons[2];
                         farmTilemap.SetTile(pos, harvestTile); // 타일을 다 자란 모습으로 변경..
                         break;
+
+                    case "failed":
+                        farmingData[pos].stateButton = farmingData[pos].buttons[3];
+                        farmTilemap.SetTile(pos, failedTile); // 타일을 망한 모습으로 변경..
+                        break;
                 }
 
 
@@ -347,6 +362,7 @@ public class FarmingManager : MonoBehaviour
                 farmingData[pos].plowEnableState = tempDic[item.Key].plowEnableState;
                 farmingData[pos].plantEnableState = tempDic[item.Key].plantEnableState;
                 farmingData[pos].harvestEnableState = tempDic[item.Key].harvestEnableState;
+                farmingData[pos].failedState = tempDic[item.Key].failedState;
                 farmingData[pos].currentState = tempDic[item.Key].currentState;
 
 
@@ -371,6 +387,10 @@ public class FarmingManager : MonoBehaviour
 
     private void Awake()
     {
+        // 델리게이트에 씬 로드 시 참조를 재설정하는 함수 연결..
+        SceneManager.sceneLoaded += OnSceneLoaded;
+
+
         // 데이터 저장 경로 설정..
         farmingDataFilePath = Path.Combine(Application.persistentDataPath, "FarmingData.json"); // 데이터 경로 설정..
 
@@ -378,6 +398,7 @@ public class FarmingManager : MonoBehaviour
         farmingData = new Dictionary<Vector3Int, FarmingData>(); // 딕셔너리 생성
         clickPosition = Vector2.zero;
 
+        animalInteractionManager.OnFailRequested += FailFarm; // 델리게이트에 함수 연결해주기..
     }
 
 
@@ -392,9 +413,8 @@ public class FarmingManager : MonoBehaviour
         }
 
 
-
         // 농사 땅 레벨 데이터 불러오기..
-        //farmLevel = PlayerPrefs.GetInt("FarmLevel");
+        farmLevel = PlayerPrefs.GetInt("FarmLevel");
         // 농사 땅 레벨 데이터를 불러온 다음에 레벨 데이터에 맞게끔 땅 업그레이드 해주기.. 
         while (farmLevel > 0)
         {
@@ -404,14 +424,6 @@ public class FarmingManager : MonoBehaviour
 
 
         LoadFarmingData(); // 데이터 가져오기..
-
-
-
-
-
-
-
-
 
 
         // LoadFarmingData 로 데이터를 가져왔으므로 이제 가능
@@ -472,7 +484,9 @@ public class FarmingManager : MonoBehaviour
 
 
         //GrowTimeUpdate(); // 과일이 다 자라기까지 남은 시간 업데이트 해주는 함수..
+
         CheckGrowedFruit(); // 과일이 다 자랐는지 확인하고, 다 자랐으면 그에 맞는 행동을 하도록 해주는 함수..
+        CheckFailedFarm(); // 농사땅이 망했는지 확인하고, 망했으면 그에 맞는 행동을 하도록 해주는 함수..
 
 
         // 씨앗 선택창에서 버튼 클릭하면 진입하도록..
@@ -485,7 +499,7 @@ public class FarmingManager : MonoBehaviour
 
         // 확인용 로직..
         if (Input.GetKeyDown(KeyCode.W))
-            SaveFarmingData();
+            FailFarm(3);
     }
 
 
@@ -510,7 +524,6 @@ public class FarmingManager : MonoBehaviour
         cellPosition = farmTilemap.WorldToCell(clickPosition);
 
 
-
         foreach (Vector3Int pos in farmingData.Keys)
         {
             // 저장해놓은 타일 중에 현재 마우스로 클릭한 위치랑 같은 타일이 있으면
@@ -523,8 +536,8 @@ public class FarmingManager : MonoBehaviour
                 }
                 else
                 {
-                    // 씨앗이 안 심어져 있을 때 또는 씨앗이 다 자랐을 때 버튼 뜰 수 있도록
-                    if (farmingData[cellPosition].seedOnTile == false || farmingData[cellPosition].isGrown)
+                    // 씨앗이 안 심어져 있을 때 버튼 뜰 수 있도록
+                    if (farmingData[cellPosition].seedOnTile == false)
                     {
                         farmingData[cellPosition].stateButton.gameObject.SetActive(true);
                     }
@@ -532,7 +545,7 @@ public class FarmingManager : MonoBehaviour
                     else if (!farmingData[cellPosition].isGrown)
                     {
                         // 판넬 위치를 현재 클릭한 타일 위치로..
-                        growTimePanel.transform.position = mainCamera.WorldToScreenPoint(farmTilemap.CellToWorld(cellPosition)) + new Vector3(0, 50, 0);
+                        growTimePanel.transform.position = mainCamera.WorldToScreenPoint(farmTilemap.CellToWorld(cellPosition)) + new Vector3(0, 100, 0);
                         growTimePanel.SetActive(true);
 
                         growTimeText.text = "남은일수\n" + (seedItems[farmingData[cellPosition].seedIdx].growDay - farmingData[cellPosition].curDay);
@@ -543,6 +556,7 @@ public class FarmingManager : MonoBehaviour
 
         prevSelectTile = cellPosition; // 지금 누른 타일을 이전에 누른 타일 위치를 저장하는 변수에 저장..
     }
+
 
     private void FarmingSystemMobile()
     {
@@ -640,6 +654,82 @@ public class FarmingManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void CheckFailedFarm()
+    {
+        // 농사가 망했는지 안 망했는지 판단하는 함수..
+
+        foreach (Vector3Int pos in farmingData.Keys)
+        {
+            // 농사땅 망했으면
+            if (farmingData[pos].failedState)
+            {
+                farmTilemap.SetTile(pos, failedTile); // 일단 임시로
+                farmingData[pos].stateButton.gameObject.SetActive(true); // 망한거 없애기 버튼은 항상 떠있어야 함
+            }
+        }
+    }
+
+    public void FailFarm(int count)
+    {
+        // 매개변수만큼 농사 망치는 함수
+        int cnt = 0;
+        List<Vector3Int> randomList = new List<Vector3Int>();
+        foreach (Vector3Int pos in farmingData.Keys)
+        {
+            // 땅에 씨앗이 있는 상태만 리스트에 넣기..
+            if (farmingData[pos].seedOnTile) randomList.Add(pos);
+        }
+
+        // 땅에 아무것도 안 되어있는 상태면 망칠게 없으니까 그냥 빠져나오도록.. 
+        if (randomList.Count == 0) return; 
+
+        if (randomList.Count < count)
+        {
+            while (cnt < randomList.Count)
+            {
+                int random = Random.Range(0, randomList.Count);
+
+                // 이미 땅이 망해있는 상태면 넘어가도록..
+                if (farmingData[randomList[random]].failedState) continue;
+                else
+                {
+                    farmingData[randomList[random]].stateButton = farmingData[randomList[random]].buttons[3]; // 망함 버튼으로 바꾸기
+                    farmingData[randomList[random]].seedOnTile = false;
+                    farmingData[randomList[random]].currentState = "failed";
+                    farmingData[randomList[random]].plowEnableState = false;
+                    farmingData[randomList[random]].plantEnableState = false;
+                    farmingData[randomList[random]].harvestEnableState = false;
+                    farmingData[randomList[random]].failedState = true;
+                    cnt++;
+                }
+            }
+        } 
+        else
+        {
+            while (cnt < count)
+            {
+                int random = Random.Range(0, randomList.Count);
+
+                // 이미 땅이 망해있는 상태면 넘어가도록..
+                if (farmingData[randomList[random]].failedState) continue;
+                else
+                {
+                    farmingData[randomList[random]].stateButton = farmingData[randomList[random]].buttons[3]; // 망함 버튼으로 바꾸기
+                    farmingData[randomList[random]].seedOnTile = false;
+                    farmingData[randomList[random]].currentState = "failed";
+                    farmingData[randomList[random]].plowEnableState = false;
+                    farmingData[randomList[random]].plantEnableState = false;
+                    farmingData[randomList[random]].harvestEnableState = false;
+                    farmingData[randomList[random]].failedState = true;
+                    cnt++;
+                }
+            }
+        }
+
+
+        SaveFarmingData(); // 데이터 저장!
     }
 
     private bool IsPointerOverUIObjectPC()
@@ -772,6 +862,29 @@ public class FarmingManager : MonoBehaviour
         SaveFarmingData();
     }
 
+    public void FailedTile(Vector3Int pos)
+    {
+        // 농사땅 망했으면 그냥 맨 초기 상태로 돌리는 로직..
+
+        farmingData[pos].plowEnableState = true;
+        farmingData[pos].currentState = "None"; // 과일을 수확한 상태니까 None 으로 바꿔주기
+
+        farmingData[pos].stateButton.gameObject.SetActive(false); // 버튼 한 번 눌렀으니까 꺼지도록..
+        farmingData[pos].stateButton = farmingData[pos].buttons[0]; // plow 버튼을 가지고 있도록..
+        farmingData[pos].seedOnTile = false; // 수확했으니까 seedOnTile 변수의 값을 다시 false 로 설정해주기..
+        farmingData[pos].seedIdx = -1; // 씨앗 인덱스 다시 -1로 바꿔주기..
+        farmingData[pos].curDay = 0; // 씨앗 심은 후 지난 일자 다시 0으로 바꿔주기..
+        farmingData[pos].isGrown = false; // 이제 땅에 아무것도 없으므로 isGrown 값도 false 로 바꿔주기..
+
+        farmingData[pos].failedState = false;
+
+
+        farmTilemap.SetTile(pos, grassTile); // 타일 모습을 초기 상태로 바꿔주기
+
+        // 저장하기
+        SaveFarmingData();
+    }
+
 
     public void BuySeed(int count, int idx)
     {
@@ -835,9 +948,9 @@ public class FarmingManager : MonoBehaviour
         // 유니티에서는 new 를 쓰려면 class 가 MonoBehaviour 를 상속 받으면 안 됨.
         farmingData[pos] = new FarmingData();
         farmingData[pos].SetData();
-        farmingData[pos].buttons = new Button[3]; // [0]: plow 버튼, [1]: plant 버튼, [2]: harvest 버튼
+        farmingData[pos].buttons = new Button[buttonPrefabs.Length]; // [0]: plow 버튼, [1]: plant 버튼, [2]: harvest 버튼, [3]: failed 버튼
 
-        // 각 타일마다 세 개의 버튼을 가지고 시작하도록..
+        // 각 타일마다 네 개의 버튼을 가지고 시작하도록..
         for (int i = 0; i < buttonPrefabs.Length; i++)
         {
             // 클로저 문제를 피하기 위해서 값을 변수에 저장해놓고 이 변수를 사용함..
@@ -858,6 +971,10 @@ public class FarmingManager : MonoBehaviour
             else if (index == 2)
             {
                 farmingData[tilePos].buttons[index].onClick.AddListener(() => HarvestTile(tilePos));
+            }
+            else if (index == 3)
+            {
+                farmingData[tilePos].buttons[index].onClick.AddListener(() => FailedTile(tilePos));
             }
         }
 
@@ -1017,5 +1134,32 @@ public class FarmingManager : MonoBehaviour
         farmLevel++; // 농장 레벨 증가
         PlayerPrefs.SetInt("FarmLevel", farmLevel); // 농장 레벨 저장..
         Debug.Log("농장을 업그레이드 했다!");
+    }
+
+
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // 씬이 완전히 로드될 때까지 기다린 후 코루틴 시작..
+        StartCoroutine(InitializeAfterSceneLoad());
+    }
+
+    private IEnumerator InitializeAfterSceneLoad()
+    {
+        yield return null;
+
+        if (Random.Range(0, 1) == 0)
+        {
+            animalInteractionManager.UICanvas.gameObject.SetActive(true);
+
+            // 여기 매개변수로 전해지는 값은 현재 허수아비 레벨에 따라 달라지도록 하는게 좋을 것 같다..
+            // 허수아비 레벨 올라갈수록 수가 작아지도록..
+            // 일단은 임의로 잡아야하는 너구리의 수 15 마리로 해놓음..
+            animalInteractionManager.SetAnimalCount(15); 
+        }
+        else
+        {
+            UIInventoryManager.instance.buttonParentGameObject.SetActive(true);
+        }
     }
 }

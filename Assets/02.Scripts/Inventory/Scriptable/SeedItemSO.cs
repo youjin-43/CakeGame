@@ -13,9 +13,6 @@ public class SeedItemSO : ItemSO
     public int seedPrice; // 씨앗 구매 가격
 
     [SerializeField]
-    public float growTime; // 성장하는데 걸리는 시간
-
-    [SerializeField]
     public int seedIdx; // 씨앗 인덱스
 
 
