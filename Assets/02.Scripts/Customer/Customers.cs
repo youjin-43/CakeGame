@@ -4,34 +4,41 @@ using UnityEngine;
 
 public class Customers : MonoBehaviour
 {
-    private List<Vector2> pathPoints;   // 이동 경로
-    private Vector2 pathLine;
-    private float moveSpeed;            // 이동 속도
-    private float lineSpacing;          // 줄서기 간격
-    private float sideSpacing;          // 옆 간격
+    // 기존 코드 유지
+    private List<Vector2> pathPoints;
+    private float originMoveSpeed;
+    private float moveSpeed;
+    private float lineSpacing;
+    private float sideSpacing;
+    public int wantedCakeIndex;
     private int currentPointIndex = 0;
-    private Vector2 targetPosition;
-    private bool isMoving = true;
+    private int randomIndex = 0;
+    private int randomShowcaseIndex;
+    private float randomTime = 0;
+    private float timer;
     private CustomersManager customersManager;
-    private Transform frontCustomer, firstCustomer;
-    private LineType lineType;
+    private Transform frontCustomer;
+    private CustomersMoveType.LineType lineType;
+    private CustomersMoveType.EnterType enterType;
+    private CustomersMoveType.ShopType shopType;
+    public CustomersMoveType.MoveType moveType;
+    private Vector2 linePostion, enterOutPosition, enterInPosition, cashierPosition;
+    private Transform[] showcasePosition;
+    private Vector2 targetPosition;
 
-    enum LineType
-    {
-        None,
-        Start,
-        During,
-        End
-    }
-
-    public void Initialize(List<Vector2> pathPoints, Vector2 pathLine, float moveSpeed, float lineSpacing, float sideSpacing, CustomersManager manager)
+    public void Initialize(List<Vector2> pathPoints, Vector2 linePostion, Vector2 enterOutPosition, Vector2 enterInPosition, Vector2 cashierPosition, float moveSpeed, float lineSpacing, float sideSpacing, int wantedCakeIndex, CustomersManager customersManager)
     {
         this.pathPoints = pathPoints;
-        this.pathLine = pathLine;
+        this.linePostion = linePostion;
+        this.enterOutPosition = enterOutPosition;
+        this.enterInPosition = enterInPosition;
+        this.cashierPosition = cashierPosition;
+        originMoveSpeed = moveSpeed;
         this.moveSpeed = moveSpeed;
         this.lineSpacing = lineSpacing;
         this.sideSpacing = sideSpacing;
-        this.customersManager = manager;
+        this.wantedCakeIndex = wantedCakeIndex;
+        this.customersManager = customersManager;
 
         if (pathPoints.Count > 0)
         {
@@ -41,37 +48,48 @@ public class Customers : MonoBehaviour
 
     void Update()
     {
-        if (isMoving)
+        switch (moveType)
         {
-            MoveAlongPath();
+            case CustomersMoveType.MoveType.Move:
+                MoveAlongPath();
+                break;
+            case CustomersMoveType.MoveType.Line:
+                GoToLineUp();
+                break;
+            case CustomersMoveType.MoveType.Enter:
+                GoToEnter();
+                break;
+            case CustomersMoveType.MoveType.Random:
+                GoToRandom();
+                break;
+            case CustomersMoveType.MoveType.Shop:
+                customersManager.customersList.Remove(this);
+                GoToShop();
+                break;
         }
-        else
+    }
+
+    void MoveTo()
+    {
+        if (Vector2.Distance(transform.position, targetPosition) > 0.01f)
         {
-            switch (lineType)
-            {
-                case LineType.Start:
-                    LineUpStart();
-                    break;
-                case LineType.During:
-                    LineUpDuring();
-                    break;
-                case LineType.End:
-                    LineUpEnd();
-                    break;
-            }
+            transform.position = Vector2.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
         }
+    }
+
+    void UpdateCustomer()
+    {
+        frontCustomer = customersManager.GetFrontCustomer(this);
     }
 
     void MoveAlongPath()
     {
         if (Vector2.Distance(transform.position, targetPosition) > 0.01f)
         {
-            // 현재 위치에서 타겟 위치로 부드럽게 이동
-            transform.position = Vector2.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
+            MoveTo();
         }
         else
         {
-            // 다음 지점으로 타겟 변경
             currentPointIndex++;
             if (currentPointIndex < pathPoints.Count)
             {
@@ -79,84 +97,183 @@ public class Customers : MonoBehaviour
             }
             else
             {
-
-                isMoving = false;
-                lineType = LineType.Start;
-                frontCustomer = customersManager.GetFrontCustomer(this);
-                firstCustomer = customersManager.GetFirstCustomer(this);
+                moveType = CustomersMoveType.MoveType.Line;
+                lineType = CustomersMoveType.LineType.Start;
+                UpdateCustomer();
             }
         }
     }
 
-    void LineUpStart()
+    void GoToLineUp()
     {
-        if (frontCustomer != null)
+        switch (lineType)
         {
-            // 옆으로 이동하는 위치를 계산
-            Vector2 firstPosition = (Vector2)firstCustomer.position + ((2*Vector2.right+Vector2.down) * sideSpacing);
-            if (Vector2.Distance(transform.position, firstPosition) > 0.01f)
-            {
-                transform.position = Vector2.MoveTowards(transform.position, firstPosition, moveSpeed * Time.deltaTime);
-            }
-            else
-            {
-                // 옆으로 이동한 후, 줄 서는 중으로 상태 변경
-                lineType = LineType.During;
-            }
-        }
-        else
-        {
-            if (Vector2.Distance(transform.position, pathLine) > 0.01f)
-            {
-                transform.position = Vector2.MoveTowards(transform.position, pathLine, moveSpeed * Time.deltaTime);
-            }
-            // 줄의 첫 번째 고객인 경우 바로 During으로 넘어갑니다.
-            else lineType = LineType.During;
+            case CustomersMoveType.LineType.Start:
+                if (frontCustomer != null)
+                {
+                    targetPosition = linePostion + ((2 * Vector2.right + Vector2.down) * sideSpacing);
+                }
+                else
+                {
+                    targetPosition = linePostion;
+                }
+                MoveTo();
+                if (Vector2.Distance(transform.position, targetPosition) <= 0.01f) lineType = CustomersMoveType.LineType.During;
+                break;
+            case CustomersMoveType.LineType.During:
+                if (frontCustomer != null)
+                {
+                    targetPosition = linePostion + customersManager.GetCustomerNum(this) * ((2 * Vector2.right + Vector2.up) * lineSpacing) + ((2 * Vector2.right + Vector2.down) * sideSpacing);
+                    MoveTo();
+                    if (Vector2.Distance(transform.position, targetPosition) <= 0.01f) lineType = CustomersMoveType.LineType.End;
+                }
+                else
+                {
+                    lineType = CustomersMoveType.LineType.End;
+                }
+                break;
+            case CustomersMoveType.LineType.End:
+                if (frontCustomer != null)
+                {
+                    targetPosition = linePostion + customersManager.GetCustomerNum(this) * ((2 * Vector2.right + Vector2.up) * lineSpacing);
+
+                    if (Vector2.Distance(transform.position, targetPosition) > 0.01f)
+                    {
+                        MoveTo();
+                    }
+                    else if (frontCustomer.GetComponent<Customers>().moveType == CustomersMoveType.MoveType.Shop)
+                    {
+                        lineType = CustomersMoveType.LineType.None;
+                        moveType = CustomersMoveType.MoveType.Enter;
+                        enterType = CustomersMoveType.EnterType.Out;
+                        UpdateCustomer();
+                    }
+
+                }
+                else
+                {
+                    moveSpeed = originMoveSpeed / 2;
+                    lineType = CustomersMoveType.LineType.None;
+                    moveType = CustomersMoveType.MoveType.Enter;
+                    enterType = CustomersMoveType.EnterType.Out;
+                    UpdateCustomer();
+                }
+                break;
         }
     }
 
-    void LineUpDuring()
+    void GoToEnter()
     {
-        if (frontCustomer != null)
+        switch (enterType)
         {
-            // 줄 서는 위치를 계산
-            Vector2 EndPosition = (Vector2)frontCustomer.position + ((2*Vector2.right+Vector2.up) * lineSpacing); // 앞 Customers 위치에서 간격을 둠
-            Vector2 lastPosition = EndPosition + ((2*Vector2.right+Vector2.down) * sideSpacing);
-            if (Vector2.Distance(transform.position, lastPosition) > 0.01f)
-            {
-                transform.position = Vector2.MoveTowards(transform.position, lastPosition, moveSpeed * Time.deltaTime);
-            }
-            else
-            {
-                // 줄 서기 완료 후 End 상태로 변경
-                lineType = LineType.End;
-            }
-        }
-        else
-        {
-            lineType = LineType.End; // 첫 번째 고객은 바로 줄 서기를 완료
+            case CustomersMoveType.EnterType.Out:
+                targetPosition = enterOutPosition;
+                MoveTo();
+                if (Vector2.Distance(transform.position, targetPosition) <= 0.01f) enterType = CustomersMoveType.EnterType.In;
+                break;
+            case CustomersMoveType.EnterType.In:
+                targetPosition = enterInPosition;
+                MoveTo();
+                if (Vector2.Distance(transform.position, targetPosition) <= 0.01f)
+                {
+                    CakeShowcaseController cakeShowcaseController = CakeManager.instance.cakeShowcaseController;
+                    showcasePosition = new Transform[cakeShowcaseController.cakeShowcasePool.childCount];
+                    timer = 0;
+                    randomTime = Random.Range(4, 7);
+                    for (int i = 0; i < cakeShowcaseController.cakeShowcasePool.childCount; i++)
+                    {
+                        showcasePosition[i] = cakeShowcaseController.cakeShowcasePool.GetChild(i).GetChild(7).transform;
+                    }
+                    enterType = CustomersMoveType.EnterType.None;
+                    moveType = CustomersMoveType.MoveType.Random;
+                    UpdateCustomer();
+                }
+                break;
         }
     }
 
-    void LineUpEnd()
+    void GoToRandom()
     {
-        if (frontCustomer != null)
+        timer += Time.deltaTime;
+        if (Vector2.Distance(transform.position, targetPosition) <= 0.01f)
         {
-            Vector2 EndPosition = (Vector2)frontCustomer.position + ((2*Vector2.right+Vector2.up) * lineSpacing); // 앞 Customers 위치에서 간격을 둠
-            if (Vector2.Distance(transform.position, EndPosition) > 0.01f)
-            {
-                transform.position = Vector2.MoveTowards(transform.position, EndPosition, moveSpeed * Time.deltaTime);
-            }// 줄 서기 완료 후 추가적인 동작을 하지 않음
-            else
-            {
-                lineType = LineType.None;
-            }
-
+            StartCoroutine(StopForSeconds(1f)); // 3초 멈춤
+            randomIndex = Random.Range(0, showcasePosition.Length);
+            targetPosition = showcasePosition[randomIndex].position;
         }
         else
         {
-            // 줄의 첫 번째 고객인 경우 바로 During으로 넘어갑니다.
-            lineType = LineType.None;
+            MoveTo();
         }
+        if (timer > randomTime)
+        {
+            moveType = CustomersMoveType.MoveType.Shop;
+            shopType = CustomersMoveType.ShopType.Check;
+            UpdateCustomer();
+        }
+    }
+
+    void GoToShop()
+    {
+        switch (shopType)
+        {
+            case CustomersMoveType.ShopType.Check:
+                List<int> wantedCakeIndexes = CakeManager.instance.cakeShowcaseController.CakeFindIndex(wantedCakeIndex);
+                if (wantedCakeIndexes != null && wantedCakeIndexes.Count > 0)
+                {
+                    int r = Random.Range(0, wantedCakeIndexes.Count);
+                    randomShowcaseIndex = wantedCakeIndexes[r];
+                    targetPosition = showcasePosition[randomShowcaseIndex].position;
+                    shopType = CustomersMoveType.ShopType.Shop;
+                }
+                else
+                {
+                    shopType = CustomersMoveType.ShopType.In;
+                }
+                break;
+            case CustomersMoveType.ShopType.Shop:
+                Debug.Log("케이크 앞으로 가는중!");
+                MoveTo();
+                if (Vector2.Distance(transform.position, targetPosition) <= 0.01f)
+                {
+                    Debug.Log("케이크 앞에 왔다!");
+                    StartCoroutine(StopForSeconds(1f)); // 3초 멈춤
+                    int r = Random.Range(0, CakeManager.instance.cakePlaceNum);
+                    CakeManager.instance.cakeShowcaseController.CakeSell(randomShowcaseIndex, r);
+                    shopType = CustomersMoveType.ShopType.Pay;
+                }
+                break;
+            case CustomersMoveType.ShopType.Pay:
+                targetPosition = cashierPosition;
+                MoveTo();
+                if (Vector2.Distance(transform.position, targetPosition) <= 0.01f)
+                {
+                    StartCoroutine(StopForSeconds(1f)); // 3초 멈춤
+                    shopType = CustomersMoveType.ShopType.In;
+                    GameManager.instance.getMoney();
+                    Debug.Log("케이크가 판매 되었습니다.");
+                }
+                break;
+            case CustomersMoveType.ShopType.In:
+                targetPosition = enterInPosition;
+                MoveTo();
+                if (Vector2.Distance(transform.position, targetPosition) <= 0.01f) shopType = CustomersMoveType.ShopType.Out;
+                break;
+            case CustomersMoveType.ShopType.Out:
+                targetPosition = enterOutPosition;
+                MoveTo();
+                if (Vector2.Distance(transform.position, targetPosition) <= 0.01f)
+                {
+                    Destroy(gameObject);
+                }
+                break;
+        }
+    }
+
+    IEnumerator StopForSeconds(float seconds)
+    {
+        moveSpeed = 0f; // 이동을 멈추기 위해 속도를 0으로 설정
+        yield return new WaitForSeconds(seconds);
+        moveSpeed = originMoveSpeed; // 이동을 재개하기 위해 원래 속도로 설정 (원래 속도로 변경)
     }
 }

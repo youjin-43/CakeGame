@@ -1,90 +1,82 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.UI;
 using Newtonsoft.Json;
 using Inventory.Model;
+using UnityEngine.SceneManagement;
 
 // 케이크 전반적인 관리 및 다른 매니저 참조
 public class CakeManager : MonoBehaviour
 {
-    // 게임 매니저 및 인벤토리 매니저와 같은 다른 매니저들을 참조
-    public GameManager gameManager;
-    public UIInventoryManager inventoryManager;
-    public FruitContainer fruitContainer;
-    public GameObject spritesToDisable;  // 케이크 제작 중 비활성화할 스프라이트 그룹
-    public List<CakeSO> cakeDataList;    // 케이크 데이터를 저장하는 리스트 (Unity Editor에서 설정)
+    public CakeShowcaseController cakeShowcaseController;
+    public CakeMakerController cakeMakerController;
+    public List<CakeSO> cakeSODataList;    // 케이크 데이터를 저장하는 리스트 (Unity Editor에서 설정)
     public int[] cakeCounts;             // 각 케이크의 개수를 관리하는 배열
     private string filePath;             // 케이크 데이터 저장 파일 경로
-    private int unlockedIndex = 0;       // 잠금 해제된 케이크의 마지막 인덱스
-
+    public static CakeManager instance;
+    public int totalCakeNum = 5;
+    public int cakePlaceNum = 4;
     void Awake()
     {
-        // 다른 매니저들 초기화
-        gameManager = FindObjectOfType<GameManager>();
-        inventoryManager = FindObjectOfType<UIInventoryManager>();
-        fruitContainer = FindObjectOfType<FruitContainer>();
+        // 싱글톤 변수 instance가 비어있는가?
+        if (instance == null)
+        {
+            // instance가 비어있다면(null) 그곳에 자기 자신을 할당
+            instance = this;
+            DontDestroyOnLoad(gameObject); // 씬이 변경되어도 삭제되지 않도록 
+            SceneManager.sceneLoaded += OnSceneLoaded; // 씬이 로딩될 때마다 함수를 호출하기위해 
 
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        InitializeCakeManager();
+    }
+    void InitializeCakeManager()
+    {
         // 데이터 저장 파일 경로 설정
         filePath = Path.Combine(Application.persistentDataPath, "cakeData.json");
         Debug.Log("Save file path: " + filePath);
 
         // 케이크 데이터 로드
         LoadCakeData();
+        cakeShowcaseController = FindObjectOfType<CakeShowcaseController>();
+        cakeMakerController = FindObjectOfType<CakeMakerController>();
+        totalCakeNum = cakeSODataList.Count;
     }
 
-    // 메뉴 닫기 및 스프라이트 재활성화
-    public void CloseMenu(GameObject menu)
+    public void SetupButton(Button button, UnityEngine.Events.UnityAction action)
     {
-        DisableSprites(false);
-        menu.SetActive(false);
-    }
-
-    // 스프라이트의 콜라이더를 활성화/비활성화
-    public void DisableSprites(bool isActive)
-    {
-        for (int i = 0; i < spritesToDisable.transform.childCount; i++)
+        if (button != null)
         {
-            Transform child = spritesToDisable.transform.GetChild(i);
-            for (int j = 0; j < child.childCount; j++)
-            {
-                Collider2D collider = child.GetChild(j).GetComponent<Collider2D>();
-                if (collider != null)
-                {
-                    collider.enabled = !isActive;
-                }
-            }
+            button.onClick.AddListener(action);
         }
     }
 
     // 케이크 상태 초기화: 첫 번째 케이크만 잠금 해제, 나머지는 잠금
     void InitializeCakeStatus()
     {
-        cakeCounts = new int[cakeDataList.Count];
+        cakeCounts = new int[totalCakeNum];
 
-        for (int i = 0; i < cakeDataList.Count; i++)
+        for (int i = 0; i < cakeSODataList.Count; i++)
         {
-            CakeSO cakeData = cakeDataList[i];
+            CakeSO cakeData = cakeSODataList[i];
             cakeCounts[i] = 0; // 초기 케이크 개수는 0으로 설정
             cakeData.isLocked = (cakeData.cakeIdx != 0); // 첫 번째 케이크만 잠금 해제
         }
     }
 
-    // 잠금 해제된 마지막 케이크 인덱스를 초기화
-    void InitializeUnlockIndex()
-    {
-        for (int i = 0; i < cakeDataList.Count; i++)
-        {
-            if (!cakeDataList[i].isLocked)
-            {
-                unlockedIndex = i;
-            }
-        }
-    }
-
     // 케이크 개수 증가 및 데이터 저장
-    public void IncreaseCakeCount(int index)
+    public void PlusCakeCount(int index)
     {
-        if (index >= 0 && index < cakeDataList.Count)
+        if (index >= 0 && index < totalCakeNum)
         {
             cakeCounts[index]++;
             Debug.Log("케이크 " + index + " 보유 수: " + cakeCounts[index]);
@@ -93,9 +85,9 @@ public class CakeManager : MonoBehaviour
     }
 
     // 케이크 개수 감소 및 데이터 저장
-    public void DecreaseCakeCount(int index)
+    public void MinusCakeCount(int index)
     {
-        if (index >= 0 && index < cakeDataList.Count && cakeCounts[index] > 0)
+        if (index >= 0 && index < totalCakeNum && cakeCounts[index] > 0)
         {
             cakeCounts[index]--;
             Debug.Log("케이크 " + index + " 보유 수: " + cakeCounts[index]);
@@ -106,11 +98,11 @@ public class CakeManager : MonoBehaviour
     // 케이크 잠금 해제 및 데이터 저장
     public void UnlockCake(int index)
     {
-        if (index >= 0 && index < cakeDataList.Count && cakeDataList[index].isLocked)
+        if (index >= 0 && index < totalCakeNum && cakeSODataList[index].isLocked)
         {
-            cakeDataList[index].isLocked = false;
+            cakeSODataList[index].isLocked = false;
             SaveCakeData();
-            Debug.Log("케이크 잠금 해제됨: " + cakeDataList[index].Name);
+            Debug.Log("케이크 잠금 해제됨: " + cakeSODataList[index].Name);
         }
         else
         {
@@ -124,7 +116,6 @@ public class CakeManager : MonoBehaviour
         CakeDataSave dataSave = new CakeDataSave
         {
             cakeDataList = SerializeCakeDataList(), // 케이크 데이터 직렬화
-            unlockedIndex = this.unlockedIndex
         };
 
         // JSON 파일로 저장
@@ -136,8 +127,8 @@ public class CakeManager : MonoBehaviour
     private void LoadCakeData()
     {
         // 기본값으로 초기화
-        cakeCounts = new int[cakeDataList.Count];
-        InitializeCakeStatus(); 
+        cakeCounts = new int[cakeSODataList.Count];
+        InitializeCakeStatus();
 
         if (File.Exists(filePath))
         {
@@ -145,7 +136,6 @@ public class CakeManager : MonoBehaviour
             string json = File.ReadAllText(filePath);
             CakeDataSave dataSave = JsonConvert.DeserializeObject<CakeDataSave>(json);
             DeserializeCakeDataList(dataSave.cakeDataList);
-            this.unlockedIndex = dataSave.unlockedIndex;
         }
         else
         {
@@ -159,19 +149,19 @@ public class CakeManager : MonoBehaviour
     {
         List<CakeDataSerializable> serializableList = new List<CakeDataSerializable>();
 
-        for (int i = 0; i < cakeDataList.Count; i++)
+        for (int i = 0; i < cakeSODataList.Count; i++)
         {
             CakeDataSerializable serializable = new CakeDataSerializable
             {
-                cakeName = cakeDataList[i].name,
-                cakeCost = cakeDataList[i].cakeCost,
-                bakeTime = cakeDataList[i].bakeTime,
-                cakePrice = cakeDataList[i].cakePrice,
-                isLocked = cakeDataList[i].isLocked,
-                cakeIdx = cakeDataList[i].cakeIdx,
+                cakeName = cakeSODataList[i].name,
+                cakeCost = cakeSODataList[i].cakeCost,
+                bakeTime = cakeSODataList[i].bakeTime,
+                cakePrice = cakeSODataList[i].cakePrice,
+                isLocked = cakeSODataList[i].isLocked,
+                cakeIdx = cakeSODataList[i].cakeIdx,
                 cakeCount = cakeCounts[i],
-                materialIdxs = cakeDataList[i].materialIdxs,
-                materialCounts = cakeDataList[i].materialCounts
+                materialIdxs = cakeSODataList[i].materialIdxs,
+                materialCounts = cakeSODataList[i].materialCounts
             };
 
             serializableList.Add(serializable);
@@ -185,7 +175,7 @@ public class CakeManager : MonoBehaviour
     {
         foreach (var serializable in serializableList)
         {
-            CakeSO cakeData = cakeDataList.Find(cake => cake.cakeIdx == serializable.cakeIdx);
+            CakeSO cakeData = cakeSODataList.Find(cake => cake.cakeIdx == serializable.cakeIdx);
             if (cakeData != null)
             {
                 cakeData.isLocked = serializable.isLocked;
@@ -197,14 +187,14 @@ public class CakeManager : MonoBehaviour
     // 새로운 케이크 데이터를 리스트에 추가
     public void AddCakeData(CakeSO cakeSO)
     {
-        if (cakeDataList == null)
+        if (cakeSODataList == null)
         {
-            cakeDataList = new List<CakeSO>();
+            cakeSODataList = new List<CakeSO>();
         }
 
-        if (!cakeDataList.Contains(cakeSO))
+        if (!cakeSODataList.Contains(cakeSO))
         {
-            cakeDataList.Add(cakeSO);
+            cakeSODataList.Add(cakeSO);
             Debug.Log($"Added {cakeSO.Name} to CakeDataList");
         }
     }
@@ -212,7 +202,7 @@ public class CakeManager : MonoBehaviour
     // 케이크 데이터를 초기화
     public void ResetCakeData()
     {
-        cakeDataList = new List<CakeSO>();
+        cakeSODataList = new List<CakeSO>();
     }
 
     // 애플리케이션 종료 시 데이터 저장
