@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class Seed : MonoBehaviour
 {
+    // 씨앗 클래스도 이제 숙청대상..
+    // 지금은 기존 만들어놓은 씨앗 구매, 선택창에서 쓰고 잇어서 아직은 없애면 안됑
+    // 다음에 차차 없애야할듯..
+
+
     // 생성자.. 그 팜 씬으로 돌아왔을 때, 이전 농장의 상태를 반영해주기 위함..
     public Seed(float currentTime, bool isGrown)
     {
@@ -18,23 +23,4 @@ public class Seed : MonoBehaviour
     public bool isGrown = false; // 다 자랐는지 여부 확인용 변수
 
     public SeedItemSO seedData; // 씨앗 데이터(씨앗 이름, 씨앗 가격, 성장 시간, 씨앗 인덱스)
-
-
-    private void OnEnable()
-    {
-        isGrown = false;
-        currentTime = 0;
-        Debug.Log("씨앗을 얻었다!");
-    }
-
-    private void Update()
-    {
-        if (currentTime >= seedData.growTime)
-        {
-            isGrown = true;
-            Debug.Log("다 자랐다!");
-            transform.gameObject.SetActive(!isGrown);
-        }
-        currentTime += Time.deltaTime;
-    }
 }

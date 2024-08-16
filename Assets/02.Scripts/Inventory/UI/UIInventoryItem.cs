@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class UIInventoryItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IPointerClickHandler, IDropHandler
+public class UIInventoryItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IPointerClickHandler, IDropHandler, IDragHandler
 {
     [SerializeField]
     public Image itemImage;
@@ -80,14 +80,17 @@ public class UIInventoryItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler
         Deselect();
     }
 
+
+
     public void OnBeginDrag(PointerEventData eventData)
     {
-        Debug.Log("드래그 시작!!");
+        Debug.Log("왜 드래그 시작이 안돼여?? !!!!!!!");
 
         if (empty) return; // 만약 아이템 칸이 비어있으면 걍 빠져나가도록..
 
         OnItemBeginDrag?.Invoke(this);
     }
+
 
 
     // Drop 은 드래그가 종료된 위치에 드롭 가능한 오브젝트가 있는지 여부에 따라 호출이 결정됨.
@@ -112,5 +115,14 @@ public class UIInventoryItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler
     public void OnPointerClick(PointerEventData eventData)
     {
         OnItemClicked?.Invoke(this);
+    }
+
+
+
+    // 드래그 관련 트리거 쓰려면 IDragHandler 얘도 무조건 필요함. 안 쓴다고 해도 무조건 인터페이스에 추가해줘야함.
+    // 따라서 OnDrag 함수 안 써도 무조건 추가해야함,,
+    // 이번에 안 써서 뺐다가 오류나서 알게되었다..
+    public void OnDrag(PointerEventData eventData)
+    {
     }
 }

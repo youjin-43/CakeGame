@@ -9,7 +9,7 @@ public class CakeManager : MonoBehaviour
 {
     // 게임 매니저 및 인벤토리 매니저와 같은 다른 매니저들을 참조
     public GameManager gameManager;
-    public UIInventoryController inventoryManager;
+    public UIInventoryManager inventoryManager;
     public FruitContainer fruitContainer;
     public GameObject spritesToDisable;  // 케이크 제작 중 비활성화할 스프라이트 그룹
     public List<CakeSO> cakeDataList;    // 케이크 데이터를 저장하는 리스트 (Unity Editor에서 설정)
@@ -21,7 +21,7 @@ public class CakeManager : MonoBehaviour
     {
         // 다른 매니저들 초기화
         gameManager = FindObjectOfType<GameManager>();
-        inventoryManager = FindObjectOfType<UIInventoryController>();
+        inventoryManager = FindObjectOfType<UIInventoryManager>();
         fruitContainer = FindObjectOfType<FruitContainer>();
 
         // 데이터 저장 파일 경로 설정
