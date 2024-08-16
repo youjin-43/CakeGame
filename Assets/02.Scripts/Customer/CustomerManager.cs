@@ -7,7 +7,11 @@ public class CustomersManager : MonoBehaviour
     public GameObject customersPrefab;    // Customers 프리팹
     public Transform spawnPoint;          // Customers가 생성될 위치
     public List<Vector2> pathPoints;      // Customers가 이동할 경로
-    public Vector2 pathLine;
+    public Vector2 linePosition;
+    public Vector2 enterOutPosition;
+    public Vector2 enterInPosition;
+    public Vector2 cashierPosition;
+
     public float customersSpawnInterval = 2.0f; // Customers 생성 간격
     public float lineSpacing = 0.5f;      // 줄서기 간격
     public float sideSpacing = 0.5f;      // 줄옆 간격
@@ -26,7 +30,9 @@ public class CustomersManager : MonoBehaviour
         {
             GameObject customersObject = Instantiate(customersPrefab, spawnPoint.position, Quaternion.identity);
             Customers customers = customersObject.GetComponent<Customers>();
-            customers.Initialize(pathPoints,pathLine, moveSpeed, lineSpacing, sideSpacing, this);
+            int wantedCakeIndex = Random.Range(0, CakeManager.instance.totalCakeNum);
+            customers.Initialize(pathPoints, linePosition, enterOutPosition, enterInPosition, cashierPosition, moveSpeed, lineSpacing, sideSpacing, wantedCakeIndex, this);
+            customers.moveType = CustomersMoveType.MoveType.Move;
             customersList.Add(customers);
             yield return new WaitForSeconds(customersSpawnInterval);
         }
@@ -47,17 +53,52 @@ public class CustomersManager : MonoBehaviour
 
         return null;
     }
-    public Transform GetFirstCustomer(Customers currentCustomer)
+    public int GetCustomerNum(Customers currentCustomer)
     {
         if (customersList.Count == 0)
         {
-            return null;
+            return -1;
         }
         int index = customersList.IndexOf(currentCustomer);
-        if (index > 0)
+        if (index >= 0)
         {
-            return customersList[0].transform;
+            return index-1;
         }
-        return null;
+        return -1;
+    }
+}
+
+public class CustomersMoveType
+{
+    public enum LineType
+    {
+        None,
+        Start,
+        During,
+        End
+    }
+    public enum EnterType
+    {
+        None,
+        In,
+        Out
+    }
+    public enum ShopType
+    {
+        None,
+        Check,
+        Shop,
+        Pay,
+        In,
+        Out
+    }
+    public enum MoveType
+    {
+        None,
+        Move,
+        Line,
+        Enter,
+        Random,
+        Shop
     }
 }

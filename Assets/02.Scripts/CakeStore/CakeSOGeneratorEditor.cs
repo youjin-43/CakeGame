@@ -12,7 +12,7 @@ public class CakeSOGeneratorEditor : EditorWindow
     private List<Sprite> itemImages = new List<Sprite>(); // Sprite 리스트
     private ReorderableList reorderableList; // ReorderableList
 
-    [MenuItem("Utilities/Generate Cake")]
+    [MenuItem("Utilities/Generate Cake Beta")]
     public static void ShowWindow()
     {
         GetWindow<CakeSOGeneratorEditor>("Generate Cake");
