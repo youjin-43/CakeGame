@@ -213,7 +213,7 @@ public class UIInventoryManager : MonoBehaviour
         seedButton = GameObject.Find("InventoryUI").transform.Find("SeedButton").GetComponent<Button>();
         fruitButton = GameObject.Find("InventoryUI").transform.Find("FruitButton").GetComponent<Button>();
         // GameObject 는 GetComponent 로 찾는게 아니라 그냥 gameObject 쓰면 됨..
-        buttonParentGameObject = GameObject.Find("FarmButtonUICanvas").transform.Find("PlowPlantHarvestButtonsParent").gameObject;
+        buttonParentGameObject = GameObject.Find("FarmButtonUICanvas")?.transform.Find("PlowPlantHarvestButtonsParent")?.gameObject;
 
 
         //// ?. 를 이용해서 null 인지 아닌지 판단함..
@@ -502,12 +502,21 @@ public class UIInventoryManager : MonoBehaviour
         if (inventoryUI.isActiveAndEnabled == false)
         {
             SetCurInventoryDataSeed(); // 인벤토리 창 켜질때는 씨앗을 기준으로 켜지도록..
-            buttonParentGameObject.SetActive(false); // 농사 버튼 다 안 보이도록.. 
+
+            // 농장씬에서만..
+            if (buttonParentGameObject != null)
+            {
+                buttonParentGameObject.SetActive(false); // 농사 버튼 다 안 보이도록.. 
+            }
             inventoryUI.Show();
         }
         else
         {
-            buttonParentGameObject.SetActive(true); // 농사 버튼 다시 다 보이도록..
+            // 농장씬에서만..
+            if (buttonParentGameObject != null)
+            {
+                buttonParentGameObject.SetActive(true); // 농사 버튼 다시 다 보이도록..
+            }
             inventoryUI.Hide();
         }
 
