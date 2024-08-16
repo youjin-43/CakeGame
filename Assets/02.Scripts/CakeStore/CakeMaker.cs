@@ -14,7 +14,7 @@ public class CakeMaker : MonoBehaviour
     private float cakeBakeTime;
     private float passedTime;
 
-    void Awake()
+    void OnEnable()
     {
         InitializeCakeMaker();
     }
