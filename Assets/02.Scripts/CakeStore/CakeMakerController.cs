@@ -99,8 +99,8 @@ public class CakeMakerController : MonoBehaviour
     void OnBakeClicked(int index) // 케이크 제작 버튼 누를 시 작동
     {
         var cakeData = cakeManager.cakeSODataList[index];
-        var fruitCounts = UIInventoryManager.instance.fruitCount;
-        var inventory = UIInventoryManager.instance.fruitInventoryData;
+        var fruitCounts = UIInventoryController.instance.fruitCount;
+        var inventory = UIInventoryController.instance.fruitInventoryData;
 
         if (GameManager.instance.money < cakeData.cakeCost)    // 돈이 충분한지 확인
         {
@@ -170,10 +170,10 @@ public class CakeMakerController : MonoBehaviour
                     material.gameObject.SetActive(true);
                     // 재료 이미지 참조
                     material.GetChild((int)CakeMaterialPanelElements.MaterialImage).GetComponent<Image>().sprite =   
-                     UIInventoryManager.instance.fruitItems[cakeSO.materialIdxs[j]].itemImage;
+                     UIInventoryController.instance.fruitItems[cakeSO.materialIdxs[j]].itemImage;
                     // 재료 갯수 참조
                     material.GetChild((int)CakeMaterialPanelElements.MaterialCount).GetComponent<Text>().text =      
-                     $"{cakeSO.materialCounts[j]}/{UIInventoryManager.instance.fruitCount[cakeSO.materialIdxs[j]]}";
+                     $"{cakeSO.materialCounts[j]}/{UIInventoryController.instance.fruitCount[cakeSO.materialIdxs[j]]}";
                 }
                 else materialPanel.GetChild(j).gameObject.SetActive(false);
             }
