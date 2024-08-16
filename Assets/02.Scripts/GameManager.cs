@@ -11,7 +11,6 @@ public class GameManager : MonoBehaviour
 {
     //싱글턴으로
     public static GameManager instance; // 싱글톤을 할당할 전역 변수 -> 이 instance 자체는 게임 오브젝트를 얘기하는것 같고 
-    public static int tmp = 1;
 
     // 게임 시작과 동시에 싱글톤을 구성
     void Awake()
