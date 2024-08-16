@@ -12748,11 +12748,11 @@ MonoBehaviour:
   cakeShowcaseController: {fileID: 0}
   cakeMakerController: {fileID: 0}
   cakeSODataList:
-  - {fileID: 11400000, guid: 3deaab800e96e1347958420611ec2756, type: 2}
-  - {fileID: 11400000, guid: 206126a431a8c34468667c8b1fc58125, type: 2}
-  - {fileID: 11400000, guid: d9c5179e070e3164eb52006b2e27da11, type: 2}
-  - {fileID: 11400000, guid: 113e11c45a8672a40a2c816f2c8f583b, type: 2}
-  - {fileID: 11400000, guid: 558f7bb8a03370043b4ea5fc4cecf204, type: 2}
+  - {fileID: 11400000, guid: 846f467e291f9485dbc9bb785b8fa727, type: 2}
+  - {fileID: 11400000, guid: b5699891956564a15a9a61f243874a26, type: 2}
+  - {fileID: 11400000, guid: 5bc4bde145d634804a5e7f0373233872, type: 2}
+  - {fileID: 11400000, guid: ffcc9d31f898443839ffa160ef3f3a6e, type: 2}
+  - {fileID: 11400000, guid: 7cafa38b63c584fb882d1eccd8fa441b, type: 2}
   cakeCounts: 
   totalCakeNum: 5
   cakePlaceNum: 4
@@ -13604,6 +13604,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   QuestBoard: {fileID: 155517769}
   QuestUIprefab: {fileID: 5938855735240156, guid: ee5cf1c4e3239463abdd96eb19da86ec, type: 3}
+  questDB:
+    QuestList: []
+  havingQuests:
+    HavingQuestList: []
 --- !u!1001 &498314057
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21417,6 +21421,7 @@ MonoBehaviour:
   currentMouseDragIndex: -1
   sellButtonPanel: {fileID: 1410441502}
   sellButton: {fileID: 1876904572}
+  exitButton: {fileID: 0}
   currentMouseClickIndex: -1
   isPossible: 0
   inventoryDescription: {fileID: 1827122115}
@@ -23853,6 +23858,7 @@ MonoBehaviour:
   fruitContainer: {fileID: 0}
   initialItems: []
   itemSellPanel: {fileID: 1947477808}
+  buttonParentGameObject: {fileID: 0}
   inventoryData:
     seedInventoryData: {fileID: 11400000, guid: 7cc197c22c6b3a2429bd59db2672dec9, type: 2}
     fruitInventoryData: {fileID: 11400000, guid: a101d58189efd7f45b064b1aacc9e36d, type: 2}
