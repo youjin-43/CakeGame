@@ -94,6 +94,8 @@ public class GameManager : MonoBehaviour
         UIManager.instance.setUIObjects();
         UIManager.instance.SetDatainUI();
         UIManager.instance.SetExpBarUI();
+
+        QuestManager.instance.setBasicQuestUIs();
     }
 
 

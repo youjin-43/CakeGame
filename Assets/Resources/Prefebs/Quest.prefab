@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1222741616176341984}
   - component: {fileID: 3184095455889406957}
   - component: {fileID: 2556215731655864070}
+  - component: {fileID: 6890979125011241495}
   m_Layer: 5
   m_Name: Quest
   m_TagString: Untagged
@@ -82,6 +83,19 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6890979125011241495
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5938855735240156}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f0d964f6f60143d3ba642e9e736e7cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  QuestId: 0
 --- !u!1 &1109500658939359481
 GameObject:
   m_ObjectHideFlags: 0
@@ -510,10 +524,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5938855735240156}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
+      - m_Target: {fileID: 6890979125011241495}
+        m_TargetAssemblyTypeName: Quest, Assembly-CSharp
+        m_MethodName: EraseQuest
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

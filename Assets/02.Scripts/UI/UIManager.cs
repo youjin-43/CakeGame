@@ -48,8 +48,13 @@ public class UIManager : MonoBehaviour
     
     private void Start()
     {
-
+        runningOverBoard = GameObject.Find("SettingAnchors").transform.GetChild(1).gameObject;
+        dateText = GameObject.Find("DateText").gameObject.GetComponent<Text>();
+        moneyText= GameObject.Find("MoneyText").gameObject.GetComponent<Text>();
+        //levelText
+        RunStartButton = GameObject.Find("RunStartButoon").gameObject;
         
+
     }
 
     public void setUIObjects()
