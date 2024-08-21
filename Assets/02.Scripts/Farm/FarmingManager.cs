@@ -141,7 +141,7 @@ public class SaveFarmingData
 
 // 타일이 가지는 농사 데이터
 [Serializable]
-class FarmingData
+public class FarmingData
 {
     [SerializeField]
     public bool plowEnableState; // 밭을 갈 수 있는 상태인지 여부 확인용(밭이 안 갈린 상태)
@@ -228,7 +228,7 @@ public class FarmingManager : MonoBehaviour
     [Header("Farming Data")]
     public Vector2 clickPosition; // 현재 마우스 위치를 게임 월드 위치로 바꿔서 저장
     public Vector3Int cellPosition; // 게임 월드 위치를 타일 맵의 타일 셀 위치로 변환
-    Dictionary<Vector3Int, FarmingData> farmingData;
+    public Dictionary<Vector3Int, FarmingData> farmingData;
     public int farmLevel = 0; // 농장 레벨. 농장 레벨 업그레이드 함수 호출하면 증가하도록..
     public int expansionSize = 1; // 농장 한 번 업그레이트 할 때 얼마나 확장될 건지.. 일단 임시로 1로 해놨다.. 나중에 변경할 것.
 
@@ -456,7 +456,7 @@ public class FarmingManager : MonoBehaviour
             {
                 Debug.Log("씨앗이 안 심어져있어용~");
             }
-        }
+        }    
 
         // 저장하기
         SaveFarmingData(); // 변경 사항 생겼으니까 저장해주기..
@@ -495,11 +495,6 @@ public class FarmingManager : MonoBehaviour
             // 씨앗 심는 함수 호출
             PlantTile(cellPosition, selectedSeedIdx);
         }
-
-
-        // 확인용 로직..
-        if (Input.GetKeyDown(KeyCode.W))
-            FailFarm(3);
     }
 
 
@@ -670,6 +665,23 @@ public class FarmingManager : MonoBehaviour
             }
         }
     }
+
+
+    
+    public void FailFarmAt(Vector3Int pos)
+    {
+        // 특정 위치의 농사땅을 망하게 하는 함수
+        farmingData[pos].stateButton = farmingData[pos].buttons[3]; // 망한 버튼으로 바꾸기
+        farmingData[pos].seedOnTile = false;
+        farmingData[pos].currentState = "failed";
+        farmingData[pos].plowEnableState = false;
+        farmingData[pos].plantEnableState = false;
+        farmingData[pos].harvestEnableState = false;
+        farmingData[pos].failedState = true;
+
+        SaveFarmingData(); // 데이터 저장!
+    }
+
 
     public void FailFarm(int count)
     {
@@ -1151,6 +1163,7 @@ public class FarmingManager : MonoBehaviour
         if (Random.Range(0, 1) == 0)
         {
             animalInteractionManager.UICanvas.gameObject.SetActive(true);
+            animalInteractionManager.backgroundButton.gameObject.SetActive(true);
 
             // 여기 매개변수로 전해지는 값은 현재 허수아비 레벨에 따라 달라지도록 하는게 좋을 것 같다..
             // 허수아비 레벨 올라갈수록 수가 작아지도록..
@@ -1159,6 +1172,7 @@ public class FarmingManager : MonoBehaviour
         }
         else
         {
+            animalInteractionManager.UICanvas.gameObject.SetActive(false);
             UIInventoryManager.instance.buttonParentGameObject.SetActive(true);
         }
     }

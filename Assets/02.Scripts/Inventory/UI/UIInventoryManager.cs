@@ -146,6 +146,12 @@ public class UIInventoryManager : MonoBehaviour
     }
 
 
+    private void Start()
+    {
+        // 씨앗 개수 반영한다음 시작..
+        SetInventoryToContainer(0);
+    }
+
 
     public void Update()
     {
