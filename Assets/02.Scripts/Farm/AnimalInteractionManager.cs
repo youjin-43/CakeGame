@@ -2,19 +2,32 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class AnimalInteractionManager : MonoBehaviour
 {
+    // 게임 오브젝트 데이터
+    [SerializeField]
+    public FarmingManager farmingManager;
+
+    [SerializeField]
+    public AnimalSpawner animalSpawner;
+
     [SerializeField]
     public GameObject UICanvas; // 게임 시작할 때만 켜도록..
 
     [SerializeField]
     public Camera mainCamera;
 
+
+
+
+    // 동물 게임 정보
     [SerializeField]
     public int targetAnimalCount; // 총 잡아야하는 너구리 수
 
@@ -31,17 +44,30 @@ public class AnimalInteractionManager : MonoBehaviour
     public float curTime; // 현재 흐른 시간
 
     [SerializeField]
-    public float screenWidth; // 스크린 너비
-
-    [SerializeField]
-    public float screenHeight; // 스크린 높이
-
-    [SerializeField]
     public float gameSpeed; // 너구리 나오는 속도
 
     [SerializeField]
     public float animalEmergeTime;
 
+    [SerializeField]
+    public int failFarmCount; // 망한 땅 개수
+
+    [SerializeField]
+    public int damageFarmCount; // 총 데미지 수(개구리가 와그작 몇 번했는지..)
+
+    [SerializeField]
+    public bool gameStart = false;
+
+    [SerializeField]
+    public int disappearAnimalCount; // 총 사라진 동물 수(이게 targetAnimalCount 와 같아지면 게임 끝!)
+
+    [SerializeField]
+    public bool exitGame;
+
+
+
+
+    // 동물 생성 프리팹 관련
     [SerializeField]
     public GameObject animalParent; // 너구리가 생성될 부모
 
@@ -51,11 +77,14 @@ public class AnimalInteractionManager : MonoBehaviour
     [SerializeField]
     public Button gameStartButton;
 
-    [SerializeField]
-    public bool gameStart = false;
 
+    
+
+    // 동물 게임 망치기 로직 관련
     [SerializeField]
     public Action<int> OnFailRequested; // 농사 망치기 함수 연결해줄것..
+
+
 
 
     // UI 관련
@@ -66,22 +95,15 @@ public class AnimalInteractionManager : MonoBehaviour
     public GameObject buttonParentGameObject; // 너구리 게임 띄우면 버튼 안 보이도록 하기 위함..
 
 
+
+    
+
+
     private void Awake()
     {
         backgroundButton.onClick.AddListener(CloseAnimalGame);
         gameStartButton.onClick.AddListener(() => GetAnimalGameRun(10));
     }
-
-    private void Start()
-    {
-        // 카메라 렉트의 width 와 height 을 가져온 후, 카메라 사이즈만큼 곱해주기..
-        screenWidth = mainCamera.rect.width * mainCamera.orthographicSize;
-        screenHeight = mainCamera.rect.height * mainCamera.orthographicSize;
-
-        Debug.Log(screenWidth);
-        Debug.Log(screenHeight);
-    }
-
 
 
     private void Update()
@@ -95,18 +117,28 @@ public class AnimalInteractionManager : MonoBehaviour
 
             if (curAnimalCount < targetAnimalCount && animalEmergeTime >= gameSpeed)
             {
-                float randomX = Random.Range(-screenWidth, screenWidth);
-                float randomY = Random.Range(-screenHeight, screenHeight);
+                // 새로 생성되는 동물 클래스의 델리게이트에 함수 연결해주기
+                Animal tmp = animalSpawner.GetAnimal(0).GetComponent<Animal>();
 
-                Vector3 animalPos = new Vector3(randomX, randomY, 0);
-
-                Animal animal = Instantiate(animalPrefab, animalParent.transform).GetComponent<Animal>();
-                animal.transform.position = animalPos;
+                // 델리게이트가 비어있을 때만 함수 연결(중복 연결 막기 위함..)..
+                if (tmp.OnClicked == null)
+                    tmp.OnClicked += GetAnimal;
+                if (tmp.OnDamaged == null)
+                    tmp.OnDamaged += GetDamage;
+                if (tmp.OnFailed == null)
+                    tmp.OnFailed += GetFail;
+                if (tmp.OnDisappeared == null)
+                    tmp.OnDisappeared += GetDisappearAnimal;
+                if (tmp.OnExited == null)
+                    tmp.OnExited += ExitGame;
+ 
+ 
                 curAnimalCount++;
                 animalEmergeTime = 0;
             }
 
-            if (curTime >= playTime + 2)
+            // 소환되어야 하는만큼 다 소환되면 그리고 현재 시간이 플레이 타임에 +2 한 것보다 크거나 같으면 게임 종료..
+            if (exitGame || ((curTime >= playTime + 2) && (disappearAnimalCount==targetAnimalCount)))
             {
                 // 게임 종료 시 로직
                 curTime = 0;
@@ -119,13 +151,18 @@ public class AnimalInteractionManager : MonoBehaviour
                 } 
                 else
                 {
-                    gameText.text = "농사땅 " + (targetAnimalCount - catchAnimalCount) + "개가 망했어요..";
+                    gameText.text = "망한 농사땅: " + failFarmCount + ", 총 늘어난 일수: " + damageFarmCount;
                 }
 
+                // 백그라운드 버튼 활성화 해주기..
+                backgroundButton.gameObject.SetActive(true);
                 // 2초 뒤에 게임 끄기 버튼 활성화..
                 Invoke("SetBackgroundButton", 2);
+                farmingManager.SaveFarmingData(); // 변경 사항 저장해주기..
 
-                backgroundButton.enabled = true;
+                // UI 다시 켜주깅..
+                UICanvas.SetActive(true);
+
 
                 Debug.Log("게임 끝!");
             }
@@ -135,8 +172,30 @@ public class AnimalInteractionManager : MonoBehaviour
 
     public void SetAnimalCount(int count)
     {
-        gameStartButton.onClick.RemoveAllListeners(); // 일단 시작 버튼에 연결된 모든 함수 삭제한 후..
-        gameStartButton.onClick.AddListener(() => GetAnimalGameRun(count)); // 함수 다시 연결해주기..
+        backgroundButton.gameObject.SetActive(true);
+
+        // 씨앗이 심어져 있는 땅의 개수를 셀 것..
+        int seedOnTileCount = 0;
+        foreach (var item in farmingManager.farmingData)
+        {
+            if (farmingManager.farmingData[item.Key].seedOnTile)
+                seedOnTileCount++;
+        }
+
+        // 만약 씨앗이 심어져 있는 땅의 개수가 0보다 작거나 같으면 그냥 게임 종료하도록..
+        if (seedOnTileCount <= 0)
+        {
+            gameStartButton.gameObject.SetActive(false); // 게임 시작 버튼 끄도록..
+            gameText.text = "휴~ 망칠 땅이 존재하지 않아요! 개구리는 다시 돌아갑니다!";
+            // 백그라운드 버튼 활성화 해주기..
+            SetBackgroundButton(); // 동물 게임 끄기 버튼 활성화
+        }
+        else
+        {
+            gameStartButton.gameObject.SetActive(true); // 게임 시작 버튼 켜도록..
+            gameStartButton.onClick.RemoveAllListeners(); // 일단 시작 버튼에 연결된 모든 함수 삭제한 후..
+            gameStartButton.onClick.AddListener(() => GetAnimalGameRun(count)); // 함수 다시 연결해주기..
+        }
     }
 
     void CloseFarmButton()
@@ -153,9 +212,24 @@ public class AnimalInteractionManager : MonoBehaviour
         backgroundButton.enabled = true;
     }
 
+    public void GetDisappearAnimal()
+    {
+        disappearAnimalCount++;
+    }
+
     public void GetAnimal()
     {
         catchAnimalCount++;
+    }
+
+    public void GetDamage()
+    {
+        damageFarmCount++;
+    }
+
+    public void GetFail()
+    {
+        failFarmCount++;
     }
 
     public void ResetGameData()
@@ -167,13 +241,15 @@ public class AnimalInteractionManager : MonoBehaviour
         gameSpeed = 0;
         curTime = 0;
         buttonParentGameObject.SetActive(false);
+        backgroundButton.enabled = false;
+        backgroundButton.gameObject.SetActive(false);
     }
 
     // 미니게임 로직..
     public void GetAnimalGameRun(int targetCount)
     {
         ResetGameData();
-        UICanvas.SetActive(true);
+        UICanvas.SetActive(false);
 
         gameStart = true;
         targetAnimalCount = targetCount;
@@ -191,5 +267,11 @@ public class AnimalInteractionManager : MonoBehaviour
         // 못잡은 너구리 수만큼 농사땅 망치기 위한 로직..
         // 연결해놓은 함수에 매개변수 전달하는 것..
         OnFailRequested?.Invoke(targetAnimalCount - catchAnimalCount);
+    }
+
+    public void ExitGame()
+    {
+        // 남은 씨앗 있는 땅이 없어져서 게임 강제 종료해야 할 때 호출할 함수..
+        animalSpawner.DisableAnimal(0); // 동물 게임 오브젝트 활성화 다 꺼버리기..
     }
 }

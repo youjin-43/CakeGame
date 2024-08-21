@@ -17810,7 +17810,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1416541283
 RectTransform:
   m_ObjectHideFlags: 0
@@ -19454,6 +19454,52 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1570142213}
   m_CullTransparentMesh: 1
+--- !u!1 &1575903836
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1575903838}
+  - component: {fileID: 1575903837}
+  m_Layer: 0
+  m_Name: AnimalSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1575903837
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1575903836}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f75f85f83f49344e8174e687f8e797f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabs:
+  - {fileID: 5925064638614667170, guid: 97061871732eff5498525cc57f15f423, type: 3}
+--- !u!4 &1575903838
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1575903836}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.43541408, y: -0.0068118125, z: 1182.9015}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1582425454
 GameObject:
   m_ObjectHideFlags: 0
@@ -24574,6 +24620,7 @@ GameObject:
   - component: {fileID: 1736282739}
   - component: {fileID: 1736282742}
   - component: {fileID: 1736282743}
+  - component: {fileID: 1736282744}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -24685,6 +24732,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4478302e1f748845ab78c9e0d099dfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1736282744
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1736282738}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56666c5a40171f54783dd416a44f42bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EventMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_MaxRayIntersections: 0
 --- !u!1 &1749582305
 GameObject:
   m_ObjectHideFlags: 0
@@ -29538,6 +29601,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 733adbbae1b354544a3b5db0618c75d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  farmingManager: {fileID: 1817601060}
+  animalSpawner: {fileID: 1575903837}
   UICanvas: {fileID: 2144840703}
   mainCamera: {fileID: 1736282740}
   targetAnimalCount: 10
@@ -29545,8 +29610,6 @@ MonoBehaviour:
   catchAnimalCount: 0
   playTime: 10
   curTime: 0
-  screenWidth: 0
-  screenHeight: 0
   gameSpeed: 2
   animalEmergeTime: 0
   animalParent: {fileID: 2114117997}
@@ -29772,7 +29835,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &2144840704
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29874,6 +29937,7 @@ SceneRoots:
   - {fileID: 28181378}
   - {fileID: 1817601061}
   - {fileID: 259496559}
+  - {fileID: 1575903838}
   - {fileID: 634117041}
   - {fileID: 56286055}
   - {fileID: 1797334158}
