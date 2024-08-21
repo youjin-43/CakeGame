@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: fruitInventory
   m_EditorClassIdentifier: 
   inventoryItems:
-  - quantity: 295
+  - quantity: 64
     item: {fileID: 11400000, guid: cdec94432ad7f57499a766c32855dc47, type: 2}
-  - quantity: 0
-    item: {fileID: 0}
+  - quantity: 2
+    item: {fileID: 11400000, guid: cdec94432ad7f57499a766c32855dc47, type: 2}
   - quantity: 0
     item: {fileID: 0}
   - quantity: 0
