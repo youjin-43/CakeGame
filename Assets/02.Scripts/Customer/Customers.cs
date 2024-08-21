@@ -48,6 +48,10 @@ public class Customers : MonoBehaviour
 
     void Update()
     {
+        if(GameManager.instance.isRunning)
+        {
+            moveType = CustomersMoveType.MoveType.Move;
+        }
         switch (moveType)
         {
             case CustomersMoveType.MoveType.Move:

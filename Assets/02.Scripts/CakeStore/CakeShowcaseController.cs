@@ -9,7 +9,7 @@ public class CakeShowcaseController : MonoBehaviour
 {
     // 필드 선언
     public Transform cakeShowcasePool;        // 케이크 쇼케이스 풀을 담는 게임 오브젝트
-    private GameObject[] cakeShowcases;         // 케이크 쇼케이스 배열
+    public GameObject[] cakeShowcases;         // 케이크 쇼케이스 배열
     public GameObject cakeShowcasePlace;       // 케이크 쇼케이스 위치를 담는 게임 오브젝트
     public GameObject cakeShowcaseMenu;        // 케이크 쇼케이스 메뉴 오브젝트
     private Transform cakeShowcaseScrollViewContent;       // 스크롤 뷰의 콘텐츠
@@ -46,6 +46,8 @@ public class CakeShowcaseController : MonoBehaviour
         cakeShowcaseScrollViewContent = cakeShowcaseMenu.GetComponentInChildren<HorizontalLayoutGroup>().transform;
 
         // 케이크 쇼케이스 패널 비활성화
+        Debug.Log(cakeShowcasePlace);
+        Debug.Log(cakeShowcaseMenu);
         cakeUIController.CloseMenu(cakeShowcasePlace);
         cakeUIController.CloseMenu(cakeShowcaseMenu);
         cakePlaceNum = cakeManager.cakePlaceNum;

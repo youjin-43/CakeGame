@@ -32,7 +32,7 @@ public class CustomersManager : MonoBehaviour
             Customers customers = customersObject.GetComponent<Customers>();
             int wantedCakeIndex = Random.Range(0, CakeManager.instance.totalCakeNum);
             customers.Initialize(pathPoints, linePosition, enterOutPosition, enterInPosition, cashierPosition, moveSpeed, lineSpacing, sideSpacing, wantedCakeIndex, this);
-            customers.moveType = CustomersMoveType.MoveType.Move;
+            customers.moveType = CustomersMoveType.MoveType.None;
             customersList.Add(customers);
             yield return new WaitForSeconds(customersSpawnInterval);
         }
