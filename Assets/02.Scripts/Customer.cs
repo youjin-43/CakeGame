@@ -47,7 +47,7 @@ public class Customer : MonoBehaviour
 
     public void endWaiting()
     {
-        GameManager.instance.getMoney(); //돈 증가 
+        GameManager.instance.getMoney(100); //돈 증가 
         transform.GetChild(0).gameObject.SetActive(false); //케이크 달라는말 비활성화
         currentState = States.moving;
 
