@@ -130,7 +130,10 @@ public class QuestManager : MonoBehaviour
         {
             QuestUIs[i].gameObject.SetActive(true);
             QuestUIs[i].GetComponent<Quest>().QuestId = havingQuests.HavingQuestList[i].QuestID;
-            QuestUIs[i].Find("Title").GetComponent<Text>().text = havingQuests.HavingQuestList[i].ExplaneText;
+            QuestUIs[i].GetChild(0).Find("Title").GetComponent<Text>().text = havingQuests.HavingQuestList[i].ExplaneText;
+            QuestUIs[i].GetChild(0).Find("MoneyText").GetComponent<Text>().text = havingQuests.HavingQuestList[i].reward1Amount.ToString();
+
+
 
 
         }
@@ -176,12 +179,19 @@ public class QuestManager : MonoBehaviour
         {
             if (havingQuests.HavingQuestList[i].QuestID == questId)
             {
+                GameManager.instance.getMoney(havingQuests.HavingQuestList[i].reward1Amount);//돈 증가
+                ExpManager.instance.getExp(10);//명성 증가 
+
                 havingQuests.HavingQuestList.Remove(havingQuests.HavingQuestList[i]);
                 Debug.Log("Quest ID : " + i + " 를 현재 가지고 있는 퀘스트 리스트에서 삭제했습니다.");
+                UpdateCurrnetQuestList();//퀘스트 DB에 저장 
+                setCurrentQuestUIs();//UI반영
+
+                
                 break;
             }
         }
-        setCurrentQuestUIs();
+        
     }
 
     [System.Serializable]

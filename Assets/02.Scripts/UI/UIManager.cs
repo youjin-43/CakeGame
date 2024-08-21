@@ -45,24 +45,13 @@ public class UIManager : MonoBehaviour
     public GameObject ExpBar;
 
 
-    
-    private void Start()
-    {
-        runningOverBoard = GameObject.Find("SettingAnchors").transform.GetChild(1).gameObject;
-        dateText = GameObject.Find("DateText").gameObject.GetComponent<Text>();
-        moneyText= GameObject.Find("MoneyText").gameObject.GetComponent<Text>();
-        //levelText
-        RunStartButton = GameObject.Find("RunStartButoon").gameObject;
-        
-
-    }
 
     public void setUIObjects()
     {
         Debug.Log("SetDatainUI 실행됨 ");
 
-        runningOverBoard = GameObject.Find("EndBoard");
-        if(runningOverBoard != null) runningOverBoard.gameObject.SetActive(false);
+        runningOverBoard = GameObject.Find("SettingAnchors").transform.GetChild(1).gameObject;
+        if (runningOverBoard != null) runningOverBoard.gameObject.SetActive(false);
 
         dateText = GameObject.Find("DateText").GetComponent<Text>();
         moneyText = GameObject.Find("MoneyText").GetComponent<Text>();
@@ -75,6 +64,7 @@ public class UIManager : MonoBehaviour
 
     public void SetDatainUI()
     {
+        Debug.Log("SetDatainUI실행");
         //seasonText.text = GameManager.instance.season.ToString();
         dateText.text = GameManager.instance.date.ToString();
         moneyText.text = GameManager.instance.money.ToString();
