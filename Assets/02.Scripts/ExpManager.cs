@@ -40,14 +40,14 @@ public class ExpManager : MonoBehaviour
     //public GameObject ExpBar;
 
     public int level = 1;
-    public float exp = 0f; // 이거 getset으로 하면 인스펙터 창에 안뜨던데 우선 이렇게 해놓겟음 
-    public float exp_max = 100f;
+    public float exp; // 이거 getset으로 하면 인스펙터 창에 안뜨던데 우선 이렇게 해놓겟음 
+    public float exp_max=100;
 
     private void Start()
     {
         level = PlayerPrefs.GetInt("level");
         exp_max = PlayerPrefs.GetFloat("exp_max");
-        exp = PlayerPrefs.GetFloat("exp_max");
+        exp = PlayerPrefs.GetFloat("exp");
     }
 
     public void getExp(float delta)
@@ -55,19 +55,20 @@ public class ExpManager : MonoBehaviour
         exp += delta;
         PlayerPrefs.SetFloat("exp", exp);//exp데이터저장
 
-        if (exp > exp_max)
+        if (exp >= exp_max)
         {
             exp = exp - exp_max;
             PlayerPrefs.SetFloat("exp", exp);//exp데이터저장
 
             level++;
-            PlayerPrefs.SetFloat("level", level);//레벨 데이터 저장
+            PlayerPrefs.SetInt("level", level);//레벨 데이터 저장
 
             //if(level == 1) SceneManager.LoadScene("Level5");
 
             UIManager.instance.levelText.text = level.ToString();
 
             exp_max += 50;
+            PlayerPrefs.SetFloat("exp_max",exp_max);
         }
 
         UIManager.instance.SetExpBarUI();

@@ -94,6 +94,8 @@ public class GameManager : MonoBehaviour
         UIManager.instance.setUIObjects();
         UIManager.instance.SetDatainUI();
         UIManager.instance.SetExpBarUI();
+
+        QuestManager.instance.setBasicQuestUIs();
     }
 
 
@@ -130,11 +132,11 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetFloat("money", money);
     }
 
-    public void getMoney()
+    public void getMoney(int amount)
     {
         Debug.Log("getmoeny 함수 실행");
 
-        money += 100;
+        money += amount;
         UIManager.instance.moneyText.text = money.ToString();
         PlayerPrefs.SetInt("money", money); 
     }

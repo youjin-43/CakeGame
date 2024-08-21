@@ -250,7 +250,7 @@ public class Customers : MonoBehaviour
                 {
                     StartCoroutine(StopForSeconds(1f)); // 3초 멈춤
                     shopType = CustomersMoveType.ShopType.In;
-                    GameManager.instance.getMoney();
+                    GameManager.instance.getMoney(100);
                     Debug.Log("케이크가 판매 되었습니다.");
                 }
                 break;
