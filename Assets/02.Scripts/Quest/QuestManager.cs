@@ -123,7 +123,7 @@ public class QuestManager : MonoBehaviour
         }
     }
 
-    public void GenQuest()
+    public void GenMainQuest(int level)
     {
         //퀘스트 여분 자리가 있을때만 실행 
         if (havingQuests.HavingQuestList.Count >= QuestUIs.Count)
@@ -133,10 +133,10 @@ public class QuestManager : MonoBehaviour
         }
 
         //모든 퀘스트 중 랜덤으로 번호를 하나 뽑아 새로 생성할 퀘스트 결정 
-        int randNum = Random.Range(0, questDB.QuestList.Count);
-        Debug.Log("NewQuestNum : " + randNum);
+        //int randNum = Random.Range(0, questDB.QuestList.Count);
+        //Debug.Log("NewQuestNum : " + randNum);
          
-        havingQuests.HavingQuestList.Add(questDB.QuestList[randNum]); //현재 가지고 있는 퀘스트에 추가
+        havingQuests.HavingQuestList.Add(questDB.QuestList[level/2-1]); //현재 가지고 있는 퀘스트에 추가
         UpdateCurrnetQuestList(); // 현재 퀘스트 정보 저장
         setCurrentQuestUIs();//퀘스트창에 퀘스트 추가
     }

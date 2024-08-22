@@ -52,6 +52,8 @@ public class EventDialog : MonoBehaviour
         if (idx >= currntDialog.Length)
         {
             SceneManager.LoadScene("CakeStore 1");
+            QuestManager.instance.GenMainQuest(ExpManager.instance.level);
+            return;
         }
         dialogText.text = currntDialog[idx];
     }

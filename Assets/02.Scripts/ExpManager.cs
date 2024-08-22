@@ -49,6 +49,33 @@ public class ExpManager : MonoBehaviour
         exp_max = PlayerPrefs.GetFloat("exp_max");
         exp = PlayerPrefs.GetFloat("exp");
     }
+    private void Update()
+    {
+        //경험치 실험 중
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            ExpManager.instance.getExp(10);
+            UIManager.instance.SetExpBarUI();
+        }
+
+        //경험치 및 레벨 초기화
+        else if (Input.GetKeyDown(KeyCode.C))
+        {
+            level = 1;
+            exp_max = 100;
+            exp = 0;
+
+            //UI 업데이트
+            UIManager.instance.SetExpBarUI();
+            UIManager.instance.SetDatainUI(); 
+
+            PlayerPrefs.SetInt("level",level);
+            PlayerPrefs.SetFloat("exp_max", exp_max);
+            PlayerPrefs.SetFloat("exp", exp);
+
+            Debug.Log("경험치 초기화 ");
+        }
+    }
 
     public void getExp(float delta)
     {
@@ -73,8 +100,9 @@ public class ExpManager : MonoBehaviour
             //스토리 진행 
             if (level == 2)
             {
-                //SceneManager.LoadScene("Level5");
-            }else if (level == 4)
+                SceneManager.LoadScene("Level2");
+            }
+            else if (level == 4)
             {
                 
             }else if (level == 6)

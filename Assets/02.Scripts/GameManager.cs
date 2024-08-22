@@ -77,12 +77,6 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        //경험치 실험 중
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            ExpManager.instance.getExp(10);
-        }
-
     }
 
     // 이 함수는 매 씬마다 호출됨.
