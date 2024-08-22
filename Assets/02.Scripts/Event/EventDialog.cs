@@ -20,8 +20,7 @@ public class EventDialog : MonoBehaviour
         LoadEventDialogJson();
         dialogText = GameObject.Find("DialogText").GetComponent<Text>();//대사 출력을 위한 텍스트 오브젝트 셋팅
 
-        //int level = ExpManager.instance.level;
-        int level = 2;
+        int level = ExpManager.instance.level;
         if(level == 2)
         {
             currntDialog = eventDialogs.Level2;
@@ -29,11 +28,11 @@ public class EventDialog : MonoBehaviour
         {
             currntDialog = eventDialogs.Level4;
         }
-        else if (level == 4)
+        else if (level == 6)
         {
             currntDialog = eventDialogs.Level6;
         }
-        else if (level == 4)
+        else if (level == 8)
         {
             currntDialog = eventDialogs.Level8;
         }

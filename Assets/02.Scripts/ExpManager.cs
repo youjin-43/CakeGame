@@ -98,23 +98,23 @@ public class ExpManager : MonoBehaviour
             UIManager.instance.SetExpBarUI();//UI 업데이트 
 
             //스토리 진행 
-            if (level == 2)
+            if (level%2 == 0)
             {
                 SceneManager.LoadScene("Level2");
             }
-            else if (level == 4)
-            {
+            //else if (level == 4)
+            //{
                 
-            }else if (level == 6)
-            {
+            //}else if (level == 6)
+            //{
 
-            }else if(level == 8)
-            {
+            //}else if(level == 8)
+            //{
 
-            }else if (level == 10)
-            {
+            //}else if (level == 10)
+            //{
 
-            }          
+            //}          
         }
     }
 }
