@@ -4,34 +4,75 @@ using UnityEngine;
 using System.Data; //for DataTable
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;//씬 관련 라이브러리
+using System.IO; // 파일, 폴더 생성을 위해 
 
 public class EventDialog : MonoBehaviour
 {
-    public DataTable DialogDT;
-    public Text dialogText;
+    public EventDialogs eventDialogs; 
+    private string DialogjsonPath = Application.dataPath + "/02.Scripts/Event/DialogDB.json"; //dataPath
 
+    public Text dialogText;
+    public string[] currntDialog;
     private int idx=0;
 
-    // Start is called before the first frame update
     void Start()
     {
-        DialogDT = DataManager.instance.tableDic[DataManager.CSVDatas.EventTable];
-        Debug.Log("데이터에서 EventTable 할당받음");
+        LoadEventDialogJson();
+        dialogText = GameObject.Find("DialogText").GetComponent<Text>();//대사 출력을 위한 텍스트 오브젝트 셋팅
 
-        dialogText.text = DialogDT.Rows[idx][1].ToString();
+        //int level = ExpManager.instance.level;
+        int level = 2;
+        if(level == 2)
+        {
+            currntDialog = eventDialogs.Level2;
+        }else if (level == 4)
+        {
+            currntDialog = eventDialogs.Level4;
+        }
+        else if (level == 4)
+        {
+            currntDialog = eventDialogs.Level6;
+        }
+        else if (level == 4)
+        {
+            currntDialog = eventDialogs.Level8;
+        }
+        else
+        {
+            currntDialog = eventDialogs.Level10;
+        }
+
+        dialogText.text = currntDialog[idx];
     }
 
-    // Update is called once per frame
-    void Update()
+    public void PassDialog()
     {
-        if (Input.GetKeyDown(KeyCode.P))
+        idx++;
+
+        if (idx >= currntDialog.Length)
         {
-            idx++;
-            if (idx == 4)
-            {
-                SceneManager.LoadScene("CakeStore 2");
-            }
-            dialogText.text = DialogDT.Rows[idx][1].ToString();
+            SceneManager.LoadScene("CakeStore 1");
         }
+        dialogText.text = currntDialog[idx];
+    }
+
+
+
+    public void LoadEventDialogJson()
+    {
+        string DialogJsonText = File.ReadAllText(DialogjsonPath);
+        Debug.Log("DialogJsonText : " + DialogJsonText);
+        eventDialogs = JsonUtility.FromJson<EventDialogs>(DialogJsonText);
+        Debug.Log("이벤트 대사 json에서 불러오기 완료");
+    }
+
+    [System.Serializable]
+    public class EventDialogs
+    {
+        public string[] Level2;
+        public string[] Level4;
+        public string[] Level6;
+        public string[] Level8;
+        public string[] Level10;
     }
 }

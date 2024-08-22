@@ -55,24 +55,38 @@ public class ExpManager : MonoBehaviour
         exp += delta;
         PlayerPrefs.SetFloat("exp", exp);//exp데이터저장
 
+        //레벨업 
         if (exp >= exp_max)
         {
-            exp = exp - exp_max;
-            PlayerPrefs.SetFloat("exp", exp);//exp데이터저장
-
             level++;
-            PlayerPrefs.SetInt("level", level);//레벨 데이터 저장
+            PlayerPrefs.SetInt("level", level);//레벨 데이터 업데이트
+            UIManager.instance.levelText.text = level.ToString();//UI 업데이트 
 
-            //if(level == 1) SceneManager.LoadScene("Level5");
+            exp = exp - exp_max;
+            PlayerPrefs.SetFloat("exp", exp);//exp데이터 업데이트
 
-            UIManager.instance.levelText.text = level.ToString();
+            exp_max += 100; //다음 레벨업까지 얻어야하는 양 증가 
+            PlayerPrefs.SetFloat("exp_max", exp_max);
 
-            exp_max += 50;
-            PlayerPrefs.SetFloat("exp_max",exp_max);
+            UIManager.instance.SetExpBarUI();//UI 업데이트 
+
+            //스토리 진행 
+            if (level == 2)
+            {
+                //SceneManager.LoadScene("Level5");
+            }else if (level == 4)
+            {
+                
+            }else if (level == 6)
+            {
+
+            }else if(level == 8)
+            {
+
+            }else if (level == 10)
+            {
+
+            }          
         }
-
-        UIManager.instance.SetExpBarUI();
     }
-
-
 }
