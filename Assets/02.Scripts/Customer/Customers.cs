@@ -25,7 +25,7 @@ public class Customers : MonoBehaviour
     public CustomersMoveType.MoveType moveType;
     private Transform leftEnd, rightEnd, linePostion, enterOutPosition, enterInPosition, cashierPosition;
     private Transform[] showcasePosition;
-    private Vector2 targetPosition;
+    public Vector2 targetPosition;
 
     public void Initialize(Transform leftEnd, Transform rightEnd, Transform linePostion, Transform enterOutPosition, Transform enterInPosition, Transform cashierPosition, float moveSpeed, float lineSpacing, float sideSpacing, int wantedCakeIndex, CustomersManager customersManager)
     {
@@ -41,20 +41,17 @@ public class Customers : MonoBehaviour
         this.wantedCakeIndex = wantedCakeIndex;
         this.customersManager = customersManager;
         isCakeCheck = false;
-        isDestroy=false;
+        isDestroy = false;
         targetPosition = rightEnd.position;
         transform.GetChild(0).gameObject.SetActive(false);
         agent = GetComponent<NavMeshAgent>();
-        agent.updateRotation=false;
-        agent.updateUpAxis=false;
+        agent.updateRotation = false;
+        agent.updateUpAxis = false;
+        moveType = CustomersMoveType.MoveType.Move;
     }
 
     void Update()
     {
-        if (Routine.instance.routineState == RoutineState.Prepare || Routine.instance.routineState == RoutineState.Open)
-        {
-            moveType = CustomersMoveType.MoveType.Move;
-        }
         switch (moveType)
         {
             case CustomersMoveType.MoveType.Move:
@@ -94,11 +91,12 @@ public class Customers : MonoBehaviour
         }
         else
         {
-            if(isDestroy)
+            if (isDestroy)
             {
                 Destroy(gameObject);
             }
             int r = Random.Range(0, 5);
+            r = 0;
             switch (r)
             {
                 case 0:
@@ -128,15 +126,19 @@ public class Customers : MonoBehaviour
 
     void GoToLineUp()
     {
+        Debug.Log("line" + lineType);
         switch (lineType)
         {
             case CustomersMoveType.LineType.Start:
+                Debug.Log("linestart");
                 if (frontCustomer != null)
                 {
+                    Debug.Log("notfirst");
                     targetPosition = (Vector2)linePostion.position + ((2 * Vector2.right + Vector2.down) * sideSpacing);
                 }
                 else
                 {
+                    Debug.Log("first");
                     targetPosition = linePostion.position;
                 }
                 MoveTo();

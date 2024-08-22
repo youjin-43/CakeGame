@@ -44,7 +44,6 @@ public class CustomersManager : MonoBehaviour
                 Customers customers = customersObject.GetComponent<Customers>();
                 int wantedCakeIndex = Random.Range(0, CakeManager.instance.totalCakeNum);
                 customers.Initialize(leftEnd,rightEnd, linePosition, enterOutPosition, enterInPosition, cashierPosition, moveSpeed, lineSpacing, sideSpacing, wantedCakeIndex, this);
-                customers.moveType = CustomersMoveType.MoveType.None;
                 customersList.Add(customers);
                 yield return new WaitForSeconds(customersSpawnInterval);
             }
@@ -61,7 +60,7 @@ public class CustomersManager : MonoBehaviour
         int index = customersList.IndexOf(currentCustomer);
         if (index > 0)
         {
-            return customersList[index - 1].transform;
+            return customersList[index-1].transform;
         }
 
         return null;
@@ -75,7 +74,7 @@ public class CustomersManager : MonoBehaviour
         int index = customersList.IndexOf(currentCustomer);
         if (index >= 0)
         {
-            return index - 1;
+            return index;
         }
         return -1;
     }
