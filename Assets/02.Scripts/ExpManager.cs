@@ -73,6 +73,8 @@ public class ExpManager : MonoBehaviour
             PlayerPrefs.SetFloat("exp_max", exp_max);
             PlayerPrefs.SetFloat("exp", exp);
 
+            CakeManager.instance.ResetUnlockCake();
+
             Debug.Log("경험치 초기화 ");
         }
     }
@@ -98,23 +100,30 @@ public class ExpManager : MonoBehaviour
             UIManager.instance.SetExpBarUI();//UI 업데이트 
 
             //스토리 진행 
-            if (level%2 == 0)
+            if (level == 2)
             {
                 SceneManager.LoadScene("Level2");
+                CakeManager.instance.UnlockCake(1);
             }
-            //else if (level == 4)
-            //{
-                
-            //}else if (level == 6)
+            else if (level == 4)
+            {
+                SceneManager.LoadScene("Level2");
+                CakeManager.instance.UnlockCake(2);
+            }
+            else if (level == 6)
+            {
+                SceneManager.LoadScene("Level2");
+                CakeManager.instance.UnlockCake(3);
+            }
+            else if (level == 8)
+            {
+                SceneManager.LoadScene("Level2");
+                CakeManager.instance.UnlockCake(4);
+            }
+            //else if (level == 10)
             //{
 
-            //}else if(level == 8)
-            //{
-
-            //}else if (level == 10)
-            //{
-
-            //}          
+            //}
         }
     }
 }
