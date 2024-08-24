@@ -79,6 +79,7 @@ public class CakeMaker : MonoBehaviour
     public void UpdateColliders() // 타이머와 오븐의 콜리더를 설정 
     // !!!!!!!반드시 isMakingCake 값의 변화 이후에 와야함.!!!!!!!
     {
+        if(timerUI==null) timerUI = transform.GetChild(0).GetComponent<SpriteRenderer>();
         timerUI.gameObject.SetActive(isMakingCake);
         GetComponent<PolygonCollider2D>().enabled = !isMakingCake;
         GetComponent<BoxCollider2D>().enabled = isMakingCake;

@@ -41,7 +41,7 @@ public class CakeShowcaseController : MonoBehaviour
         // 케이크 매니저 초기화
         cakeManager = CakeManager.instance;
         cakeUIController = CakeUIController.instance;
-
+        
         cakeShowcaseMenu.SetActive(true);
         cakeShowcaseScrollViewContent = cakeShowcaseMenu.GetComponentInChildren<HorizontalLayoutGroup>().transform;
 
