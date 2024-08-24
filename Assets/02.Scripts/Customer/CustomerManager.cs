@@ -2,6 +2,7 @@ using Microsoft.Unity.VisualStudio.Editor;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class CustomersManager : MonoBehaviour
 {
@@ -31,7 +32,7 @@ public class CustomersManager : MonoBehaviour
         }
         for (int i = 0; i < customersList.Count; i++)
         {
-            if(customersList[i] == null)
+            if (customersList[i] == null)
             {
                 customersList.Remove(customersList[i]);
             }
@@ -47,10 +48,10 @@ public class CustomersManager : MonoBehaviour
             Customers customers = customersObject.GetComponent<Customers>();
             if (r % 2 == 0) customers.targetPosition = leftEnd.position;
             else customers.targetPosition = rightEnd.position;
-            float speed = Random.Range(moveSpeed * 0.7f, moveSpeed * 1.3f);
             int wantedCakeIndex = Random.Range(0, CakeManager.instance.totalCakeNum);
+            customers.GetComponent<NavMeshAgent>().speed = Random.Range(moveSpeed * 0.7f, moveSpeed * 1.3f);
             customers.GetComponent<SpriteRenderer>().sprite = customerImages[Random.Range(0, customerImages.Length)];
-            customers.Initialize(leftEnd, rightEnd, linePosition, enterOutPosition, enterInPosition, cashierPosition, speed, lineSpacing, sideSpacing, wantedCakeIndex, this);
+            customers.Initialize(leftEnd, rightEnd, linePosition, enterOutPosition, enterInPosition, cashierPosition, moveSpeed, lineSpacing, sideSpacing, wantedCakeIndex, this);
             yield return new WaitForSeconds(customersSpawnInterval);
             if (Routine.instance.routineState == RoutineState.Close)
             {

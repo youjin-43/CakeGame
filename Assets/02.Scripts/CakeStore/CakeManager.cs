@@ -11,6 +11,7 @@ public class CakeManager : MonoBehaviour
 {
     public CakeShowcaseController cakeShowcaseController;
     public CakeMakerController cakeMakerController;
+    public CakeUIController cakeUIController;
     public List<CakeSO> cakeSODataList;    // 케이크 데이터를 저장하는 리스트 (Unity Editor에서 설정)
     public int[] cakeCounts;             // 각 케이크의 개수를 관리하는 배열
     private string filePath;             // 케이크 데이터 저장 파일 경로
@@ -49,6 +50,7 @@ public class CakeManager : MonoBehaviour
         LoadCakeData();
         cakeShowcaseController = FindObjectOfType<CakeShowcaseController>();
         cakeMakerController = FindObjectOfType<CakeMakerController>();
+        cakeUIController = CakeUIController.instance;
         totalCakeNum = cakeSODataList.Count;
     }
 
