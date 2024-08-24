@@ -111,6 +111,15 @@ public class CakeManager : MonoBehaviour
             Debug.LogWarning("잠금 해제 실패: 유효하지 않은 인덱스 또는 이미 잠금 해제된 케이크.");
         }
     }
+    public void ResetUnlockCake()
+    {
+        cakeSODataList[0].isLocked = false;
+        for (int i = 1; i < totalCakeNum; i++)
+        {
+            cakeSODataList[i].isLocked = true;
+        }
+        SaveCakeData();
+    }
 
     // 케이크 데이터를 JSON 파일로 저장
     private void SaveCakeData()
