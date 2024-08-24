@@ -58,7 +58,7 @@ public class GameManager : MonoBehaviour
     [Header("About Running")]
     public float runTime; // 현재 시간
     public float MaxRunTime = 60f;
-    public bool isRunning; //가게가 운영중인지 표시하는 변수
+    //public bool isRunning; //가게가 운영중인지 표시하는 변수
 
     public GameObject RuntimeBar;
 
@@ -66,7 +66,7 @@ public class GameManager : MonoBehaviour
     {
 
         //가게가 운영되는 동안 운영 시간 표시 
-        if (isRunning)
+        if (Routine.instance.routineState == RoutineState.Open)
         {
             runTime += Time.deltaTime;
             RuntimeBar.GetComponent<Image>().fillAmount = runTime / MaxRunTime;
@@ -98,19 +98,22 @@ public class GameManager : MonoBehaviour
     //가게 운영 시작하는 함수 
     public void StartRunning()
     {
+        Routine.instance.routineState = RoutineState.Open;
+
         UIManager.instance.runningOverBoard.SetActive(false); //정산화면 끄기
 
         date++;
         UIManager.instance.dateText.text = date.ToString();//UI 적용 
 
         runTime = 0;
-        isRunning = true;
+        //isRunning = true;
     }
 
     //가게 운영이 끝났을때 호출 할 함수
     private void EndRunning()
     {
-        isRunning = false; //운영 끝!
+        //isRunning = false; //운영 끝!
+        Routine.instance.routineState = RoutineState.Close;
 
         UIManager.instance.runningOverBoard.SetActive(true); // 정산 화면 뜨기
         UIManager.instance.RunStartButton.SetActive(true);

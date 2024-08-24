@@ -16,6 +16,7 @@ public class Routine : MonoBehaviour
         {
             // instance가 비어있다면(null) 그곳에 자기 자신을 할당
             instance = this;
+            routineState = RoutineState.Prepare;
             DontDestroyOnLoad(gameObject); // 씬이 변경되어도 삭제되지 않도록
 
         }
@@ -27,15 +28,15 @@ public class Routine : MonoBehaviour
     }
     void Update()
     {
-        timer += Time.deltaTime;
-        if(timer > prepareTime)
-        {
-            routineState = RoutineState.Open;
-        }
-        if(timer > prepareTime + openTime)
-        {
-            routineState = RoutineState.Close;
-        }
+        //timer += Time.deltaTime;
+        //if(timer > prepareTime)
+        //{
+        //    routineState = RoutineState.Open;
+        //}
+        //if(timer > prepareTime + openTime)
+        //{
+        //    routineState = RoutineState.Close;
+        //}
         
         switch (routineState)
         {
