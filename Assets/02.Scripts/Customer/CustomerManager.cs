@@ -1,16 +1,19 @@
+using Microsoft.Unity.VisualStudio.Editor;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class CustomersManager : MonoBehaviour
 {
     public GameObject customersPrefab;    // Customers 프리팹
-    public Transform spawnPoint;          // Customers가 생성될 위치
-    public List<Vector2> pathPoints;      // Customers가 이동할 경로
-    public Vector2 linePosition;
-    public Vector2 enterOutPosition;
-    public Vector2 enterInPosition;
-    public Vector2 cashierPosition;
+    public Transform[] spawnPoint;          // Customers가 생성될 위치
+    public Transform leftEnd, rightEnd;
+    public Transform linePosition;
+    public Transform enterOutPosition;
+    public Transform enterInPosition;
+    public Transform cashierPosition;
+    public Sprite[] customerImages;
 
     public float customersSpawnInterval = 2.0f; // Customers 생성 간격
     public float lineSpacing = 0.5f;      // 줄서기 간격
@@ -18,23 +21,43 @@ public class CustomersManager : MonoBehaviour
     public float moveSpeed = 2.0f;        // 이동 속도
 
     public List<Customers> customersList = new List<Customers>();
+    private bool isStartSpawning = false;
 
-    void Start()
+    void Update()
     {
-        StartCoroutine(SpawnCustomers());
+        if (Routine.instance.routineState == RoutineState.Prepare && !isStartSpawning)
+        {
+            StartCoroutine(SpawnCustomers());
+            isStartSpawning = true;
+        }
+        for (int i = 0; i < customersList.Count; i++)
+        {
+            if (customersList[i] == null)
+            {
+                customersList.Remove(customersList[i]);
+            }
+        }
     }
 
     IEnumerator SpawnCustomers()
     {
         while (true)
         {
-            GameObject customersObject = Instantiate(customersPrefab, spawnPoint.position, Quaternion.identity);
+            int r = Random.Range(0, spawnPoint.Length);
+            GameObject customersObject = Instantiate(customersPrefab, spawnPoint[r].position, Quaternion.identity);
             Customers customers = customersObject.GetComponent<Customers>();
+            if (r % 2 == 0) customers.targetPosition = leftEnd.position;
+            else customers.targetPosition = rightEnd.position;
             int wantedCakeIndex = Random.Range(0, CakeManager.instance.totalCakeNum);
-            customers.Initialize(pathPoints, linePosition, enterOutPosition, enterInPosition, cashierPosition, moveSpeed, lineSpacing, sideSpacing, wantedCakeIndex, this);
-            customers.moveType = CustomersMoveType.MoveType.None;
-            customersList.Add(customers);
+            customers.GetComponent<NavMeshAgent>().speed = Random.Range(moveSpeed * 0.7f, moveSpeed * 1.3f);
+            customers.GetComponent<SpriteRenderer>().sprite = customerImages[Random.Range(0, customerImages.Length)];
+            customers.Initialize(leftEnd, rightEnd, linePosition, enterOutPosition, enterInPosition, cashierPosition, moveSpeed, lineSpacing, sideSpacing, wantedCakeIndex, this);
             yield return new WaitForSeconds(customersSpawnInterval);
+            if (Routine.instance.routineState == RoutineState.Close)
+            {
+                StopCoroutine(SpawnCustomers());
+                isStartSpawning = false;
+            }
         }
     }
 
@@ -48,7 +71,11 @@ public class CustomersManager : MonoBehaviour
         int index = customersList.IndexOf(currentCustomer);
         if (index > 0)
         {
-            return customersList[index - 1].transform;
+            if (customersList[index - 1] != null)
+            {
+                return customersList[index - 1].transform;
+            }
+            else return null;
         }
 
         return null;
@@ -62,7 +89,7 @@ public class CustomersManager : MonoBehaviour
         int index = customersList.IndexOf(currentCustomer);
         if (index >= 0)
         {
-            return index-1;
+            return index;
         }
         return -1;
     }
@@ -71,34 +98,11 @@ public class CustomersManager : MonoBehaviour
 public class CustomersMoveType
 {
     public enum LineType
-    {
-        None,
-        Start,
-        During,
-        End
-    }
+    { None, Start, During, End }
     public enum EnterType
-    {
-        None,
-        In,
-        Out
-    }
+    { None, In, Out }
     public enum ShopType
-    {
-        None,
-        Check,
-        Shop,
-        Pay,
-        In,
-        Out
-    }
+    { None, Check, Shop, Pay, In, Out }
     public enum MoveType
-    {
-        None,
-        Move,
-        Line,
-        Enter,
-        Random,
-        Shop
-    }
+    { None, Move, Line, Enter, Random, Shop }
 }

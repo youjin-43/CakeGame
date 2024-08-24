@@ -179,6 +179,6 @@ public class CakeMakerController : MonoBehaviour
             }
         }
         // 케이크 쇼케이스 UI 업데이트
-        cakeManager.GetComponent<CakeShowcaseController>().UpdateUI();
+        cakeManager.cakeShowcaseController.UpdateUI();
     }
 }
