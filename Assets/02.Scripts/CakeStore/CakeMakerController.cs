@@ -40,6 +40,7 @@ public class CakeMakerController : MonoBehaviour
     private CakeManager cakeManager;         // 케이크 매니저 참조
     private CakeUIController cakeUIController;
 
+    private FarmingManager farmingManager;
     void Start()
     {
         InitializeCakeMakerController();
@@ -120,8 +121,12 @@ public class CakeMakerController : MonoBehaviour
         GameManager.instance.money -= cakeData.cakeCost;       // 돈 감소
         for (int i = 0; i < cakeData.materialIdxs.Length; i++) // 재료 감소
         {
-            ItemSO itemSO = inventory.GetItemAt(cakeData.materialIdxs[i]).item;  // ItemSO 추출
-            inventory.MinusItem(itemSO, cakeData.materialCounts[i]);             // ItemSO 감소 
+            InventoryItem tempItem = new InventoryItem()
+            {
+                item = farmingManager.fruitItems[cakeData.materialIdxs[i]],
+                quantity = cakeData.materialCounts[i],
+            };
+            UIInventoryManager.instance.MinusItem(tempItem);
         }
         cakeUIController.CloseMenu(cakeMakerPanel);                        // 케이크 메이커 패널 비활성화        
         cakeMakers[cakeMakerIndex].GetComponent<CakeMaker>().         // 케이크 제작 시작
