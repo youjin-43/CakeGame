@@ -130,12 +130,6 @@ public class SaveFarmingData
     [SerializeField]
     // 씨앗 마다 자라기까지 걸리는 일수가 있어서 다르게 자라도록?_?
     public int curDay; // 씨앗 심고 지난 시간(씬 전환 될 때마다 1씩 증가하는 식으로 하면 될 것 같다)
-
-
-    public void PrintData()
-    {
-        Debug.Log("씨앗 있어여?: " + seedOnTile + " " + plowEnableState + " " + plantEnableState + " " + harvestEnableState + " " + currentState + " " + seedIdx + ", 일수: " + curDay + " " + isGrown);
-    }
 }
 
 
@@ -220,6 +214,7 @@ public class FarmingManager : MonoBehaviour
     // 버튼을 프리팹으로 만들어 놓은 다음 동적으로 생성해서 쓸 것.
     public GameObject[] buttonPrefabs; // [0]: plow 버튼, [1]: plant 버튼, [2]: harvest 버튼, [3]: failed 버튼
     public GameObject buttonParent; // 버튼 생성할 때 부모 지정하기 위한 변수
+    public GameObject buttonsGameObject; // 버튼의 부모를 껐다 켜기 위해서 필요한 변수.. 
 
     [Header("Farm interaction Panel")]
     public GameObject growTimePanel; // 다 자라기까지 남은 시간 보여주는 판넬
@@ -229,14 +224,19 @@ public class FarmingManager : MonoBehaviour
     public Vector2 clickPosition; // 현재 마우스 위치를 게임 월드 위치로 바꿔서 저장
     public Vector3Int cellPosition; // 게임 월드 위치를 타일 맵의 타일 셀 위치로 변환
     public Dictionary<Vector3Int, FarmingData> farmingData;
-    public int farmLevel = 0; // 농장 레벨. 농장 레벨 업그레이드 함수 호출하면 증가하도록..
+    public int farmLevel = 1; // 농장 레벨. 농장 레벨 업그레이드 함수 호출하면 증가하도록..
     public int expansionSize = 1; // 농장 한 번 업그레이트 할 때 얼마나 확장될 건지.. 일단 임시로 1로 해놨다.. 나중에 변경할 것.
+    public int scarecrowLevel = 0; // 허수아비 레벨..
 
     [Header("PlantSeed Information")]
     public GameObject plantSeedPanel; // 씨앗 선택창
     public int selectedSeedIdx; // 현재 심을 씨앗 종류
     public bool clickedSelectedSeedButton = false; // 이 값이 true 가 되면 씨앗 심기 함수 호출하도록(씨앗 심기 함수에서는 이 값을 다시 false 로 돌림).. 
 
+    [Header("Farm Size Upgrade UI")]
+    public Text costText; // 업그레이드 비용 텍스트
+    public Text curFarmLevelText; // 현재 농장 레벨 텍스트
+    public Text nextFarmLevelText; // 다음 농장 레벨 텍스트
 
 
     // 데이터 저장
@@ -250,8 +250,6 @@ public class FarmingManager : MonoBehaviour
         Dictionary<PosInt, SaveFarmingData> tempDic = new Dictionary<PosInt, SaveFarmingData>();
         foreach (var item in farmingData)
         {
-            Debug.Log(item.Key + "저장할겁니다!!");
-
             // JSON 저장할 때 Vector3Int 가 직렬화가 안되므로 따로 만든 PosString 이용하가ㅣ..
             PosInt pos = new PosInt
             {
@@ -287,7 +285,6 @@ public class FarmingManager : MonoBehaviour
                 temp.isGrown = farmingData[item.Key].isGrown;
             }
             tempDic.Add(pos, temp);
-            tempDic[pos].PrintData();
         }
 
 
@@ -311,20 +308,13 @@ public class FarmingManager : MonoBehaviour
         // 지정된 경로에 파일이 있는지 확인한다
         if (File.Exists(path))
         {
-            Debug.Log("파일 있어여!!");
-
-
             // 경로에 파일이 있으면 Json 을 다시 오브젝트로 변환한다.
             string json = File.ReadAllText(path);
             Debug.Log(json);
             Dictionary<PosInt, SaveFarmingData> tempDic = DictionaryJsonUtility.FromJson<PosInt, SaveFarmingData>(json);
-            Debug.Log(tempDic.Count + "!!!!!!!!!!!!!!!!!!!!1");
-
 
             foreach (var item in tempDic)
             {
-                tempDic[item.Key].PrintData();
-
                 Vector3Int pos = new Vector3Int(item.Key.x, item.Key.y, item.Key.z);
 
                 switch (tempDic[item.Key].currentState)
@@ -387,10 +377,6 @@ public class FarmingManager : MonoBehaviour
 
     private void Awake()
     {
-        // 델리게이트에 씬 로드 시 참조를 재설정하는 함수 연결..
-        SceneManager.sceneLoaded += OnSceneLoaded;
-
-
         // 데이터 저장 경로 설정..
         farmingDataFilePath = Path.Combine(Application.persistentDataPath, "FarmingData.json"); // 데이터 경로 설정..
 
@@ -399,6 +385,13 @@ public class FarmingManager : MonoBehaviour
         clickPosition = Vector2.zero;
 
         animalInteractionManager.OnFailRequested += FailFarm; // 델리게이트에 함수 연결해주기..
+    }
+
+    private void OnEnable()
+    {
+        // 델리게이트에 씬 로드 시 참조를 재설정하는 함수 연결..
+        // FarmingManager 는 DontDestroyOnLoad 가 아니므로 Enable 에서 함수 연결해주고 Disable 에서 함수 연결 끊어줄 것임..
+        SceneManager.sceneLoaded += OnFarmSceneLoaded;
     }
 
 
@@ -416,10 +409,11 @@ public class FarmingManager : MonoBehaviour
         // 농사 땅 레벨 데이터 불러오기..
         farmLevel = PlayerPrefs.GetInt("FarmLevel");
         // 농사 땅 레벨 데이터를 불러온 다음에 레벨 데이터에 맞게끔 땅 업그레이드 해주기.. 
-        while (farmLevel > 0)
+        int tmpFarmLevel = farmLevel;
+        while (tmpFarmLevel > 1)
         {
             SetFarmSize();
-            farmLevel--;
+            tmpFarmLevel--;
         }
 
 
@@ -433,21 +427,15 @@ public class FarmingManager : MonoBehaviour
             // 만약 씨앗이 심어져 있으면
             if (farmingData[item.Key].seedOnTile)
             {
-                Debug.Log("씨앗이 심어져있어용~");
-
                 // 씨앗이 심긴 후 지난 일수가 씨앗이 다 자라는데 걸리는 일수랑 같으면
                 if (farmingData[item.Key].curDay == seedItems[farmingData[item.Key].seedIdx].growDay - 1)
                 {
-                    Debug.Log("다 자랐어용!");
-
                     // 다 자랐음을 표시하기 위해 isGrown 의 값을 true 로 변경해주기..
                     farmingData[item.Key].isGrown = true;
                 }
                 // 씨앗이 심긴 후 지난 일수가 씨앗이 다 자라는데 걸리는 일수보다 작으면
                 else if (farmingData[item.Key].curDay < seedItems[farmingData[item.Key].seedIdx].growDay - 1)
                 {
-                    Debug.Log("다 안 자랐어용!");
-
                     // 일수를 증가시켜주기..
                     farmingData[item.Key].curDay++;
                 }
@@ -496,6 +484,15 @@ public class FarmingManager : MonoBehaviour
             PlantTile(cellPosition, selectedSeedIdx);
         }
     }
+
+    private void OnDisable()
+    {
+        // 델리게이트에 씬 로드 시 참조를 재설정하는 함수 없애기..
+        // FarmingManager 는 DontDestroyOnLoad 가 아니므로 씬 매니저의 델리게이트에서 빼줘야함..
+        // InventortManager 는 DontDestroyOnLoad 라 델리게이트에서 안 빼줘도 되는 거고..
+        SceneManager.sceneLoaded -= OnFarmSceneLoaded;
+    }
+
 
 
     private void FarmingSystemPC()
@@ -1069,6 +1066,10 @@ public class FarmingManager : MonoBehaviour
 
     public void UpgradeFarmSize()
     {
+        // 농장 레벨은 5렙까지 존재하도록..
+        // 5 에서 더 업그레이드 하려고 하면 그냥 빠져나가도록..
+        if (farmLevel >= 5) return;
+
         // 일단 임시로 만원으로 해놨다..
         if (GameManager.instance.money < 10000)
         {
@@ -1148,9 +1149,27 @@ public class FarmingManager : MonoBehaviour
         Debug.Log("농장을 업그레이드 했다!");
     }
 
+    public void SetFarmUpgradePanel()
+    {
+        // 농장 레벨 업그레이드 판넬 정보 설정 함수
+        costText.text = 10000 + ""; // 업그레이드 비용 텍스트(일단 임시로 만원..)
+        curFarmLevelText.text = farmLevel + ""; // 현재 농장 레벨 텍스트
+        nextFarmLevelText.text = (farmLevel + 1) + ""; // 다음 농장 레벨 텍스트
+    }
 
+    public void DisableFarmStateButton()
+    {
+        // 농사 버튼 끄는 함수
+        buttonsGameObject.SetActive(false);
+    }
 
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    public void EnableFarmStateButton()
+    {
+        // 농사 버튼 켜는 함수
+        buttonsGameObject.SetActive(true);
+    }
+
+    void OnFarmSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         // 씬이 완전히 로드될 때까지 기다린 후 코루틴 시작..
         StartCoroutine(InitializeAfterSceneLoad());

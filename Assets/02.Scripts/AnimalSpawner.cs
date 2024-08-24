@@ -57,6 +57,9 @@ public class AnimalSpawner : MonoBehaviour
 
     public void DisableAnimal(int idx)
     {
-        pools[idx].Clear(); // 싹 다 없애버리기..
+        foreach (GameObject gameObj in pools[idx])
+        {
+            gameObj.SetActive(false); // 화면상에서 싹 다 없애버리기..
+        }
     }
 }

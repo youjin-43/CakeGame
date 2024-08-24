@@ -45,10 +45,10 @@ public class UIManager : MonoBehaviour
     public GameObject ExpBar;
 
 
-
+    //오브젝트 변수에 오브젝트들 찾아서 할당 
     public void setUIObjects()
     {
-        Debug.Log("SetDatainUI 실행됨 ");
+        //Debug.Log("SetDatainUI 실행됨 ");
 
         runningOverBoard = GameObject.Find("SettingAnchors").transform.GetChild(1).gameObject;
         if (runningOverBoard != null) runningOverBoard.gameObject.SetActive(false);
@@ -62,6 +62,7 @@ public class UIManager : MonoBehaviour
         ExpBar = GameObject.Find("ExpBar");
     }
 
+    //각 UI오브젝트에 맞는 데이터들 할당 
     public void SetDatainUI()
     {
         Debug.Log("SetDatainUI실행");
@@ -71,6 +72,7 @@ public class UIManager : MonoBehaviour
         levelText.text = ExpManager.instance.level.ToString();
     }
 
+    //경험치 데이터에 맞게 expbar 설정 
     public void SetExpBarUI()
     {
         ExpBar.GetComponent<Image>().fillAmount = ExpManager.instance.exp / ExpManager.instance.exp_max;

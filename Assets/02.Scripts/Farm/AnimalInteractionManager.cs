@@ -95,10 +95,6 @@ public class AnimalInteractionManager : MonoBehaviour
     public GameObject buttonParentGameObject; // 너구리 게임 띄우면 버튼 안 보이도록 하기 위함..
 
 
-
-    
-
-
     private void Awake()
     {
         backgroundButton.onClick.AddListener(CloseAnimalGame);
@@ -110,6 +106,7 @@ public class AnimalInteractionManager : MonoBehaviour
     {
         if (gameStart)
         {
+            exitGame = false;
             curTime += Time.deltaTime;
             animalEmergeTime += Time.deltaTime;
 
@@ -140,6 +137,8 @@ public class AnimalInteractionManager : MonoBehaviour
             // 소환되어야 하는만큼 다 소환되면 그리고 현재 시간이 플레이 타임에 +2 한 것보다 크거나 같으면 게임 종료..
             if (exitGame || ((curTime >= playTime + 2) && (disappearAnimalCount==targetAnimalCount)))
             {
+                animalSpawner.DisableAnimal(0); // 동물 다 없애버리기
+
                 // 게임 종료 시 로직
                 curTime = 0;
                 curAnimalCount = 0;
@@ -271,7 +270,6 @@ public class AnimalInteractionManager : MonoBehaviour
 
     public void ExitGame()
     {
-        // 남은 씨앗 있는 땅이 없어져서 게임 강제 종료해야 할 때 호출할 함수..
-        animalSpawner.DisableAnimal(0); // 동물 게임 오브젝트 활성화 다 꺼버리기..
+        exitGame = true; // true 로 값 바꿔주기..
     }
 }

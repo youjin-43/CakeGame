@@ -57,7 +57,7 @@ public class GameManager : MonoBehaviour
 
     [Header("About Running")]
     public float runTime; // 현재 시간
-    public float MaxRunTime = 5f;
+    public float MaxRunTime = 60f;
     public bool isRunning; //가게가 운영중인지 표시하는 변수
 
     public GameObject RuntimeBar;
@@ -77,12 +77,6 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        //경험치 실험 중
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            ExpManager.instance.getExp(10);
-        }
-
     }
 
     // 이 함수는 매 씬마다 호출됨.
@@ -91,11 +85,13 @@ public class GameManager : MonoBehaviour
         Debug.Log("OnSceneLoaded : " + scene.name);
         Debug.Log("mode : " + mode);
 
-        UIManager.instance.setUIObjects();
-        UIManager.instance.SetDatainUI();
-        UIManager.instance.SetExpBarUI();
+        UIManager.instance.setUIObjects(); //오브젝트 변수에 오브젝트들 찾아서 할당 
+        UIManager.instance.SetDatainUI();//각 UI오브젝트에 맞는 데이터들 할당 
+        UIManager.instance.SetExpBarUI(); //경험치 데이터에 맞게 expbar 설정 
 
-        QuestManager.instance.setBasicQuestUIs();
+        QuestManager.instance.setBasicQuestUIs();//퀘스트 UI 세팅
+
+        RuntimeBar = GameObject.Find("Background").gameObject;
     }
 
 
@@ -108,14 +104,7 @@ public class GameManager : MonoBehaviour
         UIManager.instance.dateText.text = date.ToString();//UI 적용 
 
         runTime = 0;
-
         isRunning = true;
-
-        //새로운 퀘스트 부여
-        QuestManager.instance.GenQuest();
-        Debug.Log("게임 매니저에서 GenQuest()실행 ");
-
-
     }
 
     //가게 운영이 끝났을때 호출 할 함수
@@ -140,6 +129,4 @@ public class GameManager : MonoBehaviour
         UIManager.instance.moneyText.text = money.ToString();
         PlayerPrefs.SetInt("money", money); 
     }
-
-
 }
