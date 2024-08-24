@@ -16,7 +16,7 @@ MonoBehaviour:
   <MaxStackSize>k__BackingField: 64
   <Name>k__BackingField: "\uBC14\uB098\uB098"
   <Description>k__BackingField: "\uB9DB\uC788\uB294 \uBC14\uB098\uB098!!"
-  <itemImage>k__BackingField: {fileID: 21300000, guid: 4aa3e7d66acc36946a978f438b1e9443, type: 3}
+  <itemImage>k__BackingField: {fileID: 21300000, guid: 1d9e31b36e1704445aab4cdc77a5a1e3, type: 3}
   itemType: 1
   fruitPrice: 1000
   fruitIdx: 1
