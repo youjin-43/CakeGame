@@ -67,6 +67,7 @@ public class CakeShowcaseController : MonoBehaviour
         {
             cakeShowcases[i] = cakeShowcasePool.GetChild(i).gameObject;
             cakeShowcases[i].GetComponent<CakeShowcase>().cakeShowcaseIndex = i;
+            cakeShowcases[i].GetComponent<CakeShowcase>().InitializeCakeShowcase();
             UpdateShowcaseUI(i);               // 쇼케이스 UI 업데이트
         }
     }
