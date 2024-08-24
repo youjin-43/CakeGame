@@ -120,6 +120,11 @@ public class UIInventoryManager : MonoBehaviour
             instance = this;
             Debug.Log("인벤토리 매니저가 생성됐습니다");
             DontDestroyOnLoad(gameObject); // 씬이 변경되어도 인벤토리가 삭제되지 않도록(인벤토리는 모든 씬에서 이용 가능해야 하기 때문에..)..
+
+            // 델리게이트에 씬 로드 시 참조를 재설정하는 함수 연결..
+            // 싱글톤 인스턴스가 처음 생성될 때만 실행되도록..
+            // 중복된 오브젝트가 파괴될 때 이벤트가 중복으로 연결되는 문제 해결 위함..
+            SceneManager.sceneLoaded += OnInventorySceneLoaded;
         }
         else
         {
@@ -129,12 +134,6 @@ public class UIInventoryManager : MonoBehaviour
             Destroy(gameObject);
             Debug.Log("인벤토리 매니저를 죽입니다");
         }
-
-
-
-        // 델리게이트에 씬 로드 시 참조를 재설정하는 함수 연결..
-        SceneManager.sceneLoaded += OnSceneLoaded;
-
 
 
         filePath = Path.Combine(Application.persistentDataPath, "InventoryData.json"); // 데이터 경로 설정..
@@ -186,7 +185,7 @@ public class UIInventoryManager : MonoBehaviour
     }
 
 
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    void OnInventorySceneLoaded(Scene scene, LoadSceneMode mode)
     {
         // 씬이 완전히 로드될 때까지 기다린 후 코루틴 시작..
         StartCoroutine(InitializeAfterSceneLoad());
@@ -203,6 +202,15 @@ public class UIInventoryManager : MonoBehaviour
         InitializeReferences();
         PrepareUI();
         PrepareInventoryData();
+
+
+        // 이건 UIInventoryManager 클래스 속 배열 관리
+        SetFruitInventoryToFruitContainer(); // 현재 인벤토리의 과일 개수를 과일 배열에 반영..
+
+
+        // 이건 씨앗, 과일 컨테이너 클래스 속 배열 관리
+        SetInventoryToContainer(0); // 현재 인벤토리의 씨앗 개수를 씨앗 컨테이너 게임오브젝트 속 배열에 반영..
+        SetInventoryToContainer(1); // 현재 인벤토리의 과일 개수를 과일 컨테이너 게임오브젝트 속 배열에 반영..
     }
 
     void InitializeReferences()
@@ -407,6 +415,8 @@ public class UIInventoryManager : MonoBehaviour
 
     public void SetFruitContainer(Dictionary<int, InventoryItem> curInventory)
     {
+        ResetFruitContainer(); // 한 번 배열 상태 리셋..
+
         // curInventory 에서 키값은, 인벤토리 속에서 해당 아이템의 인덱스 번호임
         // 현재 인벤토리의 내용을 가져올 때 비어있는 아이템 칸은 제외하고 가져옴.
         // 즉, 인벤토리 속 비어있는 아이템 칸이 있다면 가져온 아이템 딕셔너리의 내용은 [0]: 사과, [2]: 바나나, [5]: 오렌지 이럴 가능성이 있음

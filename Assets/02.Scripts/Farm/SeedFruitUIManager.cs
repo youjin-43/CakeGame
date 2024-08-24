@@ -54,7 +54,7 @@ public class SeedFruitUIManager : MonoBehaviour
 
             slot.slotImage.sprite = seedInfo.itemImage; // 스크립터블 오브젝트의 이미지로..
             slot.slotName.text = seedInfo.Name;
-            slot.totalPrice.text = "가격: " + seedInfo.seedPrice;
+            slot.totalPrice.text = seedInfo.seedPrice + "";
             slot.idx = seedInfo.seedIdx;
             slot.countText.text = "1";
         }
@@ -68,7 +68,7 @@ public class SeedFruitUIManager : MonoBehaviour
 
             slot.slotImage.sprite = fruitInfo.itemImage; // 스크립터블 오브젝트의 이미지로..
             slot.slotName.text = fruitInfo.Name;
-            slot.totalPrice.text = "가격: " + fruitInfo.fruitPrice;
+            slot.totalPrice.text = fruitInfo.fruitPrice + "";
             slot.idx = fruitInfo.fruitIdx;
             slot.countText.text = "1";
         }
@@ -109,7 +109,7 @@ public class SeedFruitUIManager : MonoBehaviour
             {
                 // 선택된 씨앗 개수랑 총 가격만 계속해서 업데이트 해주면 됨.
                 slot.countText.text = slot.curCount + "";
-                slot.totalPrice.text = "가격: " + (int)(slot.curCount * slotSeedInfo.seedData.seedPrice);
+                slot.totalPrice.text = "" + (int)(slot.curCount * slotSeedInfo.seedData.seedPrice);
             }
         }
 
@@ -125,7 +125,7 @@ public class SeedFruitUIManager : MonoBehaviour
             {
                 // 선택된 과일 개수랑 총 가격만 계속해서 업데이트 해주면 됨.
                 slot.countText.text = slot.curCount + "";
-                slot.totalPrice.text = "가격: " + (int)(slot.curCount * fruitInfo.fruitPrice);
+                slot.totalPrice.text = "" + (int)(slot.curCount * fruitInfo.fruitPrice);
             }
         }
 
