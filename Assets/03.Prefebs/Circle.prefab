@@ -159,7 +159,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 100
+  m_SortingOrder: 10
   m_Sprite: {fileID: 1361792945, guid: 7f32f382dc7a8ff408c2a2dbc79d15c6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -180,16 +180,16 @@ NavMeshAgent:
   m_GameObject: {fileID: 1776102195202186369}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.1
+  m_Radius: 0.001
   m_Speed: 2
-  m_Acceleration: 20
+  m_Acceleration: 2000
   avoidancePriority: 50
   m_AngularSpeed: 120
   m_StoppingDistance: 0.001
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 0.1
+  m_Height: 0.001
   m_BaseOffset: 0.2
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
@@ -318,7 +318,7 @@ Transform:
   m_GameObject: {fileID: 9064334328813660461}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.2, y: 0.7, z: 0}
+  m_LocalPosition: {x: 0.05, y: 0.8, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

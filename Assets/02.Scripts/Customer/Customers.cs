@@ -17,6 +17,7 @@ public class Customers : MonoBehaviour
     private float timer;
     private bool isCakeCheck;
     private bool isDestroy;
+    private bool isClose;
     private CustomersManager customersManager;
     private Transform frontCustomer;
     private CustomersMoveType.LineType lineType;
@@ -42,7 +43,7 @@ public class Customers : MonoBehaviour
         this.customersManager = customersManager;
         isCakeCheck = false;
         isDestroy = false;
-        targetPosition = rightEnd.position;
+        isClose = false;
         transform.GetChild(0).gameObject.SetActive(false);
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
@@ -59,6 +60,7 @@ public class Customers : MonoBehaviour
                 break;
             case CustomersMoveType.MoveType.Line:
                 GoToLineUp();
+                UpdateCustomer();
                 break;
             case CustomersMoveType.MoveType.Enter:
                 GoToEnter();
@@ -67,9 +69,14 @@ public class Customers : MonoBehaviour
                 GoToRandom();
                 break;
             case CustomersMoveType.MoveType.Shop:
-                customersManager.customersList.Remove(this);
                 GoToShop();
                 break;
+        }
+        if (Routine.instance.routineState == RoutineState.Close)
+        {
+            isClose = true;
+            customersManager.customersList.Remove(this);
+            Destroy(gameObject);
         }
     }
 
@@ -96,7 +103,6 @@ public class Customers : MonoBehaviour
                 Destroy(gameObject);
             }
             int r = Random.Range(0, 5);
-            r = 0;
             switch (r)
             {
                 case 0:
@@ -126,52 +132,44 @@ public class Customers : MonoBehaviour
 
     void GoToLineUp()
     {
-        Debug.Log("line" + lineType);
         switch (lineType)
         {
             case CustomersMoveType.LineType.Start:
-                Debug.Log("linestart");
-                if (frontCustomer != null)
-                {
-                    Debug.Log("notfirst");
-                    targetPosition = (Vector2)linePostion.position + ((2 * Vector2.right + Vector2.down) * sideSpacing);
-                }
-                else
-                {
-                    Debug.Log("first");
-                    targetPosition = linePostion.position;
-                }
+                targetPosition = (Vector2)linePostion.position + ((2 * Vector2.right + Vector2.down) * sideSpacing);
                 MoveTo();
-                if (Vector2.Distance(transform.position, targetPosition) <= 0.01f) lineType = CustomersMoveType.LineType.During;
+                if (Vector2.Distance(transform.position, targetPosition) <= 0.01f)
+                {
+                    customersManager.customersList.Add(this);
+                    lineType = CustomersMoveType.LineType.During;
+                }
                 break;
             case CustomersMoveType.LineType.During:
                 if (frontCustomer != null)
                 {
                     targetPosition = (Vector2)linePostion.position + customersManager.GetCustomerNum(this) * ((2 * Vector2.right + Vector2.up) * lineSpacing) + ((2 * Vector2.right + Vector2.down) * sideSpacing);
-                    MoveTo();
-                    if (Vector2.Distance(transform.position, targetPosition) <= 0.01f) lineType = CustomersMoveType.LineType.End;
                 }
                 else
                 {
-                    lineType = CustomersMoveType.LineType.End;
+                    targetPosition = linePostion.position;
                 }
+                MoveTo();
+                if (Vector2.Distance(transform.position, targetPosition) <= 0.01f) lineType = CustomersMoveType.LineType.End;
                 break;
             case CustomersMoveType.LineType.End:
                 if (frontCustomer != null)
                 {
                     targetPosition = (Vector2)linePostion.position + customersManager.GetCustomerNum(this) * ((2 * Vector2.right + Vector2.up) * lineSpacing);
-
                     if (Vector2.Distance(transform.position, targetPosition) > 0.01f)
                     {
                         MoveTo();
                     }
-                    else if (frontCustomer.GetComponent<Customers>().moveType == CustomersMoveType.MoveType.Shop)
+                    else if (frontCustomer.GetComponent<Customers>().moveType == CustomersMoveType.MoveType.Random || frontCustomer.GetComponent<Customers>().moveType == CustomersMoveType.MoveType.Shop)
                     {
                         agent.speed = moveSpeed / 2;
+                        customersManager.customersList.Remove(this);
                         lineType = CustomersMoveType.LineType.None;
                         moveType = CustomersMoveType.MoveType.Enter;
                         enterType = CustomersMoveType.EnterType.None;
-                        UpdateCustomer();
                     }
 
                 }
@@ -180,10 +178,10 @@ public class Customers : MonoBehaviour
                     if (Routine.instance.routineState == RoutineState.Open)
                     {
                         agent.speed = moveSpeed / 2;
+                        customersManager.customersList.Remove(this);
                         lineType = CustomersMoveType.LineType.None;
                         moveType = CustomersMoveType.MoveType.Enter;
                         enterType = CustomersMoveType.EnterType.None;
-                        UpdateCustomer();
                     }
                 }
                 break;
@@ -195,10 +193,7 @@ public class Customers : MonoBehaviour
         switch (enterType)
         {
             case CustomersMoveType.EnterType.None:
-                if (Routine.instance.routineState == RoutineState.Prepare)
-                {
-
-                }
+                enterType = CustomersMoveType.EnterType.Out;
                 break;
             case CustomersMoveType.EnterType.Out:
                 targetPosition = enterOutPosition.position;
@@ -336,6 +331,6 @@ public class Customers : MonoBehaviour
     {
         agent.speed = 0f; // 이동을 멈추기 위해 속도를 0으로 설정
         yield return new WaitForSeconds(seconds);
-        agent.speed = moveSpeed; // 이동을 재개하기 위해 원래 속도로 설정 (원래 속도로 변경)
+        agent.speed = moveSpeed / 2; // 이동을 재개하기 위해 원래 속도로 설정 (원래 속도로 변경)
     }
 }
