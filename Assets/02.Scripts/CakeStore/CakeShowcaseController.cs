@@ -16,7 +16,8 @@ public class CakeShowcaseController : MonoBehaviour
     private enum PlacePanelElements
     {
         Text = 0,
-        Image = 1
+        Plate = 1,
+        Image = 2
     }
     private enum MenuPanelElements
     {
@@ -231,10 +232,12 @@ public class CakeShowcaseController : MonoBehaviour
         for (int i = 0; i < cakePlaceNum; i++)
         {
             GameObject placeText = cakeShowcasePlace.transform.GetChild(i).GetChild((int)PlacePanelElements.Text).gameObject;
+            GameObject placePlate = cakeShowcasePlace.transform.GetChild(i).GetChild((int)PlacePanelElements.Plate).gameObject;
             GameObject placeImage = cakeShowcasePlace.transform.GetChild(i).GetChild((int)PlacePanelElements.Image).gameObject;
             CakeShowcase cakeShowcase = cakeShowcases[cakeShowcaseIndex].GetComponent<CakeShowcase>();
 
             placeText.SetActive(!cakeShowcase.isCakeSelected[i]);
+            placePlate.SetActive(cakeShowcase.isCakeSelected[i]);
             placeImage.SetActive(cakeShowcase.isCakeSelected[i]);
 
             if (cakeShowcase.isCakeSelected[i])

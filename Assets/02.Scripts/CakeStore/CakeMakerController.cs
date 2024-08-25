@@ -11,11 +11,11 @@ public class CakeMakerController : MonoBehaviour
     // 케이크 메이크 패널 자식 오브젝트 순서 저장
     private enum CakePanelElements
     {
-        Image = 0,
-        Name = 1,
-        Count = 2,
-        Locked = 3,
-        Clicked = 4
+        Image = 1,
+        Name = 2,
+        Count = 3,
+        Locked = 4,
+        Clicked = 5
     }
     private enum CakeClickedPanelElements
     {
