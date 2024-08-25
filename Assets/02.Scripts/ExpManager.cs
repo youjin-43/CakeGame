@@ -102,22 +102,22 @@ public class ExpManager : MonoBehaviour
             //스토리 진행 
             if (level == 2)
             {
-                SceneManager.LoadScene("Level2");
+                SceneManager.LoadScene("Event");
                 CakeManager.instance.UnlockCake(1);
             }
             else if (level == 4)
             {
-                SceneManager.LoadScene("Level2");
+                SceneManager.LoadScene("Event");
                 CakeManager.instance.UnlockCake(2);
             }
             else if (level == 6)
             {
-                SceneManager.LoadScene("Level2");
+                SceneManager.LoadScene("Event");
                 CakeManager.instance.UnlockCake(3);
             }
             else if (level == 8)
             {
-                SceneManager.LoadScene("Level2");
+                SceneManager.LoadScene("Event");
                 CakeManager.instance.UnlockCake(4);
             }
             //else if (level == 10)
