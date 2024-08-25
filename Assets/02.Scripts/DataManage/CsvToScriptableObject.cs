@@ -85,22 +85,21 @@ public class CsvToScriptableObject
             cake.MaxStackSize = int.Parse(splitData[1].ToString());
             cake.Name = splitData[2].ToString();
             cake.Description = splitData[3].ToString();
-            //itemImage -> 이미지 이름을 cakeIdx로 설정해놔서 순서를 뒤로 빼서 할당 
-            cake.itemType = int.Parse(splitData[5].ToString());
+            cake.itemType = int.Parse(splitData[4].ToString());
 
             //CakeSO 변수 
-            cake.cakeCost = int.Parse(splitData[6].ToString());
-            cake.bakeTime = int.Parse(splitData[7].ToString()); 
-            cake.cakePrice = int.Parse(splitData[8].ToString());
+            cake.cakeCost = int.Parse(splitData[5].ToString());
+            cake.bakeTime = int.Parse(splitData[6].ToString()); 
+            cake.cakePrice = int.Parse(splitData[7].ToString());
 
             //materialIdxs 배열
-            string[] materials = splitData[9].Split('/');
+            string[] materials = splitData[8].Split('/');
             for (int m=0;m<materials.Length;m++) cake.materialIdxs[m]= int.Parse(materials[m]);
             
             //materialCount 배열 
-            string[] materialCnts = splitData[10].ToString().Split('/');
+            string[] materialCnts = splitData[9].ToString().Split('/');
             for (int m = 0; m < materials.Length; m++) cake.materialCounts[m] = int.Parse(materialCnts[m]);
-
+            cake.exp =  int.Parse(splitData[10].ToString());
             cake.isLocked = (splitData[11].ToString() == "TRUE") ? true : false;
             cake.cakeIdx = int.Parse(splitData[12].ToString());
 

@@ -171,7 +171,8 @@ public class CakeManager : MonoBehaviour
                 cakeIdx = cakeSODataList[i].cakeIdx,
                 cakeCount = cakeCounts[i],
                 materialIdxs = cakeSODataList[i].materialIdxs,
-                materialCounts = cakeSODataList[i].materialCounts
+                materialCounts = cakeSODataList[i].materialCounts,
+                exp = cakeSODataList[i].exp
             };
 
             serializableList.Add(serializable);
@@ -231,6 +232,7 @@ public class CakeManager : MonoBehaviour
         public int cakePrice;
         public int[] materialIdxs;
         public int[] materialCounts;
+        public int exp;
         public bool isLocked;
         public int cakeIdx;
         public int cakeCount;

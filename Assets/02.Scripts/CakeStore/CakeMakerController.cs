@@ -137,7 +137,7 @@ public class CakeMakerController : MonoBehaviour
     public void CompleteCake(int index) // 케이크 제작 완료
     {
         cakeManager.PlusCakeCount(index); // 케이크 수량 증가
-        ExpManager.instance.getExp(0);        //-----------------------------fix need-----------------------
+        ExpManager.instance.getExp(cakeManager.cakeSODataList[index].exp);        //-----------------------------fix need-----------------------
         UpdateUI();                           // UI 업데이트
     }
 
