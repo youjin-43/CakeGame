@@ -43,7 +43,6 @@ public class Customers : MonoBehaviour
         this.customersManager = customersManager;
         isCakeCheck = false;
         isDestroy = false;
-        isClose = false;
         transform.GetChild(0).gameObject.SetActive(false);
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
@@ -74,7 +73,6 @@ public class Customers : MonoBehaviour
         }
         if (Routine.instance.routineState == RoutineState.Close)
         {
-            isClose = true;
             customersManager.customersList.Remove(this);
             Destroy(gameObject);
         }
@@ -165,6 +163,7 @@ public class Customers : MonoBehaviour
                     }
                     else if (frontCustomer.GetComponent<Customers>().moveType == CustomersMoveType.MoveType.Random || frontCustomer.GetComponent<Customers>().moveType == CustomersMoveType.MoveType.Shop)
                     {
+                        StartCoroutine(StopForSeconds(0.5f));
                         agent.speed = moveSpeed / 2;
                         customersManager.customersList.Remove(this);
                         lineType = CustomersMoveType.LineType.None;
@@ -295,8 +294,9 @@ public class Customers : MonoBehaviour
                 {
                     Debug.Log("케이크 앞에 왔다!");
                     StartCoroutine(StopForSeconds(1f)); // 3초 멈춤
-                    int r = Random.Range(0, CakeManager.instance.cakePlaceNum);
-                    CakeManager.instance.cakeShowcaseController.CakeSell(randomShowcaseIndex, r);
+                    List<int> cakePlaces = CakeManager.instance.cakeShowcaseController.CakeFindPlace(randomShowcaseIndex, wantedCakeIndex);
+                    int r = Random.Range(0, cakePlaces.Count);
+                    CakeManager.instance.cakeShowcaseController.CakeSell(randomShowcaseIndex, cakePlaces[r]);
                     shopType = CustomersMoveType.ShopType.Pay;
                 }
                 break;
@@ -305,7 +305,11 @@ public class Customers : MonoBehaviour
                 MoveTo();
                 if (Vector2.Distance(transform.position, targetPosition) <= 0.01f)
                 {
-                    StartCoroutine(StopForSeconds(1f)); // 3초 멈춤
+                    StartCoroutine(StopForSeconds(0.1f));
+                    transform.GetChild(0).gameObject.SetActive(true);
+                    transform.GetChild(0).GetChild(0).GetComponent<SpriteRenderer>().sprite = customersManager.heart;
+                    StartCoroutine(StopForSeconds(1f));
+                    transform.GetChild(0).gameObject.SetActive(false);
                     shopType = CustomersMoveType.ShopType.In;
                     GameManager.instance.getMoney(100);
                     Debug.Log("케이크가 판매 되었습니다.");

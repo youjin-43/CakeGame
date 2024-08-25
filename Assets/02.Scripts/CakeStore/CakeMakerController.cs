@@ -91,7 +91,7 @@ public class CakeMakerController : MonoBehaviour
 
     void OnClicked(int index) // 케이크 메이커 패널 누르면 Clicked패널 활성화
     {
-        for (int i = 0; i < cakeManager.totalCakeNum; i++)
+        for (int i = 0; i < cakeManager.TOTALCAKENUM; i++)
         {
             cakeMakerScrollViewContent.GetChild(i).GetChild((int)CakePanelElements.Clicked).gameObject.SetActive(i == index); // 클릭된 패널만 활성화
         }

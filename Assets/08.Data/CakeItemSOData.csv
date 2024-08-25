@@ -1,6 +1,7 @@
-IsStackable,MaxStackSize,Name,Description,itemImage,itemType,cakeCost,bakeTime,cakePrice,materialIdx,materialCount,isLock,cakeIdx
-TRUE,64,딸기 케이크,,Assets/04.Images/StrawberryCake.png,3,100,3,500,0/1,1/1,FALSE,0
-TRUE,64,티라미수,,Assets/04.Images/Tiramisu.png,3,150,3,700,1,1,TRUE,1
-TRUE,64,초콜릿 케이크,,Assets/04.Images/ChocolateCake.png,3,200,3,1000,2,1,TRUE,2
-TRUE,64,치즈 케이크,,Assets/04.Images/CheeseCake.png,3,300,3,1500,3,1,TRUE,3
-TRUE,64,레인보우 케이크,,Assets/04.Images/RainbowCake.png,3,400,3,2000,4,1,TRUE,4
+IsStackable,MaxStackSize,Name,Description,itemImage,itemType,cakeCost,bakeTime,cakePrice,materialIdx,materialCount,exp,isLock,cakeIdx
+TRUE,64,파운드 케이크,가장 기본적인 케이크,,3,100,3,500,0,1,100,FALSE,0
+TRUE,64,당근 케이크,당근 맛이 나지 않을수록 맛있는 케이크,,3,150,3,1000,1,1,200,FALSE,1
+TRUE,64,포도 케이크,"케이크, 근데 이제 포도를 곁들인",,3,200,3,2000,2,1,300,FALSE,2
+TRUE,64,레몬 케이크,상큼한 레몬 향이 가득한 부드러운 케이크,,3,300,3,3500,3,1,400,FALSE,3
+TRUE,64,오렌지 케이크,한 입에 따스한 햇살을 가득 담은 케이크,,3,400,3,5000,4,1,500,FALSE,4
+TRUE,64,라임 케이크,소년 제제의 순수함이 묻어나는 케이크,,3,600,3,7000,5,1,500,FALSE,5

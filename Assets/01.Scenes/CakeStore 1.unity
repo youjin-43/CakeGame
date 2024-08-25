@@ -41021,7 +41021,7 @@ MonoBehaviour:
   date: 0
   money: 0
   runTime: 0
-  MaxRunTime: 5
+  MaxRunTime: 1000
   RuntimeBar: {fileID: 1788262705}
 --- !u!1 &1992028907
 GameObject:

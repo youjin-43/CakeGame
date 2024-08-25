@@ -36,6 +36,16 @@ public class CakeShowcaseController : MonoBehaviour
     {
         InitializeCakeShowcaseController();
     }
+    // void Update()
+    // {
+    //     //functionTest
+    //     if(Input.GetKeyDown(KeyCode.J))
+    //     {
+    //         Debug.Log("test");
+    //         CakeSell(0,0);
+    //     }
+
+    // }
     void InitializeCakeShowcaseController()
     {
         // 케이크 매니저 초기화
@@ -49,8 +59,11 @@ public class CakeShowcaseController : MonoBehaviour
         Debug.Log(cakeShowcasePlace);
         Debug.Log(cakeShowcaseMenu);
         cakeUIController.CloseMenu(cakeShowcasePlace);
+
+
+        
         cakeUIController.CloseMenu(cakeShowcaseMenu);
-        cakePlaceNum = cakeManager.cakePlaceNum;
+        cakePlaceNum = cakeManager.CAKEPLACENUM;
         // 케이크 쇼케이스 및 버튼 초기화
         InitializeShowcases();
         SetUpButtons();
@@ -182,10 +195,12 @@ public class CakeShowcaseController : MonoBehaviour
     // 케이크 판매 메서드
     public void CakeSell(int ShowcaseIndex, int ShowcasePlaceIndex)
     {
+        Debug.Log(ShowcaseIndex+","+ShowcasePlaceIndex);
         CakeShowcase cakeShowcase = cakeShowcases[ShowcaseIndex].GetComponent<CakeShowcase>();
+        Debug.Log(cakeShowcase.isCakeSelected[ShowcasePlaceIndex]);
         cakeShowcase.isCakeSelected[ShowcasePlaceIndex] = false;
+        cakeShowcase.cakeType[ShowcasePlaceIndex] = -1;
         UpdateShowcaseUI(ShowcaseIndex);
-        Debug.Log("케이크를 선택하였습니다.");
     }
 
     // 특정 쇼케이스 UI를 업데이트하는 메서드
@@ -235,6 +250,7 @@ public class CakeShowcaseController : MonoBehaviour
             var cakeSO = cakeManager.cakeSODataList[i];
 
             cakeShowcasePanel.GetChild((int)MenuPanelElements.Image).GetComponent<Image>().sprite = cakeSO.itemImage;
+            cakeShowcasePanel.GetChild((int)MenuPanelElements.Name).GetComponent<Text>().text = cakeSO.name;
             cakeShowcasePanel.GetChild((int)MenuPanelElements.Count).GetComponent<Text>().text = "보유 수: " + cakeManager.cakeCounts[i];
             cakeShowcasePanel.GetChild((int)MenuPanelElements.Price).GetComponent<Text>().text = cakeSO.cakePrice.ToString();
             cakeShowcasePanel.GetChild((int)MenuPanelElements.Locked).gameObject.SetActive(cakeSO.isLocked);
