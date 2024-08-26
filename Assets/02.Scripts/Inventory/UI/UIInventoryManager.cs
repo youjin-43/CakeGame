@@ -9,6 +9,7 @@ using System.IO;
 using UnityEngine.SceneManagement;
 using static UnityEditor.Progress;
 using UnityEditor.Experimental.RestService;
+using UnityEngine.EventSystems;
 
 
 
@@ -196,6 +197,8 @@ public class UIInventoryManager : MonoBehaviour
 
     void OnInventorySceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        Debug.Log("OnInventorySceneLoaded 이거 씬 로드 되고 있는거 맞나여??? 대체 왜 안되나여!!!!!! 으악!!!!! 쩨발!!!! 왜 안되나ㅑ고!!!!!!");
+
         // 씬이 완전히 로드될 때까지 기다린 후 코루틴 시작..
         StartCoroutine(InitializeAfterSceneLoad());
     }
@@ -205,7 +208,7 @@ public class UIInventoryManager : MonoBehaviour
         // 다음 프레임에 실행 되도록 하는 구문..
         yield return null;
 
-        Debug.Log("씬 로드됨!!!");
+        Debug.Log("IntializeAfterSceneLoad 이거 씬 로드 되고 있는거 맞나여??? 대체 왜 안되나여!!!!!! 으악!!!!! 쩨발!!!! 왜 안되나ㅑ고!!!!!!");
 
         // 씬이 로드될 때 참조 변수 설정
         InitializeReferences();
@@ -220,6 +223,10 @@ public class UIInventoryManager : MonoBehaviour
         // 이건 씨앗, 과일 컨테이너 클래스 속 배열 관리
         SetInventoryToContainer(0); // 현재 인벤토리의 씨앗 개수를 씨앗 컨테이너 게임오브젝트 속 배열에 반영..
         SetInventoryToContainer(1); // 현재 인벤토리의 과일 개수를 과일 컨테이너 게임오브젝트 속 배열에 반영..
+
+        // 현재 씬이 가게 씬이면 케이크매니저 속 케이크 개수 배열 관리해주기..
+        if (CakeManager.instance != null)
+            SetInventoryToContainer(3); // 현재 인벤토리의 케이크 개수를 케이크 매니저 게임오브젝트 속 케이크 배열에 반영..
     }
 
     void InitializeReferences()
@@ -304,7 +311,6 @@ public class UIInventoryManager : MonoBehaviour
             case 3:
                 // 케이크
                 cakeInventoryData.MinusItem(item);
-                // 얘도 현재 케이크 개수를 케이크 개수 저장 배열에 반영하는 함수 만들어야 하나? 월요일 회의 때 승우님께 질문하기!!!!!!
                 break;
         }
     }
@@ -365,20 +371,18 @@ public class UIInventoryManager : MonoBehaviour
 
     private void SetInventoryToContainer(int itemType)
     {
-        // 이 함수에서 농장씬의 씨앗, 과일 컨테이너에 인벤토리의 정보를 반영해줄 것임..
-        // 만약 값이 null 이라면 현재 씬이 농장이 아닌 거니까 인벤토리의 정보를 반영해주는 함수를 호출하면 안됨(에러남)..
-        // 그러니까 그냥 빠져나오도록..
-        if (seedContainer == null || fruitContainer == null) return;
+        // 해당 아이템 배열에 현재 인벤토리의 상태를 반영해주는 함수..
 
-
-        // 현재 씬이 농장이면 여기로 도달함..
-        // 여기서 정보 반영 함수 호출!!
         Dictionary<int, InventoryItem> curInventory;
 
         switch (itemType)
         {
             case 0:
                 // 씨앗
+                // 만약 값이 null 이라면 현재 씬이 농장이 아닌 거니까 씨앗 인벤토리의 정보를 반영해주는 함수를 호출하면 안됨(에러남)..
+                // 그러니까 그냥 빠져나오도록..
+                if (seedContainer == null || fruitContainer == null) return;
+
                 curInventory = seedInventoryData.GetCurrentInventoryState();
 
                 // 컨테이너 한 번 리셋해주기..
@@ -387,6 +391,10 @@ public class UIInventoryManager : MonoBehaviour
                 break;
             case 1:
                 // 과일
+                // 만약 값이 null 이라면 현재 씬이 농장이 아닌 거니까 과일 인벤토리의 정보를 반영해주는 함수를 호출하면 안됨(에러남)..
+                // 그러니까 그냥 빠져나오도록..
+                if (seedContainer == null || fruitContainer == null) return;
+
                 curInventory = fruitInventoryData.GetCurrentInventoryState();
 
                 // 컨테이너 한 번 리셋해주기..
@@ -398,6 +406,16 @@ public class UIInventoryManager : MonoBehaviour
                 break;
             case 3:
                 // 케이크
+                // 만약 값이 null 이라면 현재 씬이 가게가 아닌 거니까 케이크 인벤토리의 정보를 반영해주는 함수를 호출하면 안됨(에러남)..
+                // 그러니까 그냥 빠져나오도록..
+                if (CakeManager.instance == null) return;
+
+                curInventory = cakeInventoryData.GetCurrentInventoryState();
+
+                // 컨테이너 한 번 리셋해주기..
+                CakeManager.instance.ResetContainer();
+                CakeManager.instance.SetContainer(curInventory);
+
                 break;
         }
     }

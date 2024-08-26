@@ -136,6 +136,15 @@ public class CakeMakerController : MonoBehaviour
 
     public void CompleteCake(int index) // 케이크 제작 완료
     {
+        // 인덱스에 맞는 케이크 인벤토리 아이템 만들기
+        InventoryItem tmpItem = new InventoryItem()
+        {
+            item = CakeManager.instance.cakeSODataList[index],
+            quantity = 1,
+        };
+        UIInventoryManager.instance.AddItem(tmpItem); // 만든 아이템 인벤토리에 추가해주기..
+
+
         cakeManager.PlusCakeCount(index); // 케이크 수량 증가
         ExpManager.instance.getExp(cakeManager.cakeSODataList[index].exp);        //-----------------------------fix need-----------------------
         UpdateUI();                           // UI 업데이트
