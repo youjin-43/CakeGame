@@ -12,10 +12,11 @@ public class CakeShowcase : MonoBehaviour
     public int cakeShowcaseIndex;
     public void InitializeCakeShowcase()
     {
-        isCakeSelected = new bool[CakeManager.instance.cakePlaceNum];
-        cakeType = new int[CakeManager.instance.cakePlaceNum];
-        cakeImages = new GameObject[CakeManager.instance.cakePlaceNum];
-        for (int i = 0; i < CakeManager.instance.cakePlaceNum; i++){
+        isCakeSelected = new bool[CakeManager.instance.CAKEPLACENUM];
+        cakeType = new int[CakeManager.instance.CAKEPLACENUM];
+        cakeImages = new GameObject[CakeManager.instance.CAKEPLACENUM];
+        for (int i = 0; i < CakeManager.instance.CAKEPLACENUM; i++)
+        {
             isCakeSelected[i] = false;
             cakeType[i] = -1;
             cakeImages[i] = transform.GetChild(i).gameObject;
@@ -27,13 +28,13 @@ public class CakeShowcase : MonoBehaviour
     }
     public void GetBack()
     {
-        for(int i = 0;i<cakeType.Length; i++)
+        for (int i = 0; i < cakeType.Length; i++)
         {
-            if(isCakeSelected[i])
+            cakeType[i] = -1;
+            if (isCakeSelected[i])
             {
                 CakeManager.instance.cakeCounts[cakeType[i]]++;
                 isCakeSelected[i] = false;
-
             }
         }
     }

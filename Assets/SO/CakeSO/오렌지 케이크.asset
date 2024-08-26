@@ -10,19 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7c47a622da81b4d44b2592a6db0b8ac8, type: 3}
-  m_Name: "\uD2F0\uB77C\uBBF8\uC218"
+  m_Name: "\uC624\uB80C\uC9C0 \uCF00\uC774\uD06C"
   m_EditorClassIdentifier: 
   <IsStackable>k__BackingField: 1
   <MaxStackSize>k__BackingField: 64
-  <Name>k__BackingField: "\uD2F0\uB77C\uBBF8\uC218"
-  <Description>k__BackingField: 
-  <itemImage>k__BackingField: {fileID: 21300000, guid: 1e0cc07f9bf3446769fc2ccd9027b7ba, type: 2}
+  <Name>k__BackingField: "\uC624\uB80C\uC9C0 \uCF00\uC774\uD06C"
+  <Description>k__BackingField: "\uD55C \uC785\uC5D0 \uB530\uC2A4\uD55C \uD587\uC0B4\uC744
+    \uAC00\uB4DD \uB2F4\uC740 \uCF00\uC774\uD06C"
+  <itemImage>k__BackingField: {fileID: 21300000, guid: 6ed2233baa670034089d12341247b3c9, type: 2}
   itemType: 3
-  cakeCost: 200
+  cakeCost: 400
   bakeTime: 3
-  cakePrice: 1000
-  materialIdxs: 0200000000000000000000000000000000000000
+  cakePrice: 5000
+  materialIdxs: 0400000000000000000000000000000000000000
   materialCounts: 0100000000000000000000000000000000000000
+  exp: 500
   cakeCount: 0
-  isLocked: 1
-  cakeIdx: 2
+  isLocked: 0
+  cakeIdx: 4

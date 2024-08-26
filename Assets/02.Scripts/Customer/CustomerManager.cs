@@ -14,6 +14,7 @@ public class CustomersManager : MonoBehaviour
     public Transform enterInPosition;
     public Transform cashierPosition;
     public Sprite[] customerImages;
+    public Sprite heart;
 
     public float customersSpawnInterval = 2.0f; // Customers 생성 간격
     public float lineSpacing = 0.5f;      // 줄서기 간격
@@ -48,9 +49,11 @@ public class CustomersManager : MonoBehaviour
             Customers customers = customersObject.GetComponent<Customers>();
             if (r % 2 == 0) customers.targetPosition = leftEnd.position;
             else customers.targetPosition = rightEnd.position;
-            int wantedCakeIndex = Random.Range(0, CakeManager.instance.totalCakeNum);
+            int wantedCakeIndex = Random.Range(0, CakeManager.instance.TOTALCAKENUM);
             customers.GetComponent<NavMeshAgent>().speed = Random.Range(moveSpeed * 0.7f, moveSpeed * 1.3f);
             customers.GetComponent<SpriteRenderer>().sprite = customerImages[Random.Range(0, customerImages.Length)];
+            float randomSize = Random.Range(0.3f, 0.7f);
+            customers.GetComponent<Transform>().localScale = new Vector3(randomSize, randomSize, 1);
             customers.Initialize(leftEnd, rightEnd, linePosition, enterOutPosition, enterInPosition, cashierPosition, moveSpeed, lineSpacing, sideSpacing, wantedCakeIndex, this);
             yield return new WaitForSeconds(customersSpawnInterval);
             if (Routine.instance.routineState == RoutineState.Close)

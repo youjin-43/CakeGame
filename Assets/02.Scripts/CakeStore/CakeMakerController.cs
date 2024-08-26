@@ -11,11 +11,11 @@ public class CakeMakerController : MonoBehaviour
     // 케이크 메이크 패널 자식 오브젝트 순서 저장
     private enum CakePanelElements
     {
-        Image = 0,
-        Name = 1,
-        Count = 2,
-        Locked = 3,
-        Clicked = 4
+        Image = 1,
+        Name = 2,
+        Count = 3,
+        Locked = 4,
+        Clicked = 5
     }
     private enum CakeClickedPanelElements
     {
@@ -91,7 +91,7 @@ public class CakeMakerController : MonoBehaviour
 
     void OnClicked(int index) // 케이크 메이커 패널 누르면 Clicked패널 활성화
     {
-        for (int i = 0; i < cakeManager.totalCakeNum; i++)
+        for (int i = 0; i < cakeManager.TOTALCAKENUM; i++)
         {
             cakeMakerScrollViewContent.GetChild(i).GetChild((int)CakePanelElements.Clicked).gameObject.SetActive(i == index); // 클릭된 패널만 활성화
         }
@@ -137,7 +137,7 @@ public class CakeMakerController : MonoBehaviour
     public void CompleteCake(int index) // 케이크 제작 완료
     {
         cakeManager.PlusCakeCount(index); // 케이크 수량 증가
-        ExpManager.instance.getExp(0);        //-----------------------------fix need-----------------------
+        ExpManager.instance.getExp(cakeManager.cakeSODataList[index].exp);        //-----------------------------fix need-----------------------
         UpdateUI();                           // UI 업데이트
     }
 

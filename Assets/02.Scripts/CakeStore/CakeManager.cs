@@ -16,8 +16,8 @@ public class CakeManager : MonoBehaviour
     public int[] cakeCounts;             // 각 케이크의 개수를 관리하는 배열
     private string filePath;             // 케이크 데이터 저장 파일 경로
     public static CakeManager instance;
-    public int totalCakeNum = 5;
-    public int cakePlaceNum = 4;
+    public int TOTALCAKENUM = 6;
+    public int CAKEPLACENUM = 4;
     void Awake()
     {
         // 싱글톤 변수 instance가 비어있는가?
@@ -26,8 +26,7 @@ public class CakeManager : MonoBehaviour
             // instance가 비어있다면(null) 그곳에 자기 자신을 할당
             instance = this;
             DontDestroyOnLoad(gameObject); // 씬이 변경되어도 삭제되지 않도록 
-            SceneManager.sceneLoaded += OnSceneLoaded; // 씬이 로딩될 때마다 함수를 호출하기위해 
-
+            SceneManager.sceneLoaded += OnSceneLoaded; // 씬이 로딩될 때마다 함수를 호출하기위해
         }
         else
         {
@@ -39,6 +38,7 @@ public class CakeManager : MonoBehaviour
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         InitializeCakeManager();
+        CakeBack();
     }
     void InitializeCakeManager()
     {
@@ -51,7 +51,13 @@ public class CakeManager : MonoBehaviour
         cakeShowcaseController = FindObjectOfType<CakeShowcaseController>();
         cakeMakerController = FindObjectOfType<CakeMakerController>();
         cakeUIController = CakeUIController.instance;
-        totalCakeNum = cakeSODataList.Count;
+    }
+    public void CakeBack()
+    {
+        for (int i = 0; i < TOTALCAKENUM; i++)
+        {
+            cakeShowcaseController.cakeShowcases[i].GetComponent<CakeShowcase>().GetBack();
+        }
     }
 
     public void SetupButton(Button button, UnityEngine.Events.UnityAction action)
@@ -65,7 +71,7 @@ public class CakeManager : MonoBehaviour
     // 케이크 상태 초기화: 첫 번째 케이크만 잠금 해제, 나머지는 잠금
     void InitializeCakeStatus()
     {
-        cakeCounts = new int[totalCakeNum];
+        cakeCounts = new int[TOTALCAKENUM];
 
         for (int i = 0; i < cakeSODataList.Count; i++)
         {
@@ -78,7 +84,7 @@ public class CakeManager : MonoBehaviour
     // 케이크 개수 증가 및 데이터 저장
     public void PlusCakeCount(int index)
     {
-        if (index >= 0 && index < totalCakeNum)
+        if (index >= 0 && index < TOTALCAKENUM)
         {
             cakeCounts[index]++;
             Debug.Log("케이크 " + index + " 보유 수: " + cakeCounts[index]);
@@ -89,7 +95,7 @@ public class CakeManager : MonoBehaviour
     // 케이크 개수 감소 및 데이터 저장
     public void MinusCakeCount(int index)
     {
-        if (index >= 0 && index < totalCakeNum && cakeCounts[index] > 0)
+        if (index >= 0 && index < TOTALCAKENUM && cakeCounts[index] > 0)
         {
             cakeCounts[index]--;
             Debug.Log("케이크 " + index + " 보유 수: " + cakeCounts[index]);
@@ -100,7 +106,7 @@ public class CakeManager : MonoBehaviour
     // 케이크 잠금 해제 및 데이터 저장
     public void UnlockCake(int index)
     {
-        if (index >= 0 && index < totalCakeNum && cakeSODataList[index].isLocked)
+        if (index >= 0 && index < TOTALCAKENUM && cakeSODataList[index].isLocked)
         {
             cakeSODataList[index].isLocked = false;
             SaveCakeData();
@@ -114,7 +120,7 @@ public class CakeManager : MonoBehaviour
     public void ResetUnlockCake()
     {
         cakeSODataList[0].isLocked = false;
-        for (int i = 1; i < totalCakeNum; i++)
+        for (int i = 1; i < TOTALCAKENUM; i++)
         {
             cakeSODataList[i].isLocked = true;
         }
@@ -172,7 +178,8 @@ public class CakeManager : MonoBehaviour
                 cakeIdx = cakeSODataList[i].cakeIdx,
                 cakeCount = cakeCounts[i],
                 materialIdxs = cakeSODataList[i].materialIdxs,
-                materialCounts = cakeSODataList[i].materialCounts
+                materialCounts = cakeSODataList[i].materialCounts,
+                exp = cakeSODataList[i].exp
             };
 
             serializableList.Add(serializable);
@@ -232,6 +239,7 @@ public class CakeManager : MonoBehaviour
         public int cakePrice;
         public int[] materialIdxs;
         public int[] materialCounts;
+        public int exp;
         public bool isLocked;
         public int cakeIdx;
         public int cakeCount;
