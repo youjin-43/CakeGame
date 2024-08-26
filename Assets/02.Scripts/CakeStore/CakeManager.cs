@@ -26,8 +26,7 @@ public class CakeManager : MonoBehaviour
             // instance가 비어있다면(null) 그곳에 자기 자신을 할당
             instance = this;
             DontDestroyOnLoad(gameObject); // 씬이 변경되어도 삭제되지 않도록 
-            SceneManager.sceneLoaded += OnSceneLoaded; // 씬이 로딩될 때마다 함수를 호출하기위해 
-
+            SceneManager.sceneLoaded += OnSceneLoaded; // 씬이 로딩될 때마다 함수를 호출하기위해
         }
         else
         {
@@ -39,6 +38,7 @@ public class CakeManager : MonoBehaviour
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         InitializeCakeManager();
+        CakeBack();
     }
     void InitializeCakeManager()
     {
@@ -51,6 +51,13 @@ public class CakeManager : MonoBehaviour
         cakeShowcaseController = FindObjectOfType<CakeShowcaseController>();
         cakeMakerController = FindObjectOfType<CakeMakerController>();
         cakeUIController = CakeUIController.instance;
+    }
+    public void CakeBack()
+    {
+        for (int i = 0; i < TOTALCAKENUM; i++)
+        {
+            cakeShowcaseController.cakeShowcases[i].GetComponent<CakeShowcase>().GetBack();
+        }
     }
 
     public void SetupButton(Button button, UnityEngine.Events.UnityAction action)

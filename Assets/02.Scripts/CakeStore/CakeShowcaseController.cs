@@ -21,11 +21,11 @@ public class CakeShowcaseController : MonoBehaviour
     }
     private enum MenuPanelElements
     {
-        Image = 0,
-        Name = 1,
-        Count = 2,
-        Price = 3,
-        Locked = 5
+        Image = 1,
+        Name = 2,
+        Count = 3,
+        Price = 4,
+        Locked = 6
     }
     private int cakeShowcasePlaceIndex;        // 현재 선택된 케이크 쇼케이스 위치 인덱스
     private int cakeShowcaseIndex;             // 현재 선택된 케이크 쇼케이스 인덱스
@@ -37,22 +37,25 @@ public class CakeShowcaseController : MonoBehaviour
     {
         InitializeCakeShowcaseController();
     }
-    // void Update()
-    // {
-    //     //functionTest
-    //     if(Input.GetKeyDown(KeyCode.J))
-    //     {
-    //         Debug.Log("test");
-    //         CakeSell(0,0);
-    //     }
-
-    // }
+    void Update()
+    {
+        //functionTest
+        // if(Input.GetKeyDown(KeyCode.J))
+        // {
+        //     Debug.Log("test");
+        //     CakeSell(0,0);
+        // }
+        if (Routine.instance.routineState == RoutineState.Close)
+        {
+            cakeManager.CakeBack();
+        }
+    }
     void InitializeCakeShowcaseController()
     {
         // 케이크 매니저 초기화
         cakeManager = CakeManager.instance;
         cakeUIController = CakeUIController.instance;
-        
+
         cakeShowcaseMenu.SetActive(true);
         cakeShowcaseScrollViewContent = cakeShowcaseMenu.GetComponentInChildren<HorizontalLayoutGroup>().transform;
 
@@ -62,7 +65,7 @@ public class CakeShowcaseController : MonoBehaviour
         cakeUIController.CloseMenu(cakeShowcasePlace);
 
 
-        
+
         cakeUIController.CloseMenu(cakeShowcaseMenu);
         cakePlaceNum = cakeManager.CAKEPLACENUM;
         // 케이크 쇼케이스 및 버튼 초기화
@@ -196,7 +199,7 @@ public class CakeShowcaseController : MonoBehaviour
     // 케이크 판매 메서드
     public void CakeSell(int ShowcaseIndex, int ShowcasePlaceIndex)
     {
-        Debug.Log(ShowcaseIndex+","+ShowcasePlaceIndex);
+        Debug.Log(ShowcaseIndex + "," + ShowcasePlaceIndex);
         CakeShowcase cakeShowcase = cakeShowcases[ShowcaseIndex].GetComponent<CakeShowcase>();
         Debug.Log(cakeShowcase.isCakeSelected[ShowcasePlaceIndex]);
         cakeShowcase.isCakeSelected[ShowcasePlaceIndex] = false;

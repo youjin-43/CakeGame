@@ -52,6 +52,8 @@ public class CustomersManager : MonoBehaviour
             int wantedCakeIndex = Random.Range(0, CakeManager.instance.TOTALCAKENUM);
             customers.GetComponent<NavMeshAgent>().speed = Random.Range(moveSpeed * 0.7f, moveSpeed * 1.3f);
             customers.GetComponent<SpriteRenderer>().sprite = customerImages[Random.Range(0, customerImages.Length)];
+            float randomSize = Random.Range(0.3f, 0.7f);
+            customers.GetComponent<Transform>().localScale = new Vector3(randomSize, randomSize, 1);
             customers.Initialize(leftEnd, rightEnd, linePosition, enterOutPosition, enterInPosition, cashierPosition, moveSpeed, lineSpacing, sideSpacing, wantedCakeIndex, this);
             yield return new WaitForSeconds(customersSpawnInterval);
             if (Routine.instance.routineState == RoutineState.Close)

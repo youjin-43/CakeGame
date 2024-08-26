@@ -6,6 +6,7 @@ using UnityEngine.AI;
 
 public class Customers : MonoBehaviour
 {
+    private int SHOWCASELOCATE = 11;
     NavMeshAgent agent;
     private float moveSpeed;
     private float lineSpacing;
@@ -17,7 +18,6 @@ public class Customers : MonoBehaviour
     private float timer;
     private bool isCakeCheck;
     private bool isDestroy;
-    private bool isClose;
     private CustomersManager customersManager;
     private Transform frontCustomer;
     private CustomersMoveType.LineType lineType;
@@ -163,6 +163,7 @@ public class Customers : MonoBehaviour
                     }
                     else if (frontCustomer.GetComponent<Customers>().moveType == CustomersMoveType.MoveType.Random || frontCustomer.GetComponent<Customers>().moveType == CustomersMoveType.MoveType.Shop)
                     {
+                        Debug.Log(0);
                         StartCoroutine(StopForSeconds(0.5f));
                         agent.speed = moveSpeed / 2;
                         customersManager.customersList.Remove(this);
@@ -210,7 +211,7 @@ public class Customers : MonoBehaviour
                     randomTime = Random.Range(4, 7);
                     for (int i = 0; i < cakeShowcaseController.cakeShowcasePool.childCount; i++)
                     {
-                        showcasePosition[i] = cakeShowcaseController.cakeShowcasePool.GetChild(i).GetChild(7).transform;
+                        showcasePosition[i] = cakeShowcaseController.cakeShowcasePool.GetChild(i).GetChild(SHOWCASELOCATE).transform;
                     }
                     enterType = CustomersMoveType.EnterType.None;
                     moveType = CustomersMoveType.MoveType.Random;
@@ -225,6 +226,7 @@ public class Customers : MonoBehaviour
         timer += Time.deltaTime;
         if (Vector2.Distance(transform.position, targetPosition) <= 0.01f)
         {
+            Debug.Log(1);
             StartCoroutine(StopForSeconds(1f)); // 3초 멈춤
             randomIndex = Random.Range(0, showcasePosition.Length);
             targetPosition = showcasePosition[randomIndex].position;
