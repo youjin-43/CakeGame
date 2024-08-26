@@ -19786,50 +19786,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6996639884115689233, guid: 868845e362fa5cb499881bffc5e3f818, type: 3}
   m_PrefabInstance: {fileID: 521369265}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &552158264
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 552158265}
-  - component: {fileID: 552158266}
-  m_Layer: 0
-  m_Name: DataManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &552158265
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 552158264}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -7.7351685, y: -0.058516517, z: -0.007049902}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &552158266
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 552158264}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a2fde7d23e6a4396898c7a4c4b1972e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &560796854
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -40823,9 +40779,11 @@ MonoBehaviour:
   inventoryUI: {fileID: 0}
   seedInventoryData: {fileID: 11400000, guid: 7cc197c22c6b3a2429bd59db2672dec9, type: 2}
   fruitInventoryData: {fileID: 11400000, guid: a101d58189efd7f45b064b1aacc9e36d, type: 2}
+  cakeInventoryData: {fileID: 0}
   curInventoryData: {fileID: 0}
   seedButton: {fileID: 0}
   fruitButton: {fileID: 0}
+  cakeButton: {fileID: 0}
   inventoryOpenButton: {fileID: 0}
   fruitCount: 
   fruitItems:
@@ -40834,14 +40792,12 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a2576668bf4713841b2aa0870c71022a, type: 2}
   - {fileID: 11400000, guid: db99d362f9e8fba42a202e19142bcd2a, type: 2}
   - {fileID: 11400000, guid: aed95d68b3f35d4469a9490bb7118295, type: 2}
+  cakeItems: []
   seedContainer: {fileID: 0}
   fruitContainer: {fileID: 0}
   initialItems: []
   itemSellPanel: {fileID: 0}
   buttonParentGameObject: {fileID: 0}
-  inventoryData:
-    seedInventoryData: {fileID: 11400000, guid: 7cc197c22c6b3a2429bd59db2672dec9, type: 2}
-    fruitInventoryData: {fileID: 11400000, guid: a101d58189efd7f45b064b1aacc9e36d, type: 2}
 --- !u!4 &2019691961
 Transform:
   m_ObjectHideFlags: 0
@@ -43381,7 +43337,6 @@ SceneRoots:
   - {fileID: 2019691961}
   - {fileID: 1886851816}
   - {fileID: 1984574965}
-  - {fileID: 552158265}
   - {fileID: 951408266}
   - {fileID: 1269196658}
   - {fileID: 484997846}
