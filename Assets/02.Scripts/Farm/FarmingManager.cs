@@ -284,7 +284,7 @@ public class FarmingManager : MonoBehaviour
 
 
         // 농사 땅 레벨 데이터 불러오기..
-        farmLevel = PlayerPrefs.GetInt("FarmLevel");
+        //farmLevel = PlayerPrefs.GetInt("FarmLevel");
         // 농사 땅 레벨 데이터를 불러온 다음에 레벨 데이터에 맞게끔 땅 업그레이드 해주기.. 
         int tmpFarmLevel = farmLevel;
         while (tmpFarmLevel > 1)
@@ -293,7 +293,7 @@ public class FarmingManager : MonoBehaviour
             tmpFarmLevel--;
         }
 
-        LoadFarmingData(); // 데이터 가져오기..
+        //LoadFarmingData(); // 데이터 가져오기..
 
 
         // LoadFarmingData 로 데이터를 가져왔으므로 이제 가능
@@ -326,9 +326,9 @@ public class FarmingManager : MonoBehaviour
         SaveFarmingData(); // 변경 사항 생겼으니까 저장해주기..
 
         // 아래 코드들은 그냥 임시로 확인하기 위한 거... 나중에 없앨 것...
-        //PlayerPrefs.SetInt("FarmLevel", farmLevel); // 농장 레벨 저장..
-        //scarecrowLevel = 1;
-        //PlayerPrefs.SetInt("ScareCrowLevel", scarecrowLevel); // 허수아비 레벨 저장..
+        PlayerPrefs.SetInt("FarmLevel", farmLevel); // 농장 레벨 저장..
+        scarecrowLevel = 1;
+        PlayerPrefs.SetInt("ScareCrowLevel", scarecrowLevel); // 허수아비 레벨 저장..
     }
 
 
@@ -956,25 +956,25 @@ public class FarmingManager : MonoBehaviour
         // 5 에서 더 업그레이드 하려고 하면 그냥 빠져나가도록..
         if (farmLevel >= 5) return;
 
-        switch (scarecrowLevel)
+        switch (farmLevel)
         {
             case 1:
-                scarecrowLevelUpCost = 10000;
+                farmSizeLevelUpCost = 10000;
                 break;
             case 2:
-                scarecrowLevelUpCost = 30000;
+                farmSizeLevelUpCost = 30000;
                 break;
             case 3:
-                scarecrowLevelUpCost = 50000;
+                farmSizeLevelUpCost = 50000;
                 break;
             case 4:
-                scarecrowLevelUpCost = 100000;
+                farmSizeLevelUpCost = 100000;
                 break;
         }
 
 
         // 돈 부족하면 그냥 빠져나가도록..
-        if (GameManager.instance.money < scarecrowLevelUpCost)
+        if (GameManager.instance.money < farmSizeLevelUpCost)
         {
             Debug.Log("돈 없어!");
             return;
@@ -1142,6 +1142,7 @@ public class FarmingManager : MonoBehaviour
             farmSizeUpgradeCostText.text = farmSizeLevelUpCost + "";
             nextFarmSizeLevelText.text = (farmLevel + 1) + "";
         }
+        curFarmSizeLevelText.text = farmLevel + ""; // 현재 농장 사이즈 레벨 텍스트
 
 
 
@@ -1173,7 +1174,6 @@ public class FarmingManager : MonoBehaviour
             scareCrowUpgradeCostText.text = scarecrowLevelUpCost + "";
             nextScareCrowLevelText.text = (scarecrowLevel + 1) + "";
         }
-
         curScareCrowLevelText.text = scarecrowLevel + ""; // 현재 허수아비 레벨 텍스트
     }
 
