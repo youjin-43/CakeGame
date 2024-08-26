@@ -282,9 +282,11 @@ public class FarmingManager : MonoBehaviour
             SetFarmingData(pos); // FarmingData 타입 인스턴스의 정보를 세팅해주는 함수.
         }
 
+        Debug.Log(farmingData.Count + "딕셔너리에 저장된 땅 개수임1!!!!!");
+
 
         // 농사 땅 레벨 데이터 불러오기..
-        //farmLevel = PlayerPrefs.GetInt("FarmLevel");
+        farmLevel = PlayerPrefs.GetInt("FarmLevel");
         // 농사 땅 레벨 데이터를 불러온 다음에 레벨 데이터에 맞게끔 땅 업그레이드 해주기.. 
         int tmpFarmLevel = farmLevel;
         while (tmpFarmLevel > 1)
@@ -293,7 +295,9 @@ public class FarmingManager : MonoBehaviour
             tmpFarmLevel--;
         }
 
-        //LoadFarmingData(); // 데이터 가져오기..
+        LoadFarmingData(); // 데이터 가져오기..
+
+        Debug.Log(farmingData.Count + "딕셔너리에 저장된 땅 개수임2!!!!!");
 
 
         // LoadFarmingData 로 데이터를 가져왔으므로 이제 가능
@@ -325,10 +329,10 @@ public class FarmingManager : MonoBehaviour
         // 저장하기
         SaveFarmingData(); // 변경 사항 생겼으니까 저장해주기..
 
-        // 아래 코드들은 그냥 임시로 확인하기 위한 거... 나중에 없앨 것...
-        PlayerPrefs.SetInt("FarmLevel", farmLevel); // 농장 레벨 저장..
-        scarecrowLevel = 1;
-        PlayerPrefs.SetInt("ScareCrowLevel", scarecrowLevel); // 허수아비 레벨 저장..
+        //// 아래 코드들은 그냥 임시로 확인하기 위한 거... 나중에 없앨 것...
+        //PlayerPrefs.SetInt("FarmLevel", farmLevel); // 농장 레벨 저장..
+        //scarecrowLevel = 1;
+        //PlayerPrefs.SetInt("ScareCrowLevel", scarecrowLevel); // 허수아비 레벨 저장..
     }
 
 
@@ -885,15 +889,37 @@ public class FarmingManager : MonoBehaviour
 
         // 땅의 크기를 업그레이드 하는 함수
 
-        BoundsInt bounds = farmEnableZoneTilemap.cellBounds; // 농사 가능 구역 타일맵의 현재 크기 가져오기
 
-        // 새로 확장할 영역 좌표 계산 로직..
-        Debug.Log(bounds.xMin);
+        BoundsInt bounds = farmEnableZoneTilemap.cellBounds; // 타일이 그려진 부분만 가져오는 건 줄 알았는데 아니었다.. 이거 가져온 후 직접 가공해줘야 한다..
 
-        int minX = bounds.xMin - expansionSize;
-        int maxX = bounds.xMax + expansionSize;
-        int minY = bounds.yMin - expansionSize;
-        int maxY = bounds.yMax + expansionSize;
+
+        // 가공 로직.. 타일이 있는 위치 중 최소와 최대를 찾아준다..
+        Vector3Int min = new Vector3Int(int.MaxValue, int.MaxValue, int.MaxValue);
+        Vector3Int max = new Vector3Int(int.MinValue, int.MinValue, int.MinValue);
+
+        foreach (Vector3Int pos in bounds.allPositionsWithin)
+        {
+            if (farmEnableZoneTilemap.HasTile(pos))
+            {
+                // 최소 좌표 갱신
+                min = Vector3Int.Min(min, pos);
+                // 최대 좌표 갱신
+                max = Vector3Int.Max(max, pos);
+            }
+        }
+
+        // 타일이 있는 영역을 기준으로 새 BoundsInt 생성
+        // min을 빼는 것은 최소 좌표와 최대 좌표 사이의 크기를 구하기 위함..
+        // Vector3Int.one을 더해주는 것은 그 크기에 마지막 좌표를 포함하기 위함..
+        BoundsInt adjustedBounds = new BoundsInt(min, max - min + Vector3Int.one);
+
+        Debug.Log("조정된 Bounds: " + adjustedBounds);
+
+
+        int minX = adjustedBounds.xMin - expansionSize;
+        int maxX = adjustedBounds.xMax + expansionSize;
+        int minY = adjustedBounds.yMin - expansionSize;
+        int maxY = adjustedBounds.yMax + expansionSize;
 
         for (int i = minX; i < maxX; i++)
         {
@@ -918,12 +944,32 @@ public class FarmingManager : MonoBehaviour
         }
 
 
-        // 경계 타일맵 깔기 위한 로직
-        bounds = farmEnableZoneTilemap.cellBounds; // 업데이트된 농사 가능 구역 타일맵의 현재 크기 가져오기
-        minX = bounds.xMin - 1;
-        maxX = bounds.xMax + 1;
-        minY = bounds.yMin - 1;
-        maxY = bounds.yMax + 1;
+
+
+        bounds = farmEnableZoneTilemap.cellBounds; // 타일이 그려진 부분만 가져오는 건 줄 알았는데 아니었다.. 이거 가져온 후 직접 가공해줘야 한다..
+
+        // 가공 로직.. 타일이 있는 위치 중 최소와 최대를 찾아준다..
+        min = new Vector3Int(int.MaxValue, int.MaxValue, int.MaxValue);
+        max = new Vector3Int(int.MinValue, int.MinValue, int.MinValue);
+
+        foreach (Vector3Int pos in bounds.allPositionsWithin)
+        {
+            if (farmEnableZoneTilemap.HasTile(pos))
+            {
+                // 최소 좌표 갱신
+                min = Vector3Int.Min(min, pos);
+                // 최대 좌표 갱신
+                max = Vector3Int.Max(max, pos);
+            }
+        }
+
+        adjustedBounds = new BoundsInt(min, max - min + Vector3Int.one);
+        Debug.Log("조정된 Bounds: " + adjustedBounds);
+
+        minX = adjustedBounds.xMin - 1;
+        maxX = adjustedBounds.xMax + 1;
+        minY = adjustedBounds.yMin - 1;
+        maxY = adjustedBounds.yMax + 1;
 
         Debug.Log("maxX: " + maxX + " maxY: " + maxY);
         Debug.Log("minX: " + minX + " minY: " + minY);
@@ -983,21 +1029,42 @@ public class FarmingManager : MonoBehaviour
 
         // 땅의 크기를 업그레이드 하는 함수
 
-        BoundsInt bounds = farmEnableZoneTilemap.cellBounds; // 농사 가능 구역 타일맵의 현재 크기 가져오기
+        BoundsInt bounds = farmEnableZoneTilemap.cellBounds; // 타일이 그려진 부분만 가져오는 건 줄 알았는데 아니었다.. 이거 가져온 후 직접 가공해줘야 한다..
 
-        // 새로 확장할 영역 좌표 계산 로직..
-        Debug.Log(bounds.xMin);
 
-        int minX = bounds.xMin - expansionSize;
-        int maxX = bounds.xMax + expansionSize;
-        int minY = bounds.yMin - expansionSize;
-        int maxY = bounds.yMax + expansionSize;
+        // 가공 로직.. 타일이 있는 위치 중 최소와 최대를 찾아준다..
+        Vector3Int min = new Vector3Int(int.MaxValue, int.MaxValue, int.MaxValue);
+        Vector3Int max = new Vector3Int(int.MinValue, int.MinValue, int.MinValue);
+
+        foreach (Vector3Int pos in bounds.allPositionsWithin)
+        {
+            if (farmEnableZoneTilemap.HasTile(pos))
+            {
+                // 최소 좌표 갱신
+                min = Vector3Int.Min(min, pos);
+                // 최대 좌표 갱신
+                max = Vector3Int.Max(max, pos);
+            }
+        }
+
+        // 타일이 있는 영역을 기준으로 새 BoundsInt 생성
+        // min을 빼는 것은 최소 좌표와 최대 좌표 사이의 크기를 구하기 위함..
+        // Vector3Int.one을 더해주는 것은 그 크기에 마지막 좌표를 포함하기 위함..
+        BoundsInt adjustedBounds = new BoundsInt(min, max - min + Vector3Int.one);
+
+        Debug.Log("조정된 Bounds: " + adjustedBounds);
+
+
+        int minX = adjustedBounds.xMin - expansionSize;
+        int maxX = adjustedBounds.xMax + expansionSize;
+        int minY = adjustedBounds.yMin - expansionSize;
+        int maxY = adjustedBounds.yMax + expansionSize;
 
         for (int i = minX; i < maxX; i++)
         {
             for (int j = minY; j < maxY; j++)
             {
-                // 테투리 부분만 경계타일 까는 로직
+                // 경계 테두리 일반 타일 모습으로 바꿔주기..
                 // max 값은 1 이 더 더해져있기 때문에 이를 고려해서 조건식 짜야함.
                 // 그래서 maxX, maxY 일 때는 i, j 에 1 을 더해줌..
                 if (i == minX || i + 1 == maxX)
@@ -1017,11 +1084,30 @@ public class FarmingManager : MonoBehaviour
 
 
         // 경계 타일맵 깔기 위한 로직
-        bounds = farmEnableZoneTilemap.cellBounds; // 업데이트된 농사 가능 구역 타일맵의 현재 크기 가져오기
-        minX = bounds.xMin - 1;
-        maxX = bounds.xMax + 1;
-        minY = bounds.yMin - 1;
-        maxY = bounds.yMax + 1;
+        bounds = farmEnableZoneTilemap.cellBounds; // 타일이 그려진 부분만 가져오는 건 줄 알았는데 아니었다.. 이거 가져온 후 직접 가공해줘야 한다..
+
+        // 가공 로직.. 타일이 있는 위치 중 최소와 최대를 찾아준다..
+        min = new Vector3Int(int.MaxValue, int.MaxValue, int.MaxValue);
+        max = new Vector3Int(int.MinValue, int.MinValue, int.MinValue);
+
+        foreach (Vector3Int pos in bounds.allPositionsWithin)
+        {
+            if (farmEnableZoneTilemap.HasTile(pos))
+            {
+                // 최소 좌표 갱신
+                min = Vector3Int.Min(min, pos);
+                // 최대 좌표 갱신
+                max = Vector3Int.Max(max, pos);
+            }
+        }
+
+        adjustedBounds = new BoundsInt(min, max - min + Vector3Int.one);
+        Debug.Log("조정된 Bounds: " + adjustedBounds);
+
+        minX = adjustedBounds.xMin - 1;
+        maxX = adjustedBounds.xMax + 1;
+        minY = adjustedBounds.yMin - 1;
+        maxY = adjustedBounds.yMax + 1;
 
         Debug.Log("maxX: " + maxX + " maxY: " + maxY);
         Debug.Log("minX: " + minX + " minY: " + minY);
@@ -1044,7 +1130,9 @@ public class FarmingManager : MonoBehaviour
         // 농사 가능 구역 타일맵의 타일들을 모두 돌면서..
         foreach (Vector3Int pos in farmEnableZoneTilemap.cellBounds.allPositionsWithin)
         {
-            SetFarmingData(pos); // 새로운 농사 가능 구역의 타일 정보를 딕셔너리에 저장..
+            // 타일이 있는 위치만 딕셔
+            if (farmEnableZoneTilemap.HasTile(pos))
+                SetFarmingData(pos); // 새로운 농사 가능 구역의 타일 정보를 딕셔너리에 저장..
         }
 
 
@@ -1300,6 +1388,7 @@ public class FarmingManager : MonoBehaviour
         }
 
 
+        Debug.Log("저장할 땅 개수 " + tempDic.Count);
         string json = DictionaryJsonUtility.ToJson(tempDic, true);
         Debug.Log(json);
         Debug.Log("데이터 저장 완료!");
@@ -1315,7 +1404,7 @@ public class FarmingManager : MonoBehaviour
     public void LoadFarmingData()
     {
         // Json 파일 경로 가져오기
-        string path = Path.Combine(Application.persistentDataPath, "FarmingData.json");
+        string path = Path.Combine(Application.persistentDataPath, farmingDataFilePath);
 
         // 지정된 경로에 파일이 있는지 확인한다
         if (File.Exists(path))
@@ -1324,6 +1413,8 @@ public class FarmingManager : MonoBehaviour
             string json = File.ReadAllText(path);
             Debug.Log(json);
             Dictionary<PosInt, SaveFarmingData> tempDic = DictionaryJsonUtility.FromJson<PosInt, SaveFarmingData>(json);
+
+            Debug.Log("가져온 땅의 개수입니다!! " + tempDic.Count);
 
             foreach (var item in tempDic)
             {
