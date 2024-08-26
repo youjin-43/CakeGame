@@ -31,7 +31,7 @@ public class FruitContainer : MonoBehaviour
         // curInventory 에서 키값은, 인벤토리 속에서 해당 아이템의 인덱스 번호임
         // 현재 인벤토리의 내용을 가져올 때 비어있는 아이템 칸은 제외하고 가져옴.
         // 즉, 인벤토리 속 비어있는 아이템 칸이 있다면 가져온 아이템 딕셔너리의 내용은 [0]: 사과, [2]: 바나나, [5]: 오렌지 이럴 가능성이 있음
-        // 그래서 key 가 1, 2, 3, 4, 5... 이런식으로 순차적으로 온다는 보장이 없으므로 그냥 키값들을 가져와서 반복문 도는 것..
+        // 그래서 key 가 0, 1, 2, 3, 4, 5... 이런식으로 순차적으로 온다는 보장이 없으므로 그냥 키값들을 가져와서 반복문 도는 것..
         foreach (int idx in curInventory.Keys) 
         {
             fruitCount[((FruitItemSO)(curInventory[idx].item)).fruitIdx] += curInventory[idx].quantity; // 해당 아이템의 아이템 인덱스에 맞는 요소의 값을 증가시켜줌..

@@ -226,153 +226,30 @@ public class FarmingManager : MonoBehaviour
     public Dictionary<Vector3Int, FarmingData> farmingData;
     public int farmLevel = 1; // 농장 레벨. 농장 레벨 업그레이드 함수 호출하면 증가하도록..
     public int expansionSize = 1; // 농장 한 번 업그레이트 할 때 얼마나 확장될 건지.. 일단 임시로 1로 해놨다.. 나중에 변경할 것.
-    public int scarecrowLevel = 0; // 허수아비 레벨..
+    public int scarecrowLevel = 1; // 허수아비 레벨..
+    public int farmSizeLevelUpCost = 10000;
+    public int scarecrowLevelUpCost = 10000;
+
 
     [Header("PlantSeed Information")]
     public GameObject plantSeedPanel; // 씨앗 선택창
     public int selectedSeedIdx; // 현재 심을 씨앗 종류
     public bool clickedSelectedSeedButton = false; // 이 값이 true 가 되면 씨앗 심기 함수 호출하도록(씨앗 심기 함수에서는 이 값을 다시 false 로 돌림).. 
 
-    [Header("Farm Size Upgrade UI")]
-    public Text costText; // 업그레이드 비용 텍스트
-    public Text curFarmLevelText; // 현재 농장 레벨 텍스트
-    public Text nextFarmLevelText; // 다음 농장 레벨 텍스트
+    [Header("Farm Upgrade UI")]
+    public Text farmSizeUpgradeCostText; // 농장 사이즈 업그레이드 비용 텍스트
+    public Text curFarmSizeLevelText; // 현재 농장 레벨 텍스트
+    public Text nextFarmSizeLevelText; // 다음 농장 레벨 텍스트
+
+    public Text scareCrowUpgradeCostText; // 허수아비 업그레이트 비용 텍스트
+    public Text curScareCrowLevelText; // 현재 허수아비 레벨 텍스트
+    public Text nextScareCrowLevelText; // 다음 허수아비 레벨 텍스트
 
 
     // 데이터 저장
     [Header("Save Data")]
     private string farmingDataFilePath; // 농사 데이터 저장 경로..
 
-
-
-    public void SaveFarmingData()
-    {
-        Dictionary<PosInt, SaveFarmingData> tempDic = new Dictionary<PosInt, SaveFarmingData>();
-        foreach (var item in farmingData)
-        {
-            // JSON 저장할 때 Vector3Int 가 직렬화가 안되므로 따로 만든 PosString 이용하가ㅣ..
-            PosInt pos = new PosInt
-            {
-                x = item.Key.x,
-                y = item.Key.y,
-                z = item.Key.z
-            };
-
-            SaveFarmingData temp = new SaveFarmingData
-            {
-                plowEnableState = farmingData[item.Key].plowEnableState,
-                plantEnableState = farmingData[item.Key].plantEnableState,
-                harvestEnableState = farmingData[item.Key].harvestEnableState,
-                failedState = farmingData[item.Key].failedState,
-                currentState = farmingData[item.Key].currentState
-            };
-
-
-
-            // 이렇게 바꿀거임..
-
-            // 농사 땅 위에 씨앗이 없을 때 진입..
-            if (farmingData[item.Key].seedOnTile == false)
-            {
-                temp.seedOnTile = farmingData[item.Key].seedOnTile;
-            }
-            // 농사 땅 위에 씨앗 있을 때 진입..
-            else
-            {
-                temp.seedOnTile = farmingData[item.Key].seedOnTile;
-                temp.seedIdx = farmingData[item.Key].seedIdx;
-                temp.curDay = farmingData[item.Key].curDay;
-                temp.isGrown = farmingData[item.Key].isGrown;
-            }
-            tempDic.Add(pos, temp);
-        }
-
-
-        string json = DictionaryJsonUtility.ToJson(tempDic, true);
-        Debug.Log(json);
-        Debug.Log("데이터 저장 완료!");
-
-
-        // 외부 폴더에 접근해서 Json 파일 저장하기
-        // Application.persistentDataPath: 특정 운영체제에서 앱이 사용할 수 있도록 허용한 경로
-        File.WriteAllText(farmingDataFilePath, json);
-    }
-
-
-    // 씬 로드 된 후에 SetFarmingData 함수 먼저 호출한 후 호출할 함수..
-    public void LoadFarmingData()
-    {
-        // Json 파일 경로 가져오기
-        string path = Path.Combine(Application.persistentDataPath, "FarmingData.json");
-
-        // 지정된 경로에 파일이 있는지 확인한다
-        if (File.Exists(path))
-        {
-            // 경로에 파일이 있으면 Json 을 다시 오브젝트로 변환한다.
-            string json = File.ReadAllText(path);
-            Debug.Log(json);
-            Dictionary<PosInt, SaveFarmingData> tempDic = DictionaryJsonUtility.FromJson<PosInt, SaveFarmingData>(json);
-
-            foreach (var item in tempDic)
-            {
-                Vector3Int pos = new Vector3Int(item.Key.x, item.Key.y, item.Key.z);
-
-                switch (tempDic[item.Key].currentState)
-                {
-                    // 현재 농사 땅 상태에 맞는 버튼으로 설정해주기..
-
-                    case "None":
-                        farmingData[pos].stateButton = farmingData[pos].buttons[0];
-                        farmTilemap.SetTile(pos, grassTile); // 타일을 아무것도 안 한 상태로 변경(키 값이 농사땅의 pos 임)
-                        break;
-
-                    case "plow":
-                        farmingData[pos].stateButton = farmingData[pos].buttons[1];
-                        farmTilemap.SetTile(pos, farmTile); // 타일을 밭 갈린 모습으로 변경..
-                        break;
-
-                    case "plant":
-                        farmingData[pos].stateButton = farmingData[pos].buttons[2];
-                        farmTilemap.SetTile(pos, plantTile); // 타일을 씨앗 심은 모습으로 변경..
-                        break;
-
-                    case "harvest":
-                        farmingData[pos].stateButton = farmingData[pos].buttons[2];
-                        farmTilemap.SetTile(pos, harvestTile); // 타일을 다 자란 모습으로 변경..
-                        break;
-
-                    case "failed":
-                        farmingData[pos].stateButton = farmingData[pos].buttons[3];
-                        farmTilemap.SetTile(pos, failedTile); // 타일을 망한 모습으로 변경..
-                        break;
-                }
-
-
-                // 저장해놓은 데이터 가져와서 설정해주기..
-                farmingData[pos].plowEnableState = tempDic[item.Key].plowEnableState;
-                farmingData[pos].plantEnableState = tempDic[item.Key].plantEnableState;
-                farmingData[pos].harvestEnableState = tempDic[item.Key].harvestEnableState;
-                farmingData[pos].failedState = tempDic[item.Key].failedState;
-                farmingData[pos].currentState = tempDic[item.Key].currentState;
-
-
-                // 이렇게 수정할거임!!
-                // 저장 당시 농사 땅 위에 씨앗 있었으면 씨앗 데이터 설정해주기..
-                if (tempDic[item.Key].seedOnTile)
-                {
-                    farmingData[pos].seedOnTile = tempDic[item.Key].seedOnTile;
-                    farmingData[pos].seedIdx = tempDic[item.Key].seedIdx;
-                    farmingData[pos].curDay = tempDic[item.Key].curDay;
-                    farmingData[pos].isGrown = tempDic[item.Key].isGrown;
-                }
-            }
-        }
-        // 지정된 경로에 파일이 없으면
-        else
-        {
-            Debug.Log("파일이 없어요!!");
-        }
-    }
 
 
     private void Awake()
@@ -416,7 +293,6 @@ public class FarmingManager : MonoBehaviour
             tmpFarmLevel--;
         }
 
-
         LoadFarmingData(); // 데이터 가져오기..
 
 
@@ -444,10 +320,15 @@ public class FarmingManager : MonoBehaviour
             {
                 Debug.Log("씨앗이 안 심어져있어용~");
             }
-        }    
+        }
 
         // 저장하기
         SaveFarmingData(); // 변경 사항 생겼으니까 저장해주기..
+
+        // 아래 코드들은 그냥 임시로 확인하기 위한 거... 나중에 없앨 것...
+        //PlayerPrefs.SetInt("FarmLevel", farmLevel); // 농장 레벨 저장..
+        //scarecrowLevel = 1;
+        //PlayerPrefs.SetInt("ScareCrowLevel", scarecrowLevel); // 허수아비 레벨 저장..
     }
 
 
@@ -664,7 +545,7 @@ public class FarmingManager : MonoBehaviour
     }
 
 
-    
+
     public void FailFarmAt(Vector3Int pos)
     {
         // 특정 위치의 농사땅을 망하게 하는 함수
@@ -692,7 +573,7 @@ public class FarmingManager : MonoBehaviour
         }
 
         // 땅에 아무것도 안 되어있는 상태면 망칠게 없으니까 그냥 빠져나오도록.. 
-        if (randomList.Count == 0) return; 
+        if (randomList.Count == 0) return;
 
         if (randomList.Count < count)
         {
@@ -714,7 +595,7 @@ public class FarmingManager : MonoBehaviour
                     cnt++;
                 }
             }
-        } 
+        }
         else
         {
             while (cnt < count)
@@ -811,6 +692,9 @@ public class FarmingManager : MonoBehaviour
         // 심기 버튼이랑 연결해줘야함.
         farmingData[pos].stateButton.gameObject.SetActive(false); // 버튼 한 번 눌렀으니까 꺼지도록..
 
+        // 농사 버튼 꺼지도록..
+        DisableFarmStateButton();
+
         plantSeedPanel.SetActive(true); // 심기 버튼 눌렀을 때 씨앗 선택창 뜨도록 하기 위함
     }
 
@@ -818,6 +702,8 @@ public class FarmingManager : MonoBehaviour
     {
         // 씨앗을 심는 함수
         // 이 함수는 씨앗 선택창에서 씨앗 버튼 눌렀을 때 호출되도록..
+        EnableFarmStateButton(); // 농사 버튼 다시 켜지도록..
+
 
         farmingData[pos].seedIdx = seedIdx; // 씨앗 인덱스 설정해주기
         farmingData[pos].seedOnTile = true; // 씨앗을 심었으니까 true 로 값 변경해주기..
@@ -1070,12 +956,30 @@ public class FarmingManager : MonoBehaviour
         // 5 에서 더 업그레이드 하려고 하면 그냥 빠져나가도록..
         if (farmLevel >= 5) return;
 
-        // 일단 임시로 만원으로 해놨다..
-        if (GameManager.instance.money < 10000)
+        switch (scarecrowLevel)
+        {
+            case 1:
+                scarecrowLevelUpCost = 10000;
+                break;
+            case 2:
+                scarecrowLevelUpCost = 30000;
+                break;
+            case 3:
+                scarecrowLevelUpCost = 50000;
+                break;
+            case 4:
+                scarecrowLevelUpCost = 100000;
+                break;
+        }
+
+
+        // 돈 부족하면 그냥 빠져나가도록..
+        if (GameManager.instance.money < scarecrowLevelUpCost)
         {
             Debug.Log("돈 없어!");
             return;
         }
+
 
         // 땅의 크기를 업그레이드 하는 함수
 
@@ -1149,24 +1053,150 @@ public class FarmingManager : MonoBehaviour
         Debug.Log("농장을 업그레이드 했다!");
     }
 
+    public void SetScareCrowLevel(int level)
+    {
+        // 게임 시작시 데이터 불러올 때 호출될 함수..
+
+        switch (level)
+        {
+            case 1:
+                scarecrowLevelUpCost = 10000;
+                break;
+            case 2:
+                scarecrowLevelUpCost = 30000;
+                break;
+            case 3:
+                scarecrowLevelUpCost = 50000;
+                break;
+            case 4:
+                scarecrowLevelUpCost = 100000;
+                break;
+        }
+
+        Debug.Log("허수아비 정보를 세팅했다!");
+    } 
+
+    public void UpgradeScareCrow()
+    {
+        // 허수아비 레벨은 5렙까지 존재하도록..
+        // 5 에서 더 업그레이드 하려고 하면 그냥 빠져나가도록..
+        if (scarecrowLevel >= 5) return;
+
+        switch (scarecrowLevel)
+        {
+            case 1:
+                scarecrowLevelUpCost = 10000;
+                break;
+            case 2:
+                scarecrowLevelUpCost = 30000;
+                break;
+            case 3:
+                scarecrowLevelUpCost = 50000;
+                break;
+            case 4:
+                scarecrowLevelUpCost = 100000;
+                break;
+        }
+
+
+        if (GameManager.instance.money < scarecrowLevelUpCost)
+        {
+            Debug.Log("돈 없어!");
+            return;
+        }
+
+        scarecrowLevel++;
+        PlayerPrefs.SetInt("ScareCrowLevel", scarecrowLevel); // 허수아비 레벨 저장..
+        Debug.Log("허수아비를 업그레이드 했다!");
+    }
+
     public void SetFarmUpgradePanel()
     {
         // 농장 레벨 업그레이드 판넬 정보 설정 함수
-        costText.text = 10000 + ""; // 업그레이드 비용 텍스트(일단 임시로 만원..)
-        curFarmLevelText.text = farmLevel + ""; // 현재 농장 레벨 텍스트
-        nextFarmLevelText.text = (farmLevel + 1) + ""; // 다음 농장 레벨 텍스트
+
+
+        // 농장 사이즈 정보 설정
+        switch (farmLevel)
+        {
+            case 1:
+                farmSizeLevelUpCost = 10000;
+                break;
+            case 2:
+                farmSizeLevelUpCost = 30000; 
+                break;
+            case 3:
+                farmSizeLevelUpCost = 50000;
+                break;
+            case 4:
+                farmSizeLevelUpCost = 100000;
+                break;
+        }
+
+        if (farmLevel == 5)
+        {
+            farmSizeUpgradeCostText.text = "max";
+            nextScareCrowLevelText.text = "X";
+        } 
+        else
+        {
+            farmSizeUpgradeCostText.text = farmSizeLevelUpCost + "";
+            nextFarmSizeLevelText.text = (farmLevel + 1) + "";
+        }
+
+
+
+        // 허수아비 정보 설정
+        switch (scarecrowLevel)
+        {
+            case 1:
+                scarecrowLevelUpCost = 10000;
+                break;
+            case 2:
+                scarecrowLevelUpCost = 30000;
+                break;
+            case 3:
+                scarecrowLevelUpCost = 50000;
+                break;
+            case 4:
+                scarecrowLevelUpCost = 100000;
+                break;
+        }
+
+
+        if (scarecrowLevel == 5)
+        {
+            scareCrowUpgradeCostText.text = "max";
+            nextScareCrowLevelText.text = "X";
+        }
+        else
+        {
+            scareCrowUpgradeCostText.text = scarecrowLevelUpCost + "";
+            nextScareCrowLevelText.text = (scarecrowLevel + 1) + "";
+        }
+
+        curScareCrowLevelText.text = scarecrowLevel + ""; // 현재 허수아비 레벨 텍스트
     }
 
     public void DisableFarmStateButton()
     {
-        // 농사 버튼 끄는 함수
-        buttonsGameObject.SetActive(false);
+        // 농장 씬에서만 사용해야 하는 함수라서.. 조건문 달아준 것..
+        // UIInventoryManager 의 seedContainer 와 fruitContainer 의 값이 null 이면 현재 농장이 아닌 다른 씬에 있는 것..
+        if (UIInventoryManager.instance.seedContainer != null && UIInventoryManager.instance.fruitContainer != null)
+        {
+            // 농사 버튼 끄는 함수
+            buttonsGameObject.SetActive(false);
+        }
     }
 
     public void EnableFarmStateButton()
     {
-        // 농사 버튼 켜는 함수
-        buttonsGameObject.SetActive(true);
+        // 농장 씬에서만 사용해야 하는 함수라서.. 조건문 달아준 것..
+        // UIInventoryManager 의 seedContainer 와 fruitContainer 의 값이 null 이면 현재 농장이 아닌 다른 씬에 있는 것..
+        if (UIInventoryManager.instance.seedContainer != null && UIInventoryManager.instance.fruitContainer != null)
+        {
+            // 농사 버튼 켜는 함수
+            buttonsGameObject.SetActive(true);
+        }
     }
 
     void OnFarmSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -1179,7 +1209,36 @@ public class FarmingManager : MonoBehaviour
     {
         yield return null;
 
-        if (Random.Range(0, 1) == 0)
+        // 허수아비 레벨 데이터 불러오기..
+        scarecrowLevel = PlayerPrefs.GetInt("ScareCrowLevel");
+        Debug.Log(scarecrowLevel + "허수아비 레벨임여!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        // 허수아비 레벨 데이터를 불러온 다음에 레벨 데이터에 맞게끔 정보 설정해주기..
+        SetScareCrowLevel(scarecrowLevel);
+
+
+        int probability = 1;
+        switch (scarecrowLevel)
+        {
+            case 1:
+                probability = 2;
+                break;
+            case 2:
+                probability = 3;
+                break;
+            case 3:
+                probability = 5;
+                break;
+            case 4:
+                probability = 10;
+                break;
+            case 5:
+                probability = 20;
+                break;
+        }
+
+        Debug.Log("probability: " + probability);
+
+        if (Random.Range(0, probability) == 0)
         {
             animalInteractionManager.UICanvas.gameObject.SetActive(true);
             animalInteractionManager.backgroundButton.gameObject.SetActive(true);
@@ -1187,12 +1246,143 @@ public class FarmingManager : MonoBehaviour
             // 여기 매개변수로 전해지는 값은 현재 허수아비 레벨에 따라 달라지도록 하는게 좋을 것 같다..
             // 허수아비 레벨 올라갈수록 수가 작아지도록..
             // 일단은 임의로 잡아야하는 너구리의 수 15 마리로 해놓음..
-            animalInteractionManager.SetAnimalCount(15); 
+            // 음.. 너구리 수는 그냥 15 마리로 고정하는게 나은가..
+            animalInteractionManager.SetAnimalCount(15);
         }
         else
         {
             animalInteractionManager.UICanvas.gameObject.SetActive(false);
             UIInventoryManager.instance.buttonParentGameObject.SetActive(true);
+        }
+    }
+
+
+    public void SaveFarmingData()
+    {
+        Dictionary<PosInt, SaveFarmingData> tempDic = new Dictionary<PosInt, SaveFarmingData>();
+        foreach (var item in farmingData)
+        {
+            // JSON 저장할 때 Vector3Int 가 직렬화가 안되므로 따로 만든 PosString 이용하가ㅣ..
+            PosInt pos = new PosInt
+            {
+                x = item.Key.x,
+                y = item.Key.y,
+                z = item.Key.z
+            };
+
+            SaveFarmingData temp = new SaveFarmingData
+            {
+                plowEnableState = farmingData[item.Key].plowEnableState,
+                plantEnableState = farmingData[item.Key].plantEnableState,
+                harvestEnableState = farmingData[item.Key].harvestEnableState,
+                failedState = farmingData[item.Key].failedState,
+                currentState = farmingData[item.Key].currentState
+            };
+
+
+
+            // 이렇게 바꿀거임..
+
+            // 농사 땅 위에 씨앗이 없을 때 진입..
+            if (farmingData[item.Key].seedOnTile == false)
+            {
+                temp.seedOnTile = farmingData[item.Key].seedOnTile;
+            }
+            // 농사 땅 위에 씨앗 있을 때 진입..
+            else
+            {
+                temp.seedOnTile = farmingData[item.Key].seedOnTile;
+                temp.seedIdx = farmingData[item.Key].seedIdx;
+                temp.curDay = farmingData[item.Key].curDay;
+                temp.isGrown = farmingData[item.Key].isGrown;
+            }
+            tempDic.Add(pos, temp);
+        }
+
+
+        string json = DictionaryJsonUtility.ToJson(tempDic, true);
+        Debug.Log(json);
+        Debug.Log("데이터 저장 완료!");
+
+
+        // 외부 폴더에 접근해서 Json 파일 저장하기
+        // Application.persistentDataPath: 특정 운영체제에서 앱이 사용할 수 있도록 허용한 경로
+        File.WriteAllText(farmingDataFilePath, json);
+    }
+
+
+    // 씬 로드 된 후에 SetFarmingData 함수 먼저 호출한 후 호출할 함수..
+    public void LoadFarmingData()
+    {
+        // Json 파일 경로 가져오기
+        string path = Path.Combine(Application.persistentDataPath, "FarmingData.json");
+
+        // 지정된 경로에 파일이 있는지 확인한다
+        if (File.Exists(path))
+        {
+            // 경로에 파일이 있으면 Json 을 다시 오브젝트로 변환한다.
+            string json = File.ReadAllText(path);
+            Debug.Log(json);
+            Dictionary<PosInt, SaveFarmingData> tempDic = DictionaryJsonUtility.FromJson<PosInt, SaveFarmingData>(json);
+
+            foreach (var item in tempDic)
+            {
+                Vector3Int pos = new Vector3Int(item.Key.x, item.Key.y, item.Key.z);
+
+                switch (tempDic[item.Key].currentState)
+                {
+                    // 현재 농사 땅 상태에 맞는 버튼으로 설정해주기..
+
+                    case "None":
+                        farmingData[pos].stateButton = farmingData[pos].buttons[0];
+                        farmTilemap.SetTile(pos, grassTile); // 타일을 아무것도 안 한 상태로 변경(키 값이 농사땅의 pos 임)
+                        break;
+
+                    case "plow":
+                        farmingData[pos].stateButton = farmingData[pos].buttons[1];
+                        farmTilemap.SetTile(pos, farmTile); // 타일을 밭 갈린 모습으로 변경..
+                        break;
+
+                    case "plant":
+                        farmingData[pos].stateButton = farmingData[pos].buttons[2];
+                        farmTilemap.SetTile(pos, plantTile); // 타일을 씨앗 심은 모습으로 변경..
+                        break;
+
+                    case "harvest":
+                        farmingData[pos].stateButton = farmingData[pos].buttons[2];
+                        farmTilemap.SetTile(pos, harvestTile); // 타일을 다 자란 모습으로 변경..
+                        break;
+
+                    case "failed":
+                        farmingData[pos].stateButton = farmingData[pos].buttons[3];
+                        farmTilemap.SetTile(pos, failedTile); // 타일을 망한 모습으로 변경..
+                        break;
+                }
+
+
+                // 저장해놓은 데이터 가져와서 설정해주기..
+                farmingData[pos].plowEnableState = tempDic[item.Key].plowEnableState;
+                farmingData[pos].plantEnableState = tempDic[item.Key].plantEnableState;
+                farmingData[pos].harvestEnableState = tempDic[item.Key].harvestEnableState;
+                farmingData[pos].failedState = tempDic[item.Key].failedState;
+                farmingData[pos].currentState = tempDic[item.Key].currentState;
+
+
+                // 이렇게 수정할거임!!
+                // 저장 당시 농사 땅 위에 씨앗 있었으면 씨앗 데이터 설정해주기..
+                if (tempDic[item.Key].seedOnTile)
+                {
+                    farmingData[pos].seedOnTile = tempDic[item.Key].seedOnTile;
+                    farmingData[pos].seedIdx = tempDic[item.Key].seedIdx;
+                    farmingData[pos].curDay = tempDic[item.Key].curDay;
+                    farmingData[pos].isGrown = tempDic[item.Key].isGrown;
+                }
+            }
+        }
+        // 지정된 경로에 파일이 없으면
+        else
+        {
+            Debug.Log("파일이 없어요!!");
         }
     }
 }

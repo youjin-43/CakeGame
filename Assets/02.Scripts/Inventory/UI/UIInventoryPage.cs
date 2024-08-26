@@ -54,7 +54,11 @@ public class UIInventoryPage : MonoBehaviour
         Debug.Log("인벤토리 페이지 생성됐어요..");
 
         mouseDragItem.gameObject.SetActive(false); // 활성화 끈채로 시작..
-        //transform.gameObject.SetActive(false); // 창 끈채로 시작..
+    }
+
+    private void Start()
+    {
+        mouseDragItem.gameObject.SetActive(false);
     }
 
 
@@ -199,6 +203,8 @@ public class UIInventoryPage : MonoBehaviour
             sellButtonPanel.SetActive(false); // 판매 버튼 활성화 끄기..
             return; // 밑에 로직 수행 안하도록 그냥 나가버리기..
         }
+
+        Debug.Log("케이크 아이템칸 클릭했다공!!!!!!!!");
 
         int index = inventoryUIItems.IndexOf(item); // 매개변수로 전달받은 UIInventoryItem 의 인스턴스가 리스트 속 몇 번 째 인덱스 요소인지 가져옴..
 
