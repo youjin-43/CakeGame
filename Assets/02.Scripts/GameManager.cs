@@ -116,7 +116,7 @@ public class GameManager : MonoBehaviour
         Routine.instance.routineState = RoutineState.Close;
 
         UIManager.instance.runningOverBoard.SetActive(true); // 정산 화면 뜨기
-        UIManager.instance.RunStartButton.SetActive(true);
+        //UIManager.instance.RunStartButton.SetActive(true); // 가게 운영이 끝나면 농장으로 가도록 
 
         //정산 결과 저장 -> 돈, 인지도 등 데이터 갱신
         PlayerPrefs.SetInt("date", date);
