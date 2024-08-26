@@ -22,6 +22,9 @@ public class UIMouseDragItem : MonoBehaviour
 
         // 내 밑에 UIInventoryItem 이 있으므로 GetCompoentInChildren 함수를 이용해서 가져옴
         item = GetComponentInChildren<UIInventoryItem>();
+
+
+        transform.gameObject.SetActive(false); // 활성화 끈채로 시작..
     }
 
     public void SetData(Sprite sprite, int quantity)

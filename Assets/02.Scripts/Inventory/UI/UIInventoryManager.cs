@@ -35,6 +35,9 @@ public class UIInventoryManager : MonoBehaviour
     public InventorySO fruitInventoryData; // 실제 인벤토리(과일 인벤토리)
 
     [SerializeField]
+    public InventorySO cakeInventoryData; // 실제 인벤토리(케이크 인벤토리)
+
+    [SerializeField]
     public InventorySO curInventoryData; // 현재 보기로 선택한 인벤토리
 
     [SerializeField]
@@ -42,6 +45,9 @@ public class UIInventoryManager : MonoBehaviour
 
     [SerializeField]
     public Button fruitButton; // curInventoryData 의 값을 fruitInventoryData 의 값으로 설정하는 버튼..
+
+    [SerializeField]
+    public Button cakeButton; // curInventoryData 의 값을 cakeInventoryData 의 값으로 설정하는 버튼..
 
     [SerializeField]
     public Button inventoryOpenButton; // 인벤토리를 켜고 닫는 버튼..
@@ -56,6 +62,8 @@ public class UIInventoryManager : MonoBehaviour
     public int[] fruitCount;
     // 아이템 스크립터블 오브젝트를 저장해놓기..
     public FruitItemSO[] fruitItems; // [0]: 사과, [1]: 바나나, [2]: 체리, [3]: 오렌지, [4]: 딸기
+    // 이건 아이템 잘 추가되나 보려고 임시롤 만든 배열...
+    public CakeSO[] cakeItems; // 케이크임요!!
 
 
 
@@ -78,10 +86,6 @@ public class UIInventoryManager : MonoBehaviour
     [Header("Close Farm Interaction Button")]
     public GameObject buttonParentGameObject; // 인벤토리 UI 띄우면 버튼 안 보이도록 하기 위함..
 
-
-    [Header("Save Data")]
-    private string filePath; // 데이터 저장 경로..
-    public InventoryData inventoryData = new InventoryData();
 
 
 
@@ -136,9 +140,6 @@ public class UIInventoryManager : MonoBehaviour
         }
 
 
-        filePath = Path.Combine(Application.persistentDataPath, "InventoryData.json"); // 데이터 경로 설정..
-
-
         fruitCount = new int[fruitItems.Length];
         // 시작할 때 한번 과일 컨테이너 개수 반영한다음 시작..
         SetFruitInventoryToFruitContainer(); // 현재 인벤토리의 과일 개수를 과일 개수 저장하는 배열에 반영..
@@ -169,8 +170,11 @@ public class UIInventoryManager : MonoBehaviour
             }
 
 
+            // 현재 인벤토리 UI 가 켜져 있는지 여부에 따라 씨앗, 과일, 케이크 버튼의 활성화 결정해줄 것..
             seedButton.gameObject.SetActive(inventoryUI.isActiveAndEnabled);
             fruitButton.gameObject.SetActive(inventoryUI.isActiveAndEnabled);
+            cakeButton.gameObject.SetActive(inventoryUI.isActiveAndEnabled);
+
             inventoryUI.ResetDescription(); // 설명창 리셋해주기.. 
             inventoryUI.sellButtonPanel.gameObject.SetActive(false); // 판매 버튼 판넬도 꺼주기..
         }
@@ -179,8 +183,13 @@ public class UIInventoryManager : MonoBehaviour
         // 임시 확인 코드
         if (Input.GetKeyDown(KeyCode.C))
         {
-            //SaveInventoryData();
-            //LoadInventoryData();
+            InventoryItem tmpItem = new InventoryItem()
+            {
+                item = cakeItems[0],
+                quantity = 1,
+            };
+
+            cakeInventoryData.AddItem(tmpItem);
         }
     }
 
@@ -226,6 +235,7 @@ public class UIInventoryManager : MonoBehaviour
 
         seedButton = GameObject.Find("InventoryUI").transform.Find("SeedButton").GetComponent<Button>();
         fruitButton = GameObject.Find("InventoryUI").transform.Find("FruitButton").GetComponent<Button>();
+        cakeButton = GameObject.Find("InventoryUI").transform.Find("CakeButton").GetComponent<Button>();
         // GameObject 는 GetComponent 로 찾는게 아니라 그냥 gameObject 쓰면 됨..
         buttonParentGameObject = GameObject.Find("FarmButtonUICanvas")?.transform.Find("PlowPlantHarvestButtonsParent")?.gameObject;
 
@@ -243,6 +253,7 @@ public class UIInventoryManager : MonoBehaviour
         inventoryUI.exitButton.gameObject.SetActive(false);
         seedButton.gameObject.SetActive(false);
         fruitButton.gameObject.SetActive(false);
+        cakeButton.gameObject.SetActive(false);
         itemSellPanel.gameObject.SetActive(false);
 
 
@@ -269,12 +280,9 @@ public class UIInventoryManager : MonoBehaviour
                 break;
             case 3:
                 // 케이크
+                cakeInventoryData.AddItem(item);
                 break;
         }
-
-        inventoryData.seedInventoryData = seedInventoryData;
-        inventoryData.fruitInventoryData = fruitInventoryData;
-        //SaveInventoryData(); // 데이터 저장!  
     }
 
     public void MinusItem(InventoryItem item)
@@ -295,12 +303,10 @@ public class UIInventoryManager : MonoBehaviour
                 break;
             case 3:
                 // 케이크
+                cakeInventoryData.MinusItem(item);
+                // 얘도 현재 케이크 개수를 케이크 개수 저장 배열에 반영하는 함수 만들어야 하나? 월요일 회의 때 승우님께 질문하기!!!!!!
                 break;
         }
-
-        inventoryData.seedInventoryData = seedInventoryData;
-        inventoryData.fruitInventoryData = fruitInventoryData;
-        //SaveInventoryData(); // 데이터 저장!  
     }
 
     public void SellItem(int count, int price, int itemType)
@@ -319,20 +325,12 @@ public class UIInventoryManager : MonoBehaviour
             case 2:
                 // 보석
                 break;
-            case 3:
-                // 케이크
-                break;
         }
 
         itemSellPanel.gameObject.SetActive(false); // 팔고 난 다음에 창 끄기..
         inventoryUI.currentMouseClickIndex = -1; // -1 로 다시 바꿔주기..
         inventoryUI.ResetDescription(); // 아이템 설명창도 리셋해주기..
         inventoryUI.sellButtonPanel.gameObject.SetActive(false); // 판매 버튼 판넬도 꺼주기..
-
-
-        inventoryData.seedInventoryData = seedInventoryData;
-        inventoryData.fruitInventoryData = fruitInventoryData;
-        //SaveInventoryData(); // 데이터 저장!  
     }
 
     private void SetItemSellPanel(int itemIndex)
@@ -464,16 +462,19 @@ public class UIInventoryManager : MonoBehaviour
         // 인벤토리 데이터에 변경사항이 생기면 UpdateInventoryUI 함수를 호출할 수 있도록..
         seedInventoryData.OnInventoryUpdated += UpdateInventoryUI;
         fruitInventoryData.OnInventoryUpdated += UpdateInventoryUI;
+        cakeInventoryData.OnInventoryUpdated += UpdateInventoryUI;
 
         // 델리게이트에 SetInvenetoryToContainer 함수를 연결하기..
         // 인벤토리 데이터에 변경사항이 생기면 SetInvenetoryToContainer 함수를 호출할 수 있도록..
         seedInventoryData.OnInventoryUpdatedInt += SetInventoryToContainer;
         fruitInventoryData.OnInventoryUpdatedInt += SetInventoryToContainer;
+        cakeInventoryData.OnInventoryUpdatedInt += SetInventoryToContainer;
 
         // 델리게이트에 SetInventoryUI 함수 연결하기..
         // 인벤토리 사이즈에 변경사항이 생기면 호출할 수 있도록..
         seedInventoryData.OnInventorySizeUpdated += SetInventoryUI;
         fruitInventoryData.OnInventorySizeUpdated += SetInventoryUI;
+        cakeInventoryData.OnInventorySizeUpdated += SetInventoryUI;
 
         // 델리게이트에 SetItemSellPanel 함수 연결해놓기..
         // 판매 버튼 눌렀을 때, 판매 창 정보를 현재 선택한 아이템의 정보로 설정하기 위함..
@@ -502,6 +503,7 @@ public class UIInventoryManager : MonoBehaviour
         // 버튼에 함수 연결
         seedButton.onClick.AddListener(SetCurInventoryDataSeed); // 씨앗 버튼에 인벤토리 데이터를 씨앗 인벤토리 데이터로 바꿔주는 함수 연결
         fruitButton.onClick.AddListener(SetCurInventoryDataFruit); // 과일 버튼에 인벤토리 데이터를 과일 인벤토리 데이터로 바꿔주는 함수 연결
+        cakeButton.onClick.AddListener(SetCurInventoryDataCake); // 케이크 버튼에 인벤토리 데이터를 케이크 인벤토리 데이터로 바꿔주는 함수 연결
         inventoryOpenButton.onClick.AddListener(OpenInventoryUI); // 버튼에 인벤토리창 여는 로직 함수 연결
 
         // 아이템 판매 판넬 클래스의 델리게이트에 SellItem 함수 연결..
@@ -539,6 +541,8 @@ public class UIInventoryManager : MonoBehaviour
         // 인벤토리 창이 켜졌는지 여부에 따라 씨앗, 과일 인벤토리창 선택 버튼도 켜질지 꺼질지 결정..
         seedButton.gameObject.SetActive(inventoryUI.isActiveAndEnabled);
         fruitButton.gameObject.SetActive(inventoryUI.isActiveAndEnabled);
+        cakeButton.gameObject.SetActive(inventoryUI.isActiveAndEnabled);
+
         inventoryUI.ResetDescription(); // 설명창 리셋해주기.. 
         inventoryUI.sellButtonPanel.gameObject.SetActive(false); // 판매 버튼 판넬도 꺼주기..
     }
@@ -548,38 +552,42 @@ public class UIInventoryManager : MonoBehaviour
     // 델리게이트 연결 함수
     private void HandleDescriptionRequest(int itemIndex)
     {
-        InventoryItem inventoryItem; // InventoryItem 은 구조체라 null 값을 가질 수 없음(r-value 임..)
+        InventoryItem inventoryItem = new InventoryItem(); // InventoryItem 은 구조체라 null 값을 가질 수 없음(r-value 임..)
 
         // 현재 인벤토리 데이터 변수가 가리키는 값이 씨앗 인벤토리 데이터 값이라면..
         if (curInventoryData == seedInventoryData)
         {
-            inventoryItem = seedInventoryData.GetItemAt(itemIndex); // 전달받은 아이템의 인덱스로 인벤토리 아이템을 가져옴..
-
-            if (inventoryItem.IsEmpty) // 만약 인벤토리 아이템이 비어있으면 디스크립션 초기화하고 빠져나가도록..
-            {
-                inventoryUI.ResetDescription();
-                return;
-            }
-
-            ItemSO item = inventoryItem.item;
-            inventoryUI.UpdateDescription(itemIndex, item.itemImage, item.Name, item.Description);
+            inventoryItem = seedInventoryData.GetItemAt(itemIndex); // 전달받은 아이템의 인덱스로 인벤토리 아이템을 가져옴.. 
         }
         // 현재 인벤토리 데이터 변수가 가리키는 값이 과일 인벤토리 데이터 값이라면.. 
         else if (curInventoryData == fruitInventoryData)
         {
             inventoryItem = fruitInventoryData.GetItemAt(itemIndex); // 전달받은 아이템의 인덱스로 인벤토리 아이템을 가져옴..
-
-            if (inventoryItem.IsEmpty) // 만약 인벤토리 아이템이 비어있으면 디스크립션 초기화하고 빠져나가도록..
-            {
-                inventoryUI.ResetDescription();
-                return;
-            }
-
-            ItemSO item = inventoryItem.item;
-            inventoryUI.UpdateDescription(itemIndex, item.itemImage, item.Name, item.Description);
         }
+        // 현재 인벤토리 데이터 변수가 가리키는 값이 케이크 인벤토리 데이터 값이라면..
+        else if (curInventoryData == cakeInventoryData)
+        {
+            inventoryItem = cakeInventoryData.GetItemAt(itemIndex); // 전달 받은 아이템의 인덱스로 인벤토리 아이템을 가져옴..
+        }
+
+        // 중복되는 구문 처리 함수..
+        HandleDescription(inventoryItem, itemIndex);
     }
 
+    private void HandleDescription(InventoryItem inventoryItem, int itemIndex)
+    {
+        // 중복 되는 구문 따로 빼서 함수로 만든 것...
+        // HandleDescriptionRequest 함수에서 호출할 것..
+
+        if (inventoryItem.IsEmpty) // 만약 인벤토리 아이템이 비어있으면 디스크립션 초기화하고 빠져나가도록..
+        {
+            inventoryUI.ResetDescription();
+            return;
+        }
+
+        ItemSO item = inventoryItem.item;
+        inventoryUI.UpdateDescription(itemIndex, item.itemImage, item.Name, item.Description);
+    }
 
     private void HandleSwapItems(int index1, int index2)
     {
@@ -593,80 +601,42 @@ public class UIInventoryManager : MonoBehaviour
         {
             fruitInventoryData.SwapItems(index1, index2); // 과일 인벤토리 데이터의 SwapItems 함수를 호출함!
         }
+        // 현재 인벤토리 데이터 변수가 가리키는 값이 과일 인벤토리 데이터 값이라면..
+        else if (curInventoryData == cakeInventoryData)
+        {
+            cakeInventoryData.SwapItems(index1, index2); // 케이크 인벤토리 데이터의 SwapItems 함수를 호출함!
+        }
     }
 
 
 
     // 버튼 관련
+    private void SetCurInventoryData(InventorySO inventoryData, bool canSell)
+    {
+        // 현재 인벤토리 데이터 값을 주어진 인벤토리 데이터 값으로 설정하는 함수
+        inventoryUI.sellButtonPanel.gameObject.SetActive(canSell); // 판매 가능 여부에 따라 버튼 활성화 설정
+
+        curInventoryData = inventoryData;
+        inventoryUI.SetInventoryUI(curInventoryData.Size); // 인벤토리 UI 를 현재 보려고 선택한 인벤토리 데이터에 맞게 설정
+        inventoryUI.ResetDescription(); // 인벤토리 창 변경하면 설명도 꺼지도록
+        curInventoryData.InformAboutChange();
+    }
+
     private void SetCurInventoryDataSeed()
     {
         // 현재 인벤토리 데이터 값을 Seed 인벤토리 데이터 값으로 설정하는 함수
-
-        inventoryUI.sellButtonPanel.gameObject.SetActive(false); // 씨앗은 판매 불가능하니까 씨앗 인벤토리 창으로 전환하면 판매 버튼도 그냥 꺼지도록..
-
-        curInventoryData = seedInventoryData;
-        inventoryUI.SetInventoryUI(curInventoryData.Size); // 인벤토리 UI 를 현재 보려고 선택한 인벤토리 데이터에 맞게 설정..
-        inventoryUI.ResetDescription(); // 인벤토리 창 변경하면 설명도 꺼지도록..
-        curInventoryData.InformAboutChange();
+        SetCurInventoryData(seedInventoryData, false); // 씨앗은 판매 불가능하니까 씨앗 인벤토리 창으로 전환하면 판매 버튼도 그냥 꺼질 수 있도록 false 넘겨주기..
     }
 
     private void SetCurInventoryDataFruit()
     {
         // 현재 인벤토리 데이터 값을 Fruit 인벤토리 데이터 값으로 설정하는 함수
-        curInventoryData = fruitInventoryData;
-        inventoryUI.SetInventoryUI(curInventoryData.Size); // 인벤토리 UI 를 현재 보려고 선택한 인벤토리 데이터에 맞게 설정..
-        inventoryUI.ResetDescription(); // 인벤토리 창 변경하면 설명도 꺼지도록..
-        curInventoryData.InformAboutChange();
+        SetCurInventoryData(fruitInventoryData, true); // 과일은 판매 가능하니까 과일 인벤토리 창으로 전환하면 판매 버튼 켜질 수 있도록 true 넘겨주기..
     }
 
-
-
-
-    // 데이터 저장
-    public void SaveInventoryData()
+    private void SetCurInventoryDataCake()
     {
-        // Json 직렬화 하기
-        string json = JsonUtility.ToJson(inventoryData, true);
-
-        Debug.Log("데이터 저장 완료!");
-
-        // 외부 폴더에 접근해서 Json 파일 저장하기
-        // Application.persistentDataPath: 특정 운영체제에서 앱이 사용할 수 있도록 허용한 경로
-        File.WriteAllText(filePath, json);
-    }
-
-    public void LoadInventoryData()
-    {
-        // Json 파일 경로 가져오기
-        string path = Path.Combine(Application.persistentDataPath, "InventoryData.json");
-
-        // 지정된 경로에 파일이 있는지 확인한다
-        if (File.Exists(path))
-        {
-            // 경로에 파일이 있으면 Json 을 다시 오브젝트로 변환한다.
-            string json = File.ReadAllText(path);
-            inventoryData = JsonUtility.FromJson<InventoryData>(json);
-
-            seedInventoryData = inventoryData.seedInventoryData;
-            fruitInventoryData = inventoryData.fruitInventoryData;
-
-            Debug.Log(inventoryData.seedInventoryData.Size + "씨앗 인벤토리 사이즈");
-            Debug.Log(inventoryData.fruitInventoryData.Size + "과일 인벤토리 사이즈");
-
-
-            foreach (var item in seedInventoryData.GetCurrentInventoryState())
-            {
-                Debug.Log(item.Key + " 아이템: " + item.Value.item.Name + ", 양: " + item.Value.quantity);
-            }
-
-            foreach (var item in fruitInventoryData.GetCurrentInventoryState())
-            {
-                Debug.Log(item.Key + " 아이템: " + item.Value.item.Name + ", 양: " + item.Value.quantity);
-            }
-        }
-        else
-        {
-            Debug.Log("파일이 없어용!!");
-        }
+        // 현재 인벤토리 데이터 값을 Cake 인벤토리 데이터 값으로 설정하는 함수
+        SetCurInventoryData(cakeInventoryData, false); // 씨앗은 판매 불가능하니까 씨앗 인벤토리 창으로 전환하면 판매 버튼도 그냥 꺼질 수 있도록 false 넘겨주기..
     }
 }
