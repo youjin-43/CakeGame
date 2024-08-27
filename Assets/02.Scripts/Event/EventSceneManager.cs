@@ -59,11 +59,14 @@ public class EventSceneManager : MonoBehaviour
         //dialogBox.onClick.AddListener(PassDialog);
         dialogText = GameObject.Find("DialogText").GetComponent<Text>();
 
+        Debug.Log(toShowEvnetList.events[0]+"-----------------");
         int i = toShowEvnetList.events[0]; //실행해야하는 이벤트 변수에 할당
+
         toShowEvnetList.events.RemoveAt(0);//그 이벤트 리스트에서 삭제 
         SaveEventList(); //현재 상태 업데이트하여 json에 저장
 
-        CakeManager.instance.UnlockCake(i); //케이크 레시피  해금 
+        CakeManager.instance.UnlockCake(i); //케이크 레시피  해금
+        QuestManager.instance.GenMainQuest(i);//퀘스틑 추가 
 
         //실행해야하는 이벤트에 따라 다이얼로그 할당 
         if (i == 1)
@@ -82,7 +85,7 @@ public class EventSceneManager : MonoBehaviour
         {
             currntDialog = eventDialogs.Level8;
         }
-        else
+        else if(i == 5)
         {
             currntDialog = eventDialogs.Level10;
         }
@@ -104,7 +107,6 @@ public class EventSceneManager : MonoBehaviour
         if (idx >= currntDialog.Length)
         {
             SceneManager.LoadScene("CakeStore 1");
-            QuestManager.instance.GenMainQuest(ExpManager.instance.level);
             return;
         }
         dialogText.text = currntDialog[idx];
@@ -140,7 +142,7 @@ public class EventSceneManager : MonoBehaviour
 
         string saveJson = JsonUtility.ToJson(toShowEvnetList);
         File.WriteAllText(saveFilePath, saveJson);
-        Debug.Log("HavingQuestsData Save Success: " + saveFilePath);
+        Debug.Log("EvnetList Save Success: " + saveFilePath);
     }
 
     [System.Serializable]
