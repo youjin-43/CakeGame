@@ -33,8 +33,6 @@ public class ExpManager : MonoBehaviour
             Destroy(gameObject);
             Debug.Log("ExpManager를 죽입니다");
         }
-
-
     }
 
     //public GameObject ExpBar;
@@ -94,36 +92,35 @@ public class ExpManager : MonoBehaviour
             exp = exp - exp_max;
             PlayerPrefs.SetFloat("exp", exp);//exp데이터 업데이트
 
-            exp_max += 100; //다음 레벨업까지 얻어야하는 양 증가 
-            PlayerPrefs.SetFloat("exp_max", exp_max);
+            //임시로 지워놓음. 나중에 밸런스 조절할때 주석 풀고 조정해주면 됨
+            //exp_max += 100; //다음 레벨업까지 얻어야하는 양 증가 
+            //PlayerPrefs.SetFloat("exp_max", exp_max);
 
-            UIManager.instance.SetExpBarUI();//UI 업데이트 
+            UIManager.instance.SetExpBarUI();//UI 업데이트
 
-            //스토리 진행 
             if (level == 2)
             {
-                SceneManager.LoadScene("Event");
-                CakeManager.instance.UnlockCake(1);
+                EventSceneManager.instance.toShowEvnetList.events.Add(1); //해금해야하는 레시피 인덱스를 받음 
             }
-            else if (level == 4)
+            else if(level == 4)
             {
-                SceneManager.LoadScene("Event");
-                CakeManager.instance.UnlockCake(2);
+                EventSceneManager.instance.toShowEvnetList.events.Add(2); 
             }
             else if (level == 6)
             {
-                SceneManager.LoadScene("Event");
-                CakeManager.instance.UnlockCake(3);
+                EventSceneManager.instance.toShowEvnetList.events.Add(3);
             }
             else if (level == 8)
             {
-                SceneManager.LoadScene("Event");
-                CakeManager.instance.UnlockCake(4);
+                EventSceneManager.instance.toShowEvnetList.events.Add(4);
             }
-            //else if (level == 10)
-            //{
+            else if (level == 10)
+            {
+                EventSceneManager.instance.toShowEvnetList.events.Add(5);
+            }
 
-            //}
+            EventSceneManager.instance.SaveEventList();//추가된 이벤트 정보 json으로 저장 
+
         }
     }
 }

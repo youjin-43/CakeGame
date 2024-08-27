@@ -75,7 +75,7 @@ public class QuestManager : MonoBehaviour
         }
 
         string saveFile = File.ReadAllText(saveFilePath);
-        Debug.Log("현재 가지고 있는 퀘스트 데이터 불러오기 완료");
+        //Debug.Log("현재 가지고 있는 퀘스트 데이터 불러오기 완료");
         havingQuests = JsonUtility.FromJson<HavingQuests>(saveFile);
     }
 
@@ -83,15 +83,15 @@ public class QuestManager : MonoBehaviour
     public void LoadQuestdataBase()
     {
         string QuestjsonText = File.ReadAllText(QuestjsonPath);
-        Debug.Log("QuestjsonText : "+QuestjsonText);
+        //Debug.Log("QuestjsonText : "+QuestjsonText);
         questDB = JsonUtility.FromJson<QuestDB>(QuestjsonText);
-        Debug.Log("퀘스트 데이터 베이스 불러오기 완료");
+        //Debug.Log("퀘스트 데이터 베이스 불러오기 완료");
     }
 
     //UI를 위한 오브젝트 변수들에 오브젝트들 셋팅
     public void setBasicQuestUIs()
     {
-        Debug.Log("setBasicQuestUIs 실행 ");
+        //Debug.Log("setBasicQuestUIs 실행 ");
          
         QuestBoard = GameObject.Find("Quest").transform.GetChild(1).gameObject;
         QuestContent = QuestBoard.transform.GetComponentInChildren<VerticalLayoutGroup>().gameObject;
