@@ -33,7 +33,7 @@ public class CakeShowcase : MonoBehaviour
             cakeType[i] = -1;
             if (isCakeSelected[i])
             {
-                CakeManager.instance.cakeCounts[cakeType[i]]++;
+                CakeManager.instance.PlusCakeCount(i);
                 isCakeSelected[i] = false;
             }
         }

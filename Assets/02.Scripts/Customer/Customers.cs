@@ -18,7 +18,7 @@ public class Customers : MonoBehaviour
     private float timer;
     private bool isCakeCheck;
     private bool isDestroy;
-    private CustomersManager customersManager;
+    private CustomerController customerController;
     private Transform frontCustomer;
     private CustomersMoveType.LineType lineType;
     private CustomersMoveType.EnterType enterType;
@@ -28,7 +28,7 @@ public class Customers : MonoBehaviour
     private Transform[] showcasePosition;
     public Vector2 targetPosition;
 
-    public void Initialize(Transform leftEnd, Transform rightEnd, Transform linePostion, Transform enterOutPosition, Transform enterInPosition, Transform cashierPosition, float moveSpeed, float lineSpacing, float sideSpacing, int wantedCakeIndex, CustomersManager customersManager)
+    public void Initialize(Transform leftEnd, Transform rightEnd, Transform linePostion, Transform enterOutPosition, Transform enterInPosition, Transform cashierPosition, float moveSpeed, float lineSpacing, float sideSpacing, int wantedCakeIndex, CustomerController customerController)
     {
         this.leftEnd = leftEnd;
         this.rightEnd = rightEnd;
@@ -40,7 +40,7 @@ public class Customers : MonoBehaviour
         this.lineSpacing = lineSpacing;
         this.sideSpacing = sideSpacing;
         this.wantedCakeIndex = wantedCakeIndex;
-        this.customersManager = customersManager;
+        this.customerController = customerController;
         isCakeCheck = false;
         isDestroy = false;
         transform.GetChild(0).gameObject.SetActive(false);
@@ -73,7 +73,7 @@ public class Customers : MonoBehaviour
         }
         if (Routine.instance.routineState == RoutineState.Close)
         {
-            customersManager.customersList.Remove(this);
+            customerController.customersList.Remove(this);
             Destroy(gameObject);
         }
     }
@@ -85,7 +85,7 @@ public class Customers : MonoBehaviour
 
     void UpdateCustomer()
     {
-        frontCustomer = customersManager.GetFrontCustomer(this);
+        frontCustomer = customerController.GetFrontCustomer(this);
     }
 
     void BeforeLineUp()
@@ -137,14 +137,14 @@ public class Customers : MonoBehaviour
                 MoveTo();
                 if (Vector2.Distance(transform.position, targetPosition) <= 0.01f)
                 {
-                    customersManager.customersList.Add(this);
+                    customerController.customersList.Add(this);
                     lineType = CustomersMoveType.LineType.During;
                 }
                 break;
             case CustomersMoveType.LineType.During:
                 if (frontCustomer != null)
                 {
-                    targetPosition = (Vector2)linePostion.position + customersManager.GetCustomerNum(this) * ((2 * Vector2.right + Vector2.up) * lineSpacing) + ((2 * Vector2.right + Vector2.down) * sideSpacing);
+                    targetPosition = (Vector2)linePostion.position + customerController.GetCustomerNum(this) * ((2 * Vector2.right + Vector2.up) * lineSpacing) + ((2 * Vector2.right + Vector2.down) * sideSpacing);
                 }
                 else
                 {
@@ -156,7 +156,7 @@ public class Customers : MonoBehaviour
             case CustomersMoveType.LineType.End:
                 if (frontCustomer != null)
                 {
-                    targetPosition = (Vector2)linePostion.position + customersManager.GetCustomerNum(this) * ((2 * Vector2.right + Vector2.up) * lineSpacing);
+                    targetPosition = (Vector2)linePostion.position + customerController.GetCustomerNum(this) * ((2 * Vector2.right + Vector2.up) * lineSpacing);
                     if (Vector2.Distance(transform.position, targetPosition) > 0.01f)
                     {
                         MoveTo();
@@ -166,7 +166,7 @@ public class Customers : MonoBehaviour
                         Debug.Log(0);
                         StartCoroutine(StopForSeconds(0.5f));
                         agent.speed = moveSpeed / 2;
-                        customersManager.customersList.Remove(this);
+                        customerController.customersList.Remove(this);
                         lineType = CustomersMoveType.LineType.None;
                         moveType = CustomersMoveType.MoveType.Enter;
                         enterType = CustomersMoveType.EnterType.None;
@@ -178,7 +178,7 @@ public class Customers : MonoBehaviour
                     if (Routine.instance.routineState == RoutineState.Open)
                     {
                         agent.speed = moveSpeed / 2;
-                        customersManager.customersList.Remove(this);
+                        customerController.customersList.Remove(this);
                         lineType = CustomersMoveType.LineType.None;
                         moveType = CustomersMoveType.MoveType.Enter;
                         enterType = CustomersMoveType.EnterType.None;
@@ -309,11 +309,12 @@ public class Customers : MonoBehaviour
                 {
                     StartCoroutine(StopForSeconds(0.1f));
                     transform.GetChild(0).gameObject.SetActive(true);
-                    transform.GetChild(0).GetChild(0).GetComponent<SpriteRenderer>().sprite = customersManager.heart;
+                    transform.GetChild(0).GetChild(0).GetComponent<SpriteRenderer>().sprite = customerController.heart;
                     StartCoroutine(StopForSeconds(1f));
                     transform.GetChild(0).gameObject.SetActive(false);
                     shopType = CustomersMoveType.ShopType.In;
                     GameManager.instance.getMoney(100);
+                    SoundManager.instance.GetMoneyClip();
                     Debug.Log("케이크가 판매 되었습니다.");
                 }
                 break;
