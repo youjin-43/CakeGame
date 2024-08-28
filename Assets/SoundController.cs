@@ -8,6 +8,7 @@ public class SoundController : MonoBehaviour
     public static SoundController instance;
     public AudioClip[] storeAudios;
     public AudioClip[] farmAudios;
+    public AudioClip coinAudio;
     public Slider volumeSlider;     // 슬라이더 연결
     void Awake()
     {

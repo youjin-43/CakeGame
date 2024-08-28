@@ -9,6 +9,7 @@ public class SoundManager : MonoBehaviour
     public static SoundManager instance;
     private AudioClip[] storeAudios;
     private AudioClip[] farmAudios;
+    private AudioClip coinAudio;
     private AudioSource audioSource;
     private Slider volumeSlider;     // 슬라이더 연결
     private int currentClipNum = 0;
@@ -36,6 +37,7 @@ public class SoundManager : MonoBehaviour
             storeAudios = SoundController.instance.storeAudios;
             farmAudios = SoundController.instance.farmAudios;
             volumeSlider = SoundController.instance.volumeSlider;
+            coinAudio = SoundController.instance.coinAudio;
         }
         audioSource = GetComponent<AudioSource>();
         audioSource.playOnAwake = false;
@@ -95,6 +97,11 @@ public class SoundManager : MonoBehaviour
             }
             audioSource.clip = farmAudios[currentClipNum];
         }
+    }
+
+    public void GetMoneyClip()
+    {
+        audioSource.PlayOneShot(coinAudio);
     }
 
     public void SetVolume(float volume)
