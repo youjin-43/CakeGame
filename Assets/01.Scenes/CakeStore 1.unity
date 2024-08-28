@@ -16234,6 +16234,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 9cfb4c69838329042854330aafd65559, type: 3}
   farmAudios:
   - {fileID: 8300000, guid: 929969beeffd4964da7b815293c5cb9f, type: 3}
+  coinAudio: {fileID: 8300000, guid: 7450050bafca52145bb6419cdb2541dc, type: 3}
   volumeSlider: {fileID: 297847282}
 --- !u!4 &621123792
 Transform:
@@ -16267,7 +16268,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &639645393
 RectTransform:
   m_ObjectHideFlags: 0
@@ -17563,7 +17564,7 @@ RectTransform:
   m_Father: {fileID: 524455054}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 281.31, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -18262,8 +18263,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 927663211}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 50, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
