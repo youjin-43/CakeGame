@@ -10,6 +10,7 @@ using UnityEngine.SceneManagement;
 using static UnityEditor.Progress;
 using UnityEditor.Experimental.RestService;
 using UnityEngine.EventSystems;
+using static AudioManager;
 
 
 
@@ -86,6 +87,13 @@ public class UIInventoryManager : MonoBehaviour
 
     [Header("Close Farm Interaction Button")]
     public GameObject buttonParentGameObject; // 인벤토리 UI 띄우면 버튼 안 보이도록 하기 위함..
+
+
+
+
+    // 음향
+    [Header("Game Sound")]
+    public AudioManager audioManager; // 오디오 매니저..
 
 
 
@@ -255,6 +263,10 @@ public class UIInventoryManager : MonoBehaviour
         inventoryOpenButton = GameObject.Find("InventoryOpenButton")?.GetComponent<Button>();
 
 
+        // 오디오 매니저 연결..
+        audioManager = GameObject.Find("AudioManager")?.GetComponent<AudioManager>();
+
+
         // 일단 다 끈 상태로 시작..
         inventoryUI.gameObject.SetActive(false);
         inventoryUI.exitButton.gameObject.SetActive(false);
@@ -332,6 +344,10 @@ public class UIInventoryManager : MonoBehaviour
                 // 보석
                 break;
         }
+
+
+        // 음향
+        audioManager.SetSFX(SFX.COMPLETE);
 
         itemSellPanel.gameObject.SetActive(false); // 팔고 난 다음에 창 끄기..
         inventoryUI.currentMouseClickIndex = -1; // -1 로 다시 바꿔주기..
