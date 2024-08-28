@@ -10,20 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7c47a622da81b4d44b2592a6db0b8ac8, type: 3}
-  m_Name: "\uD30C\uC6B4\uB4DC \uCF00\uC774\uD06C"
+  m_Name: "\uCCB4\uB9AC \uCF00\uC774\uD06C"
   m_EditorClassIdentifier: 
   <IsStackable>k__BackingField: 1
   <MaxStackSize>k__BackingField: 64
-  <Name>k__BackingField: "\uD30C\uC6B4\uB4DC \uCF00\uC774\uD06C"
-  <Description>k__BackingField: "\uAC00\uC7A5 \uAE30\uBCF8\uC801\uC778 \uCF00\uC774\uD06C"
-  <itemImage>k__BackingField: {fileID: 21300000, guid: d0a3866c2ff984942b994777a1b26269, type: 2}
+  <Name>k__BackingField: "\uCCB4\uB9AC \uCF00\uC774\uD06C"
+  <Description>k__BackingField: "\uAE4A\uACE0 \uC9D9\uC740 \uCCB4\uB9AC\uC758 \uD48D\uBBF8\uAC00
+    \uD06C\uB9BC\uACFC \uC5B4\uC6B0\uB7EC\uC838 \uACE0\uADC0\uD55C \uB2EC\uCF64\uD568\uC744
+    \uC120\uC0AC\uD558\uB294 \uCF00\uC774\uD06C"
+  <itemImage>k__BackingField: {fileID: 21300000, guid: 338f6efbee14c3543aa4b96eed9dc3ea, type: 2}
   itemType: 3
-  cakeCost: 100
+  cakeCost: 300
   bakeTime: 3
-  cakePrice: 500
-  materialIdxs: 0000000000000000000000000000000000000000
+  cakePrice: 3500
+  materialIdxs: 0300000000000000000000000000000000000000
   materialCounts: 0100000000000000000000000000000000000000
-  exp: 100
+  exp: 400
   cakeCount: 0
   isLocked: 0
-  cakeIdx: 0
+  cakeIdx: 3

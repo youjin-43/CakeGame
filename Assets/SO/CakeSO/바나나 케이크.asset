@@ -10,21 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7c47a622da81b4d44b2592a6db0b8ac8, type: 3}
-  m_Name: "\uD3EC\uB3C4 \uCF00\uC774\uD06C"
+  m_Name: "\uBC14\uB098\uB098 \uCF00\uC774\uD06C"
   m_EditorClassIdentifier: 
   <IsStackable>k__BackingField: 1
   <MaxStackSize>k__BackingField: 64
-  <Name>k__BackingField: "\uD3EC\uB3C4 \uCF00\uC774\uD06C"
-  <Description>k__BackingField: "\"\uCF00\uC774\uD06C\uB2E4. \uADFC\uB370 \uC774\uC81C
-    \uD3EC\uB3C4\uB97C \uACC1\uB4E4\uC778\""
-  <itemImage>k__BackingField: {fileID: 21300000, guid: 9a48335e29f690341b2ac0e4b6ef550e, type: 2}
+  <Name>k__BackingField: "\uBC14\uB098\uB098 \uCF00\uC774\uD06C"
+  <Description>k__BackingField: "\uBD80\uB4DC\uB7FD\uACE0 \uCD09\uCD09\uD55C \uBC14\uB098\uB098\uC758
+    \uB2EC\uCF64\uD568\uC774 \uAC00\uB4DD\uD55C \uCF00\uC774\uD06C"
+  <itemImage>k__BackingField: {fileID: 21300000, guid: 6a46e5559eb9abb4c80e1c003e9ed007, type: 2}
   itemType: 3
   cakeCost: 200
   bakeTime: 3
   cakePrice: 2000
-  materialIdxs: 0200000000000000
-  materialCounts: 0100000000000000
+  materialIdxs: 0200000000000000000000000000000000000000
+  materialCounts: 0100000000000000000000000000000000000000
   exp: 300
   cakeCount: 0
-  isLocked: 1
+  isLocked: 0
   cakeIdx: 2

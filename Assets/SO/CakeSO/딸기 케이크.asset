@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c47a622da81b4d44b2592a6db0b8ac8, type: 3}
+  m_Name: "\uB538\uAE30 \uCF00\uC774\uD06C"
+  m_EditorClassIdentifier: 
+  <IsStackable>k__BackingField: 1
+  <MaxStackSize>k__BackingField: 64
+  <Name>k__BackingField: "\uB538\uAE30 \uCF00\uC774\uD06C"
+  <Description>k__BackingField: "\uC2E0\uC120\uD55C \uB538\uAE30\uC758 \uD5A5\uAE0B\uD55C
+    \uC0B0\uBBF8\uC640 \uC2E4\uD06C\uCC98\uB7FC \uBD80\uB4DC\uB7EC\uC6B4 \uD06C\uB9BC\uC774
+    \uC5B4\uC6B0\uB7EC\uC838 \uC6B0\uC544\uD568\uACFC \uD48D\uBBF8\uB97C \uB3D9\uC2DC\uC5D0
+    \uB2F4\uC544\uB0B8 \uCD5C\uC0C1\uC758 \uB514\uC800\uD2B8 \uCF00\uC774\uD06C"
+  <itemImage>k__BackingField: {fileID: 21300000, guid: 4c65135bd76151c43a6f6afd5f3ec68e, type: 2}
+  itemType: 3
+  cakeCost: 600
+  bakeTime: 3
+  cakePrice: 7000
+  materialIdxs: 0500000000000000000000000000000000000000
+  materialCounts: 0100000000000000000000000000000000000000
+  exp: 500
+  cakeCount: 0
+  isLocked: 0
+  cakeIdx: 5

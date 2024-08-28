@@ -15,16 +15,16 @@ MonoBehaviour:
   <IsStackable>k__BackingField: 1
   <MaxStackSize>k__BackingField: 64
   <Name>k__BackingField: "\uC624\uB80C\uC9C0 \uCF00\uC774\uD06C"
-  <Description>k__BackingField: "\uD55C \uC785\uC5D0 \uB530\uC2A4\uD55C \uD587\uC0B4\uC744
-    \uAC00\uB4DD \uB2F4\uC740 \uCF00\uC774\uD06C"
-  <itemImage>k__BackingField: {fileID: 21300000, guid: 6ed2233baa670034089d12341247b3c9, type: 2}
+  <Description>k__BackingField: "\uC18C\uB144 \uC81C\uC81C\uC758 \uC21C\uC218\uD568\uC774
+    \uBB3B\uC5B4\uB098\uB294 \uCF00\uC774\uD06C"
+  <itemImage>k__BackingField: {fileID: 21300000, guid: 3e8c27751ead7b745941faabf21c50cb, type: 2}
   itemType: 3
   cakeCost: 400
   bakeTime: 3
   cakePrice: 5000
-  materialIdxs: 0400000000000000
-  materialCounts: 0100000000000000
+  materialIdxs: 0400000000000000000000000000000000000000
+  materialCounts: 0100000000000000000000000000000000000000
   exp: 500
   cakeCount: 0
-  isLocked: 1
+  isLocked: 0
   cakeIdx: 4
