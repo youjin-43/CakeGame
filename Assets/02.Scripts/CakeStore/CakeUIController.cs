@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using static AudioManager;
 
 public class CakeUIController : MonoBehaviour
 {
@@ -21,7 +23,6 @@ public class CakeUIController : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
     }
 
     public void CloseMenu(GameObject menu)

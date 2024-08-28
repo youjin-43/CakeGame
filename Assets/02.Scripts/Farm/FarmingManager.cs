@@ -715,7 +715,9 @@ public class FarmingManager : MonoBehaviour
         if (seedContainer.seedCount[seedIdx] <= 0)
         {
             // 음향
+            // 음향
             audioManager.SetSFX(SFX.RETURN);
+
             Debug.Log("씨앗 없어!!!!");
             return;
         }
@@ -1421,7 +1423,8 @@ public class FarmingManager : MonoBehaviour
     {
         // 이 함수는 AnimalinteractionManager 의 OnAnimalGameClosed 델리게이트에 연결해줄것..
 
-        audioManager.bgmPlayer.Play(); // bgm 시작..
+        audioManager.SetBGM(BGM.FARM); // bgm 을 농장 씬에 맞는 음악으로 변경..
+        audioManager.bgmPlayer.Play();
     }
 
 

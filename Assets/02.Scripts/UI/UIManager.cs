@@ -58,8 +58,8 @@ public class UIManager : MonoBehaviour
 
         //이벤트 버튼
         EventButton = GameObject.Find("EventButton");
-        if (EventSceneManager.instance.toShowEvnetList.events.Count < 1) EventButton.gameObject.SetActive(false); // 실행해야하는 이벤트 없으면 비활성화
-        EventButton.GetComponent<Button>().onClick.AddListener(EventSceneManager.instance.StartEventScene);//버튼 기능 세팅 
+        //if (EventSceneManager.instance.toShowEvnetList.events.Count < 1) EventButton.gameObject.SetActive(false); // 실행해야하는 이벤트 없으면 비활성화
+        //EventButton.GetComponent<Button>().onClick.AddListener(EventSceneManager.instance.StartEventScene);//버튼 기능 세팅 
 
         //각종 데이터(텍스트)를 표시할 오브젝트들 
         dateText = GameObject.Find("DateText").GetComponent<Text>();
