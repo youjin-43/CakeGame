@@ -1,4 +1,5 @@
 using Inventory.Model;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,6 +16,12 @@ public class PlantSeedSlotManager : MonoBehaviour
     public Image seedImage; // 씨앗 이미지
     public int seedIdx; // 씨앗 인덱스
 
+
+    // 델리게이트
+    [Header("Delegate")]
+    public Action<int> OnClickedPlantSeedButton;
+
+
     private void Start()
     {
         farmingManager = FindObjectOfType<FarmingManager>();
@@ -25,27 +32,7 @@ public class PlantSeedSlotManager : MonoBehaviour
     {
         farmingManager.plantSeedPanel.gameObject.SetActive(false); // 버튼 눌리는 즉시에 판넬 꺼버리기
 
-        // 씨앗의 개수가 0보다 작거나 같으면 그냥 빠져나가도록..
-        if (farmingManager.seedContainer.seedCount[seedIdx] <= 0) {
-            Debug.Log("씨앗 없어!!!!");
-            return; 
-        } 
 
-        farmingManager.selectedSeedIdx = seedIdx; // 현재 심을 씨앗 인덱스를 설정
-        farmingManager.clickedSelectedSeedButton = true; // 버튼이 클릭됐다는 걸 알려줌..
-
-
-        // 이것도 이제 이 함수에서 관리 안 할 것..
-        //farmingManager.seedContainer.seedCount[seedIdx]--; // 버튼 클릭하면 씨앗 심는거니까 씨앗 개수 줄어들도록
-
-
-        // 구매하려는 씨앗의 개수만큼 InventoryItem 구조체의 인스턴스를 만들기..
-        InventoryItem tempItem = new InventoryItem()
-        {
-            item = farmingManager.seedItems[seedIdx],
-            quantity = 1,
-        };
-
-        farmingManager.inventoryController.seedInventoryData.MinusItem(tempItem); // 씨앗 심었으니까 인벤토리에서 개수 줄어들도록..
+        OnClickedPlantSeedButton?.Invoke(seedIdx); // 현재 심을 씨앗 인덱스를 매개변수로 넘겨주면서 연결된 함수 호출함..
     }
 }

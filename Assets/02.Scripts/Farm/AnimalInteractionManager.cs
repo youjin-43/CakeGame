@@ -91,6 +91,12 @@ public class AnimalInteractionManager : MonoBehaviour
     public Button backgroundButton; // 게임 끝나고 누르면 진짜 팜씬 시작.. 
     public Text gameText;
 
+
+
+    // BGM 관련
+    public Action OnAnimalGameClosed; // 동물 게임 끝났을 때 호출되어야 하는 함수 연결하는 델리게이트 선언..
+
+
     [Header("Close Farm Interaction Button")]
     public GameObject buttonParentGameObject; // 너구리 게임 띄우면 버튼 안 보이도록 하기 위함..
 
@@ -98,7 +104,8 @@ public class AnimalInteractionManager : MonoBehaviour
     private void Awake()
     {
         backgroundButton.onClick.AddListener(CloseAnimalGame);
-        gameStartButton.onClick.AddListener(() => GetAnimalGameRun(10));
+        backgroundButton.onClick.AddListener(PressedBackgroundButton);
+        //gameStartButton.onClick.AddListener(() => GetAnimalGameRun(10));
     }
 
 
@@ -155,6 +162,7 @@ public class AnimalInteractionManager : MonoBehaviour
 
                 // 백그라운드 버튼 활성화 해주기..
                 backgroundButton.gameObject.SetActive(true);
+
                 // 2초 뒤에 게임 끄기 버튼 활성화..
                 Invoke("SetBackgroundButton", 2);
                 farmingManager.SaveFarmingData(); // 변경 사항 저장해주기..
@@ -166,6 +174,12 @@ public class AnimalInteractionManager : MonoBehaviour
                 Debug.Log("게임 끝!");
             }
         }
+    }
+
+
+    void PressedBackgroundButton()
+    {
+        OnAnimalGameClosed?.Invoke(); // 델리게이트에 연결된 함수 호출(bgm 시작하는 함수 연결되어 있음..)
     }
 
 

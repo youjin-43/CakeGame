@@ -89,10 +89,12 @@ public class SeedFruitUIManager : MonoBehaviour
 
             SeedItemSO seedInfo = farmingManager.seedItems[i];
 
+            
             slot.seedImage.sprite = seedInfo.itemImage;
             slot.seedNameText.text = seedInfo.Name;
             slot.seedCountText.text = farmingManager.seedContainer.seedCount[i] + "";
             slot.seedIdx = seedInfo.seedIdx;
+            slot.OnClickedPlantSeedButton += farmingManager.PlantTile; // 델리게이트에 함수 연결해주기..
         }
     }
 

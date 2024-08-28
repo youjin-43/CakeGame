@@ -12,6 +12,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
+using static AudioManager;
 using static UnityEditor.PlayerSettings;
 using Random = UnityEngine.Random;
 
@@ -233,8 +234,8 @@ public class FarmingManager : MonoBehaviour
 
     [Header("PlantSeed Information")]
     public GameObject plantSeedPanel; // 씨앗 선택창
-    public int selectedSeedIdx; // 현재 심을 씨앗 종류
-    public bool clickedSelectedSeedButton = false; // 이 값이 true 가 되면 씨앗 심기 함수 호출하도록(씨앗 심기 함수에서는 이 값을 다시 false 로 돌림).. 
+
+
 
     [Header("Farm Upgrade UI")]
     public Text farmSizeUpgradeCostText; // 농장 사이즈 업그레이드 비용 텍스트
@@ -249,6 +250,11 @@ public class FarmingManager : MonoBehaviour
     // 데이터 저장
     [Header("Save Data")]
     private string farmingDataFilePath; // 농사 데이터 저장 경로..
+
+
+    // 농장씬 사운드
+    [Header("Game Sound")]
+    public AudioManager audioManager; // 오디오 매니저.. 인스펙터 창에서 오디오 매니저 게임 오브젝트 할당해줄것..
 
 
 
@@ -360,14 +366,6 @@ public class FarmingManager : MonoBehaviour
 
         CheckGrowedFruit(); // 과일이 다 자랐는지 확인하고, 다 자랐으면 그에 맞는 행동을 하도록 해주는 함수..
         CheckFailedFarm(); // 농사땅이 망했는지 확인하고, 망했으면 그에 맞는 행동을 하도록 해주는 함수..
-
-
-        // 씨앗 선택창에서 버튼 클릭하면 진입하도록..
-        if (clickedSelectedSeedButton)
-        {
-            // 씨앗 심는 함수 호출
-            PlantTile(cellPosition, selectedSeedIdx);
-        }
     }
 
     private void OnDisable()
@@ -687,6 +685,10 @@ public class FarmingManager : MonoBehaviour
         farmingData[pos].stateButton = farmingData[pos].buttons[1]; // plant 버튼으로 변경..
 
 
+        // 음향
+        audioManager.SetSFX(SFX.PLOW);
+
+
         // 저장하기
         SaveFarmingData();
     }
@@ -702,22 +704,46 @@ public class FarmingManager : MonoBehaviour
         plantSeedPanel.SetActive(true); // 심기 버튼 눌렀을 때 씨앗 선택창 뜨도록 하기 위함
     }
 
-    public void PlantTile(Vector3Int pos, int seedIdx)
+    public void PlantTile(int seedIdx)
     {
         // 씨앗을 심는 함수
         // 이 함수는 씨앗 선택창에서 씨앗 버튼 눌렀을 때 호출되도록..
         EnableFarmStateButton(); // 농사 버튼 다시 켜지도록..
 
 
-        farmingData[pos].seedIdx = seedIdx; // 씨앗 인덱스 설정해주기
-        farmingData[pos].seedOnTile = true; // 씨앗을 심었으니까 true 로 값 변경해주기..
-        farmTilemap.SetTile(pos, plantTile); // 타일 모습을 씨앗 심은 상태로 바꿔주기
-        farmingData[pos].plantEnableState = false; // 씨앗을 심을 수 없는 상태를 나타내기 위해 false 로 변경
-        farmingData[pos].currentState = "plant"; // 씨앗 심은 상태니까 plant 로 바꿔주기
+        // 씨앗의 개수가 0보다 작거나 같으면 그냥 빠져나가도록..
+        if (seedContainer.seedCount[seedIdx] <= 0)
+        {
+            // 음향
+            audioManager.SetSFX(SFX.RETURN);
+            Debug.Log("씨앗 없어!!!!");
+            return;
+        }
 
-        farmingData[pos].stateButton = farmingData[pos].buttons[2]; // harvest 버튼을 가지고 있도록..
 
-        clickedSelectedSeedButton = false; // 한 번 심고 난 다음에 바로 변수값 false 로 바꿔주기
+
+        // 구매하려는 씨앗의 개수만큼 InventoryItem 구조체의 인스턴스를 만들기..
+        InventoryItem tempItem = new InventoryItem()
+        {
+            item = seedItems[seedIdx],
+            quantity = 1,
+        };
+
+        inventoryController.seedInventoryData.MinusItem(tempItem); // 씨앗 심었으니까 인벤토리에서 개수 줄어들도록..
+
+
+
+        farmingData[cellPosition].seedIdx = seedIdx; // 씨앗 인덱스 설정해주기
+        farmingData[cellPosition].seedOnTile = true; // 씨앗을 심었으니까 true 로 값 변경해주기..
+        farmTilemap.SetTile(cellPosition, plantTile); // 타일 모습을 씨앗 심은 상태로 바꿔주기
+        farmingData[cellPosition].plantEnableState = false; // 씨앗을 심을 수 없는 상태를 나타내기 위해 false 로 변경
+        farmingData[cellPosition].currentState = "plant"; // 씨앗 심은 상태니까 plant 로 바꿔주기
+
+        farmingData[cellPosition].stateButton = farmingData[cellPosition].buttons[2]; // harvest 버튼을 가지고 있도록..
+
+
+        // 음향
+        audioManager.SetSFX(SFX.PLANT);
 
 
         // 저장하기
@@ -757,6 +783,10 @@ public class FarmingManager : MonoBehaviour
         farmTilemap.SetTile(pos, grassTile); // 타일 모습을 초기 상태로 바꿔주기
 
 
+        // 음향
+        audioManager.SetSFX(SFX.HARVEST);
+
+
         // 저장하기
         SaveFarmingData();
     }
@@ -780,6 +810,11 @@ public class FarmingManager : MonoBehaviour
 
         farmTilemap.SetTile(pos, grassTile); // 타일 모습을 초기 상태로 바꿔주기
 
+
+        // 음향
+        audioManager.SetSFX(SFX.FAIL);
+
+
         // 저장하기
         SaveFarmingData();
     }
@@ -790,6 +825,9 @@ public class FarmingManager : MonoBehaviour
         // 돈이 부족하면 씨앗 못사!
         if (GameManager.instance.money < seedContainer.prefabs[idx].GetComponent<Seed>().seedData.seedPrice * count)
         {
+            // 음향
+            audioManager.SetSFX(SFX.RETURN);
+
             Debug.Log("돈 없어!!!");
             return;
         }
@@ -803,8 +841,8 @@ public class FarmingManager : MonoBehaviour
         inventoryController.AddItem(tempItem); // 새로 생성한 인벤토리 아이템을 인벤토리 데이터에 추가해주기..
 
 
-        // 이건 이제 이 함수에서 관리 안 할 것..
-        //seedContainer.seedCount[idx] += count; // 씨앗의 개수를 저장하고 있는 배열의 인덱스 요소에 구매한 씨앗의 개수만큼 더해주기
+        // 음향
+        audioManager.SetSFX(SFX.COMPLETE);
         GameManager.instance.money -= seedContainer.prefabs[idx].GetComponent<Seed>().seedData.seedPrice * count; // 가진 돈에서 차감!
     }
 
@@ -813,6 +851,9 @@ public class FarmingManager : MonoBehaviour
         // 만약 판매하려고 하는 과일의 개수가 현재 과일의 개수보다 적으면 그냥 빠져나가도록..
         if (fruitContainer.fruitCount[idx] < count)
         {
+            // 음향
+            audioManager.SetSFX(SFX.RETURN);
+
             Debug.Log("과일이 부족해!!!");
             return;
         }
@@ -824,11 +865,13 @@ public class FarmingManager : MonoBehaviour
             quantity = count,
         };
 
+
         inventoryController.MinusItem(tempItem); // 새로 생성한 인벤토리 아이템을 인벤토리 데이터에서 빼주기..
 
-        // 이건 이제 이 함수에서 관리 안 할 것..
-        //fruitContainer.fruitCount[idx] -= count; // 판매할 과일의 수만큼 과일 컨테이너에서 빼주기
 
+
+        // 음향
+        audioManager.SetSFX(SFX.COMPLETE);
 
         GameManager.instance.money += fruitItems[idx].fruitPrice * count; // 가진 돈에 더하기!
 
@@ -1000,7 +1043,11 @@ public class FarmingManager : MonoBehaviour
     {
         // 농장 레벨은 5렙까지 존재하도록..
         // 5 에서 더 업그레이드 하려고 하면 그냥 빠져나가도록..
-        if (farmLevel >= 5) return;
+        if (farmLevel >= 5) {
+            // 음향
+            audioManager.SetSFX(SFX.RETURN);
+            return;
+        }
 
         switch (farmLevel)
         {
@@ -1022,6 +1069,9 @@ public class FarmingManager : MonoBehaviour
         // 돈 부족하면 그냥 빠져나가도록..
         if (GameManager.instance.money < farmSizeLevelUpCost)
         {
+            // 음향
+            audioManager.SetSFX(SFX.RETURN);
+
             Debug.Log("돈 없어!");
             return;
         }
@@ -1137,6 +1187,10 @@ public class FarmingManager : MonoBehaviour
 
 
         farmLevel++; // 농장 레벨 증가
+
+        // 음향
+        audioManager.SetSFX(SFX.UPGRADE);
+
         PlayerPrefs.SetInt("FarmLevel", farmLevel); // 농장 레벨 저장..
         Debug.Log("농장을 업그레이드 했다!");
     }
@@ -1168,7 +1222,11 @@ public class FarmingManager : MonoBehaviour
     {
         // 허수아비 레벨은 5렙까지 존재하도록..
         // 5 에서 더 업그레이드 하려고 하면 그냥 빠져나가도록..
-        if (scarecrowLevel >= 5) return;
+        if (scarecrowLevel >= 5) {
+            // 음향
+            audioManager.SetSFX(SFX.RETURN);
+            return; 
+        }
 
         switch (scarecrowLevel)
         {
@@ -1189,11 +1247,20 @@ public class FarmingManager : MonoBehaviour
 
         if (GameManager.instance.money < scarecrowLevelUpCost)
         {
+            // 음향
+            audioManager.SetSFX(SFX.RETURN);
+
             Debug.Log("돈 없어!");
             return;
         }
 
         scarecrowLevel++;
+
+
+        // 음향
+        audioManager.SetSFX(SFX.UPGRADE);
+
+
         PlayerPrefs.SetInt("ScareCrowLevel", scarecrowLevel); // 허수아비 레벨 저장..
         Debug.Log("허수아비를 업그레이드 했다!");
     }
@@ -1328,6 +1395,10 @@ public class FarmingManager : MonoBehaviour
 
         if (Random.Range(0, probability) == 0)
         {
+            // 델리게이트에 아무것도 연겨 안 되어 있을 때에만 함수 연결해줄 것..
+            if (animalInteractionManager.OnAnimalGameClosed == null)
+                animalInteractionManager.OnAnimalGameClosed += StartBGM; // bgm 시작하는 함수 연결..
+
             animalInteractionManager.UICanvas.gameObject.SetActive(true);
             animalInteractionManager.backgroundButton.gameObject.SetActive(true);
 
@@ -1341,7 +1412,16 @@ public class FarmingManager : MonoBehaviour
         {
             animalInteractionManager.UICanvas.gameObject.SetActive(false);
             UIInventoryManager.instance.buttonParentGameObject.SetActive(true);
+            StartBGM(); // bgm 시작..
         }
+    }
+
+
+    public void StartBGM()
+    {
+        // 이 함수는 AnimalinteractionManager 의 OnAnimalGameClosed 델리게이트에 연결해줄것..
+
+        audioManager.bgmPlayer.Play(); // bgm 시작..
     }
 
 
