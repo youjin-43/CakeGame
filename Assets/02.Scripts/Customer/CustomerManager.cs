@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class CustomersManager : MonoBehaviour
+public class CustomerController : MonoBehaviour
 {
     public GameObject customersPrefab;    // Customers 프리팹
     public Transform[] spawnPoint;          // Customers가 생성될 위치
@@ -46,14 +46,15 @@ public class CustomersManager : MonoBehaviour
         {
             int r = Random.Range(0, spawnPoint.Length);
             GameObject customersObject = Instantiate(customersPrefab, spawnPoint[r].position, Quaternion.identity);
+            customersObject.transform.parent = this.transform;
             Customers customers = customersObject.GetComponent<Customers>();
             if (r % 2 == 0) customers.targetPosition = leftEnd.position;
             else customers.targetPosition = rightEnd.position;
             int wantedCakeIndex = Random.Range(0, CakeManager.instance.TOTALCAKENUM);
             customers.GetComponent<NavMeshAgent>().speed = Random.Range(moveSpeed * 0.7f, moveSpeed * 1.3f);
-            customers.GetComponent<SpriteRenderer>().sprite = customerImages[Random.Range(0, customerImages.Length)];
-            float randomSize = Random.Range(0.3f, 0.7f);
-            customers.GetComponent<Transform>().localScale = new Vector3(randomSize, randomSize, 1);
+            customers.transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = customerImages[Random.Range(0, customerImages.Length)];
+            float randomSize = Random.Range(0.7f, 1.3f);
+            customers.transform.GetChild(1).GetComponent<Transform>().localScale = new Vector3(randomSize, randomSize, 1);
             customers.Initialize(leftEnd, rightEnd, linePosition, enterOutPosition, enterInPosition, cashierPosition, moveSpeed, lineSpacing, sideSpacing, wantedCakeIndex, this);
             yield return new WaitForSeconds(customersSpawnInterval);
             if (Routine.instance.routineState == RoutineState.Close)
