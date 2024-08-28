@@ -46,7 +46,7 @@ public class CakeMakerController : MonoBehaviour
         InitializeCakeMakerController();
     }
     void InitializeCakeMakerController()
-    {   
+    {
         cakeManager = CakeManager.instance;   // 케이크 매니저 초기화
         cakeUIController = CakeUIController.instance;
         cakeMakerPanel.SetActive(true);
@@ -91,7 +91,7 @@ public class CakeMakerController : MonoBehaviour
 
     void OnClicked(int index) // 케이크 메이커 패널 누르면 Clicked패널 활성화
     {
-        for (int i = 0; i < cakeManager.TOTALCAKENUM; i++)
+        for (int i = 0; i < cakeMakerScrollViewContent.childCount; i++)
         {
             cakeMakerScrollViewContent.GetChild(i).GetChild((int)CakePanelElements.Clicked).gameObject.SetActive(i == index); // 클릭된 패널만 활성화
         }
@@ -144,9 +144,7 @@ public class CakeMakerController : MonoBehaviour
         };
         UIInventoryManager.instance.AddItem(tmpItem); // 만든 아이템 인벤토리에 추가해주기..
 
-
-        cakeManager.PlusCakeCount(index); // 케이크 수량 증가
-        ExpManager.instance.getExp(cakeManager.cakeSODataList[index].exp);        //-----------------------------fix need-----------------------
+        ExpManager.instance.getExp(cakeManager.cakeSODataList[index].exp);
         UpdateUI();                           // UI 업데이트
     }
 
@@ -183,10 +181,10 @@ public class CakeMakerController : MonoBehaviour
                     var material = materialPanel.GetChild(j);
                     material.gameObject.SetActive(true);
                     // 재료 이미지 참조
-                    material.GetChild((int)CakeMaterialPanelElements.MaterialImage).GetComponent<Image>().sprite =   
+                    material.GetChild((int)CakeMaterialPanelElements.MaterialImage).GetComponent<Image>().sprite =
                      UIInventoryManager.instance.fruitItems[cakeSO.materialIdxs[j]].itemImage;
                     // 재료 갯수 참조
-                    material.GetChild((int)CakeMaterialPanelElements.MaterialCount).GetComponent<Text>().text =      
+                    material.GetChild((int)CakeMaterialPanelElements.MaterialCount).GetComponent<Text>().text =
                      $"{cakeSO.materialCounts[j]}/{UIInventoryManager.instance.fruitCount[cakeSO.materialIdxs[j]]}";
                 }
                 else materialPanel.GetChild(j).gameObject.SetActive(false);

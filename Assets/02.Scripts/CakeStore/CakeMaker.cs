@@ -38,7 +38,7 @@ public class CakeMaker : MonoBehaviour
             isMakeComplete = false;
             UpdateColliders();
             // 케이크 제작 완료 호출
-            CakeManager.instance.GetComponent<CakeMakerController>().CompleteCake(currentCakeIndex);
+            CakeManager.instance.cakeMakerController.CompleteCake(currentCakeIndex);
         }
     }
 
