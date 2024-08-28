@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour
             SceneManager.sceneLoaded += OnSceneLoaded; // 씬이 로딩될 때마다 함수를 호출하기위해 
 
             //이전 데이터 가져오기
-            Debug.Log("게임매니저에서 기본 데이터를 로드함");
+            //Debug.Log("게임매니저에서 기본 데이터를 로드함");
             season = (Seasons)PlayerPrefs.GetInt("season");
             date = PlayerPrefs.GetInt("date");
             money = PlayerPrefs.GetInt("money"); //주어진 키로 저장된 값이 없으면 기본값을 반환
@@ -58,7 +58,6 @@ public class GameManager : MonoBehaviour
     [Header("About Running")]
     public float runTime; // 현재 시간
     public float MaxRunTime = 60f;
-    //public bool isRunning; //가게가 운영중인지 표시하는 변수
 
     public GameObject RuntimeBar;
 
@@ -85,13 +84,21 @@ public class GameManager : MonoBehaviour
         Debug.Log("OnSceneLoaded : " + scene.name);
         Debug.Log("mode : " + mode);
 
-        UIManager.instance.setUIObjects(); //오브젝트 변수에 오브젝트들 찾아서 할당 
-        UIManager.instance.SetDatainUI();//각 UI오브젝트에 맞는 데이터들 할당 
-        UIManager.instance.SetExpBarUI(); //경험치 데이터에 맞게 expbar 설정 
+        if (scene.name != "Event")
+        {
+            UIManager.instance.setUIObjects(); //오브젝트 변수에 오브젝트들 찾아서 할당 
+            UIManager.instance.SetDatainUI();//각 UI오브젝트에 맞는 데이터들 할당 
+            UIManager.instance.SetExpBarUI(); //경험치 데이터에 맞게 expbar 설정 
 
-        QuestManager.instance.setBasicQuestUIs();//퀘스트 UI 세팅
+            QuestManager.instance.setBasicQuestUIs();//퀘스트 UI 세팅
 
-        RuntimeBar = GameObject.Find("Background").gameObject;
+            RuntimeBar = GameObject.Find("Background").gameObject;
+        }
+        else
+        {
+            EventSceneManager.instance.SettingForEvent();
+        }
+
     }
 
 
@@ -106,7 +113,7 @@ public class GameManager : MonoBehaviour
         UIManager.instance.dateText.text = date.ToString();//UI 적용 
 
         runTime = 0;
-        //isRunning = true;
+
     }
 
     //가게 운영이 끝났을때 호출 할 함수

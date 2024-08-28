@@ -39,7 +39,9 @@ public class UIManager : MonoBehaviour
     public Text moneyText;//현재 돈을 표시할 텍스트 컴포넌트
     public Text levelText;
 
-    public GameObject RunStartButton; //가게 운영이 끝났을때 활성화 할 오브젝트
+    public GameObject RunStartButton; //가게 운영을 시작시키는 버튼
+
+    public GameObject EventButton;//이벤트가 있는경우 클릭해서 이벤트를 실행할 버튼
 
     [Header("About EXP")]
     public GameObject ExpBar;
@@ -50,14 +52,21 @@ public class UIManager : MonoBehaviour
     {
         //Debug.Log("SetDatainUI 실행됨 ");
 
+        //정산보드 
         runningOverBoard = GameObject.Find("SettingAnchors").transform.GetChild(1).gameObject;
-        if (runningOverBoard != null) runningOverBoard.gameObject.SetActive(false);
+        if (runningOverBoard != null) runningOverBoard.gameObject.SetActive(false); //정산보드 꺼놓음
 
+        //이벤트 버튼
+        EventButton = GameObject.Find("EventButton");
+        if (EventSceneManager.instance.toShowEvnetList.events.Count < 1) EventButton.gameObject.SetActive(false); // 실행해야하는 이벤트 없으면 비활성화
+        EventButton.GetComponent<Button>().onClick.AddListener(EventSceneManager.instance.StartEventScene);//버튼 기능 세팅 
+
+        //각종 데이터(텍스트)를 표시할 오브젝트들 
         dateText = GameObject.Find("DateText").GetComponent<Text>();
         moneyText = GameObject.Find("MoneyText").GetComponent<Text>();
         levelText = GameObject.Find("LevelText").GetComponent<Text>();
 
-        RunStartButton = GameObject.Find("RunStartButoon");
+        RunStartButton = GameObject.Find("RunStartButoon");//가게 운영 스타트 버튼 
 
         ExpBar = GameObject.Find("ExpBar");
     }
@@ -65,7 +74,7 @@ public class UIManager : MonoBehaviour
     //각 UI오브젝트에 맞는 데이터들 할당 
     public void SetDatainUI()
     {
-        Debug.Log("SetDatainUI실행");
+        //Debug.Log("SetDatainUI실행");
         //seasonText.text = GameManager.instance.season.ToString();
         dateText.text = GameManager.instance.date.ToString();
         moneyText.text = GameManager.instance.money.ToString();

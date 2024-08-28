@@ -75,7 +75,7 @@ public class QuestManager : MonoBehaviour
         }
 
         string saveFile = File.ReadAllText(saveFilePath);
-        Debug.Log("현재 가지고 있는 퀘스트 데이터 불러오기 완료");
+        //Debug.Log("현재 가지고 있는 퀘스트 데이터 불러오기 완료");
         havingQuests = JsonUtility.FromJson<HavingQuests>(saveFile);
     }
 
@@ -83,15 +83,15 @@ public class QuestManager : MonoBehaviour
     public void LoadQuestdataBase()
     {
         string QuestjsonText = File.ReadAllText(QuestjsonPath);
-        Debug.Log("QuestjsonText : "+QuestjsonText);
+        //Debug.Log("QuestjsonText : "+QuestjsonText);
         questDB = JsonUtility.FromJson<QuestDB>(QuestjsonText);
-        Debug.Log("퀘스트 데이터 베이스 불러오기 완료");
+        //Debug.Log("퀘스트 데이터 베이스 불러오기 완료");
     }
 
     //UI를 위한 오브젝트 변수들에 오브젝트들 셋팅
     public void setBasicQuestUIs()
     {
-        Debug.Log("setBasicQuestUIs 실행 ");
+        //Debug.Log("setBasicQuestUIs 실행 ");
          
         QuestBoard = GameObject.Find("Quest").transform.GetChild(1).gameObject;
         QuestContent = QuestBoard.transform.GetComponentInChildren<VerticalLayoutGroup>().gameObject;
@@ -123,7 +123,7 @@ public class QuestManager : MonoBehaviour
         }
     }
 
-    public void GenMainQuest(int level)
+    public void GenMainQuest(int idx)
     {
         //퀘스트 여분 자리가 있을때만 실행 
         if (havingQuests.HavingQuestList.Count >= QuestUIs.Count)
@@ -136,9 +136,9 @@ public class QuestManager : MonoBehaviour
         //int randNum = Random.Range(0, questDB.QuestList.Count);
         //Debug.Log("NewQuestNum : " + randNum);
          
-        havingQuests.HavingQuestList.Add(questDB.QuestList[level/2-1]); //현재 가지고 있는 퀘스트에 추가
+        havingQuests.HavingQuestList.Add(questDB.QuestList[idx-1]); //현재 가지고 있는 퀘스트에 추가
         UpdateCurrnetQuestList(); // 현재 퀘스트 정보 저장
-        setCurrentQuestUIs();//퀘스트창에 퀘스트 추가
+        //setCurrentQuestUIs();//퀘스트창에 퀘스트 추가
     }
 
     //해당 퀘스트를 가지고 있는 퀘스트리스트에서 삭제 
