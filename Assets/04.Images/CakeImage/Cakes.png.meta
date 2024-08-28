@@ -34,7 +34,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -72,7 +72,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -126,10 +126,10 @@ TextureImporter:
       name: Cakes_0
       rect:
         serializedVersion: 2
-        x: 26
-        y: 140
-        width: 121
-        height: 110
+        x: 1
+        y: 23
+        width: 22
+        height: 21
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -137,8 +137,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: db7eba1c16c385246b038e775f2e7b85
-      internalID: -2034726621
+      spriteID: 06762ba3aa1859b4199dfa06160bfb2d
+      internalID: 1832570326
       vertices: []
       indices: 
       edges: []
@@ -147,10 +147,10 @@ TextureImporter:
       name: Cakes_1
       rect:
         serializedVersion: 2
-        x: 159
-        y: 140
-        width: 121
-        height: 104
+        x: 26
+        y: 23
+        width: 21
+        height: 21
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -158,8 +158,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9fbab89103075c74fa653b5a35cf052b
-      internalID: 2101289845
+      spriteID: 049ce2a24fd4cb7489fa9e1310219b3c
+      internalID: -1760351091
       vertices: []
       indices: 
       edges: []
@@ -168,10 +168,10 @@ TextureImporter:
       name: Cakes_2
       rect:
         serializedVersion: 2
-        x: 290
-        y: 140
-        width: 122
-        height: 122
+        x: 50
+        y: 24
+        width: 22
+        height: 20
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -179,8 +179,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 708644babafe1b94b973fe06851957f2
-      internalID: -1570345225
+      spriteID: 95e4292fd5842234c86dd3107528a82f
+      internalID: -271635917
       vertices: []
       indices: 
       edges: []
@@ -189,10 +189,10 @@ TextureImporter:
       name: Cakes_3
       rect:
         serializedVersion: 2
-        x: 92
-        y: 29
-        width: 122
-        height: 107
+        x: 2
+        y: 0
+        width: 21
+        height: 19
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -200,8 +200,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1512ebab9c1d9c74c9b1453c7ba8213d
-      internalID: -465999281
+      spriteID: 2496c4f7ebcb29f4cbe27629ca12d72e
+      internalID: 1536395684
       vertices: []
       indices: 
       edges: []
@@ -210,10 +210,10 @@ TextureImporter:
       name: Cakes_4
       rect:
         serializedVersion: 2
-        x: 225
-        y: 29
-        width: 121
-        height: 104
+        x: 26
+        y: 0
+        width: 21
+        height: 18
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -221,8 +221,29 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d5771aeda0d12624d91bb731b6d4c376
-      internalID: -454074519
+      spriteID: 0a4b32c7fe397a74dbb8ba07bf432bc0
+      internalID: 465100125
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cakes_5
+      rect:
+        serializedVersion: 2
+        x: 52
+        y: 0
+        width: 21
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 90d1dea687052ee47a564abc578765ad
+      internalID: 728774339
       vertices: []
       indices: 
       edges: []
@@ -238,11 +259,12 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Cakes_0: -2034726621
-      Cakes_1: 2101289845
-      Cakes_2: -1570345225
-      Cakes_3: -465999281
-      Cakes_4: -454074519
+      Cakes_0: 1832570326
+      Cakes_1: -1760351091
+      Cakes_2: -271635917
+      Cakes_3: 1536395684
+      Cakes_4: 465100125
+      Cakes_5: 728774339
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
