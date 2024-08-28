@@ -2138,6 +2138,7 @@ MonoBehaviour:
   moneyText: {fileID: 0}
   levelText: {fileID: 0}
   RunStartButton: {fileID: 0}
+  EventButton: {fileID: 0}
   ExpBar: {fileID: 0}
 --- !u!4 &144919401
 Transform:
@@ -9732,7 +9733,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Store
+  m_Text: 'Next
+
+    Day'
 --- !u!222 &729747816
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -29941,8 +29944,6 @@ MonoBehaviour:
   farmSizeLevelUpCost: 10000
   scarecrowLevelUpCost: 10000
   plantSeedPanel: {fileID: 2038100387}
-  selectedSeedIdx: 0
-  clickedSelectedSeedButton: 0
   farmSizeUpgradeCostText: {fileID: 1594571514}
   curFarmSizeLevelText: {fileID: 2103603432}
   nextFarmSizeLevelText: {fileID: 1521981791}
