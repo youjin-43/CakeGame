@@ -49,7 +49,7 @@ public class ExpManager : MonoBehaviour
     }
     private void Update()
     {
-        //경험치 실험 중
+        //E를 누르면 경험치 10 씩 증가
         if (Input.GetKeyDown(KeyCode.E))
         {
             ExpManager.instance.getExp(10);

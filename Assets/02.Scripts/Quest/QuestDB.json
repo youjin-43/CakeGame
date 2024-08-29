@@ -7,8 +7,8 @@
             "cakeToMakeIdx": 1,
             "CurrnetValue1": 0,
             "ClearValue1": 1,
-            "reward1": 1,
-            "reward1Amount": 101
+            "MoneyAmount": 100,
+            "ExpAmount": 10
         },
         {
             "QuestID": 2,
@@ -17,8 +17,8 @@
             "cakeToMakeIdx": 2,
             "CurrnetValue1": 0,
             "ClearValue1": 1,
-            "reward1": 1,
-            "reward1Amount": 102
+            "MoneyAmount": 200,
+            "ExpAmount": 20
         },
         {
             "QuestID": 3,
@@ -27,8 +27,8 @@
             "cakeToMakeIdx": 3,
             "CurrnetValue1": 0,
             "ClearValue1": 1,
-            "reward1": 1,
-            "reward1Amount": 103
+            "MoneyAmount": 300,
+            "ExpAmount":30
         },
         {
             "QuestID": 4,
@@ -37,8 +37,8 @@
             "cakeToMakeIdx": 4,
             "CurrnetValue1": 0,
             "ClearValue1": 1,
-            "reward1": 1,
-            "reward1Amount": 104
+            "MoneyAmount": 400,
+            "ExpAmount": 40
         },
         {
             "QuestID": 5,
@@ -47,8 +47,8 @@
             "cakeToMakeIdx": 5,
             "CurrnetValue1": 0,
             "ClearValue1": 1,
-            "reward1": 1,
-            "reward1Amount": 105
+            "MoneyAmount": 500,
+            "ExpAmount": 50
         }
     ]
 }

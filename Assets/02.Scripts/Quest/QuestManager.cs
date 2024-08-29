@@ -88,7 +88,7 @@ public class QuestManager : MonoBehaviour
         //Debug.Log("퀘스트 데이터 베이스 불러오기 완료");
     }
 
-    //UI를 위한 오브젝트 변수들에 오브젝트들 셋팅
+    //UI를 위한 오브젝트 변수들에 오브젝트들 셋팅 -> 게임매니저의 OnSceneLoaded 함수에서 호출됨 == 씬이 전환될때마다 
     public void setBasicQuestUIs()
     {
         //Debug.Log("setBasicQuestUIs 실행 ");
@@ -112,17 +112,26 @@ public class QuestManager : MonoBehaviour
         int i = 0;
         for (; i < havingQuests.HavingQuestList.Count; i++)
         {
-            QuestUIs[i].gameObject.SetActive(true);
-            QuestUIs[i].GetComponent<Quest>().QuestId = havingQuests.HavingQuestList[i].QuestID;
-            QuestUIs[i].GetChild(0).Find("Title").GetComponent<Text>().text = havingQuests.HavingQuestList[i].ExplaneText;
-            QuestUIs[i].GetChild(0).Find("MoneyText").GetComponent<Text>().text = havingQuests.HavingQuestList[i].reward1Amount.ToString();
+            QuestUIs[i].gameObject.SetActive(true); //활성화 시키고 
+            QuestUIs[i].GetComponent<Quest>().QuestId = havingQuests.HavingQuestList[i].QuestID;//퀘스트컴포넌트에 가지고있는 퀘스트 할당
+
+            //퀘스트에 따라 UI 이미지랑 텍스트 설정 
+            QuestUIs[i].GetChild(0).Find("Title").GetComponent<Text>().text = havingQuests.HavingQuestList[i].ExplaneText; //퀘스트 제목 
+            QuestUIs[i].GetChild(0).Find("MoneyText").GetComponent<Text>().text = havingQuests.HavingQuestList[i].MoneyAmount.ToString();//얻을수 있는돈 
+            QuestUIs[i].GetChild(0).Find("PopularityText").GetComponent<Text>().text = havingQuests.HavingQuestList[i].ExpAmount.ToString();//얻을수 있는 명성
+
+            //제작해야하는 케이크 이미지셋팅
+            Sprite img = (Sprite)Resources.Load($"CakeImage/{havingQuests.HavingQuestList[i].cakeToMakeIdx}");
+            //Debug.Log("이미지 이름 : " + img.name);
+            QuestUIs[i].Find("CakeImage").GetComponent<Image>().sprite = img;
         }
         for (; i < QuestUIs.Count; i++)
         {
-            QuestUIs[i].gameObject.SetActive(false);
+            QuestUIs[i].gameObject.SetActive(false); //나머지는 비활성화 
         }
     }
 
+    //퀘스트 생성 -> UI에 반영되지는 않음
     public void GenMainQuest(int idx)
     {
         //퀘스트 여분 자리가 있을때만 실행 
@@ -132,13 +141,9 @@ public class QuestManager : MonoBehaviour
             return;
         }
 
-        //모든 퀘스트 중 랜덤으로 번호를 하나 뽑아 새로 생성할 퀘스트 결정 
-        //int randNum = Random.Range(0, questDB.QuestList.Count);
-        //Debug.Log("NewQuestNum : " + randNum);
-         
         havingQuests.HavingQuestList.Add(questDB.QuestList[idx-1]); //현재 가지고 있는 퀘스트에 추가
         UpdateCurrnetQuestList(); // 현재 퀘스트 정보 저장
-        //setCurrentQuestUIs();//퀘스트창에 퀘스트 추가
+        //setCurrentQuestUIs();//UI 적용
     }
 
     //해당 퀘스트를 가지고 있는 퀘스트리스트에서 삭제 
@@ -148,7 +153,7 @@ public class QuestManager : MonoBehaviour
         {
             if (havingQuests.HavingQuestList[i].QuestID == questId)
             {
-                GameManager.instance.getMoney(havingQuests.HavingQuestList[i].reward1Amount);//돈 증가
+                GameManager.instance.getMoney(havingQuests.HavingQuestList[i].MoneyAmount);//돈 증가
                 ExpManager.instance.getExp(10);//명성 증가 
 
                 havingQuests.HavingQuestList.Remove(havingQuests.HavingQuestList[i]);
@@ -182,7 +187,7 @@ public class QuestManager : MonoBehaviour
         public int cakeToMakeIdx;
         public int CurrnetValue1;
         public int ClearValue1;
-        public int reward1;
-        public int reward1Amount;
+        public int MoneyAmount;
+        public int ExpAmount;
     }
 }
