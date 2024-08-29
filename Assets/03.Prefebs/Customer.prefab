@@ -293,6 +293,7 @@ MonoBehaviour:
   wantedCakeIndex: 0
   moveType: 0
   targetPosition: {x: 0, y: 0}
+  moveState: 0
 --- !u!1 &1839937667010452410
 GameObject:
   m_ObjectHideFlags: 0
@@ -303,6 +304,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2336835245444266587}
   - component: {fileID: 1164860568756988471}
+  - component: {fileID: 6795489191522039971}
   m_Layer: 0
   m_Name: CustomerImage
   m_TagString: Untagged
@@ -377,6 +379,27 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!95 &6795489191522039971
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1839937667010452410}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: a3d9e98e41c054441844f0c063ac2744, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &2577907772490035515
 GameObject:
   m_ObjectHideFlags: 0

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.EventSystems;
 
 public class Customers : MonoBehaviour
 {
@@ -20,17 +21,22 @@ public class Customers : MonoBehaviour
     private bool isDestroy;
     private CustomerController customerController;
     private Transform frontCustomer;
-    private CustomersMoveType.LineType lineType;
+    public CustomersMoveType.LineType lineType;
     private CustomersMoveType.EnterType enterType;
     private CustomersMoveType.ShopType shopType;
     public CustomersMoveType.MoveType moveType;
-    private Transform leftEnd, rightEnd, linePostion, enterOutPosition, enterInPosition, cashierPosition;
+    private Transform leftEnd, middleCorner, rightEnd, linePostion, enterOutPosition, enterInPosition, cashierPosition;
     private Transform[] showcasePosition;
     public Vector2 targetPosition;
+    public Sprite[] sprites;
+    public int currentSpriteIndex;
+    public int moveState = 0;
+    public int MAXLiNENUM = 10;
 
-    public void Initialize(Transform leftEnd, Transform rightEnd, Transform linePostion, Transform enterOutPosition, Transform enterInPosition, Transform cashierPosition, float moveSpeed, float lineSpacing, float sideSpacing, int wantedCakeIndex, CustomerController customerController)
+    public void Initialize(Transform leftEnd, Transform middleCorner, Transform rightEnd, Transform linePostion, Transform enterOutPosition, Transform enterInPosition, Transform cashierPosition, float moveSpeed, float lineSpacing, float sideSpacing, int wantedCakeIndex, CustomerController customerController)
     {
         this.leftEnd = leftEnd;
+        this.middleCorner = middleCorner;
         this.rightEnd = rightEnd;
         this.linePostion = linePostion;
         this.enterOutPosition = enterOutPosition;
@@ -48,6 +54,7 @@ public class Customers : MonoBehaviour
         agent.updateRotation = false;
         agent.updateUpAxis = false;
         moveType = CustomersMoveType.MoveType.Move;
+        StartCoroutine(ChangeSpriteRoutine());
     }
 
     void Update()
@@ -81,6 +88,25 @@ public class Customers : MonoBehaviour
     void MoveTo()
     {
         agent.SetDestination(targetPosition);
+        if (Vector2.Distance(transform.position, targetPosition) > 1f)
+        {
+            if (targetPosition.y > transform.position.y)
+            {
+                moveState = 1;
+            }
+            else
+            {
+                moveState = 2;
+            }
+            if (targetPosition.x < transform.position.x)
+            {
+                transform.GetChild(1).GetComponent<SpriteRenderer>().flipX = false;
+            }
+            else
+            {
+                transform.GetChild(1).GetComponent<SpriteRenderer>().flipX = true;
+            }
+        }
     }
 
     void UpdateCustomer()
@@ -100,27 +126,32 @@ public class Customers : MonoBehaviour
             {
                 Destroy(gameObject);
             }
-            int r = Random.Range(0, 5);
+            int r = Random.Range(0, 3);
             switch (r)
             {
                 case 0:
-                    moveType = CustomersMoveType.MoveType.Line;
-                    lineType = CustomersMoveType.LineType.Start;
-                    UpdateCustomer();
+                    if (customerController.customersList.Count > MAXLiNENUM)
+                    {
+                        r = Random.Range(0, 3);
+                        return;
+                    }
+                    if ((Vector3)targetPosition != middleCorner.position) targetPosition = middleCorner.position;
+                    else
+                    {
+                        moveType = CustomersMoveType.MoveType.Line;
+                        lineType = CustomersMoveType.LineType.Start;
+                        UpdateCustomer();
+                    }
                     break;
                 case 1:
-                    targetPosition = leftEnd.position;
+                    if ((Vector3)targetPosition != middleCorner.position) targetPosition = middleCorner.position;
+                    else if ((Vector3)targetPosition == leftEnd.position) isDestroy = true;
+                    else targetPosition = leftEnd.position;
                     break;
                 case 2:
-                    targetPosition = rightEnd.position;
-                    break;
-                case 3:
-                    targetPosition = leftEnd.position;
-                    isDestroy = true;
-                    break;
-                case 4:
-                    targetPosition = rightEnd.position;
-                    isDestroy = true;
+                    if ((Vector3)targetPosition != middleCorner.position) targetPosition = middleCorner.position;
+                    else if ((Vector3)targetPosition == rightEnd.position) isDestroy = true;
+                    else targetPosition = rightEnd.position;
                     break;
                 default:
                     break;
@@ -161,10 +192,14 @@ public class Customers : MonoBehaviour
                     {
                         MoveTo();
                     }
-                    else if (frontCustomer.GetComponent<Customers>().moveType == CustomersMoveType.MoveType.Random || frontCustomer.GetComponent<Customers>().moveType == CustomersMoveType.MoveType.Shop)
+                    else
+                    {
+                        moveState = 0;
+                    }
+                    if (frontCustomer.GetComponent<Customers>().moveType == CustomersMoveType.MoveType.Random || frontCustomer.GetComponent<Customers>().moveType == CustomersMoveType.MoveType.Shop)
                     {
                         Debug.Log(0);
-                        StartCoroutine(StopForSeconds(0.5f));
+                        StartCoroutine(StopForSeconds(1f));
                         agent.speed = moveSpeed / 2;
                         customerController.customersList.Remove(this);
                         lineType = CustomersMoveType.LineType.None;
@@ -175,6 +210,7 @@ public class Customers : MonoBehaviour
                 }
                 else
                 {
+                    moveState = 0;
                     if (Routine.instance.routineState == RoutineState.Open)
                     {
                         agent.speed = moveSpeed / 2;
@@ -213,6 +249,9 @@ public class Customers : MonoBehaviour
                     {
                         showcasePosition[i] = cakeShowcaseController.cakeShowcasePool.GetChild(i).GetChild(SHOWCASELOCATE).transform;
                     }
+
+                    randomIndex = Random.Range(0, showcasePosition.Length);
+                    targetPosition = showcasePosition[randomIndex].position;
                     enterType = CustomersMoveType.EnterType.None;
                     moveType = CustomersMoveType.MoveType.Random;
                     UpdateCustomer();
@@ -336,8 +375,54 @@ public class Customers : MonoBehaviour
 
     IEnumerator StopForSeconds(float seconds)
     {
+        moveState = 1;
         agent.speed = 0f; // 이동을 멈추기 위해 속도를 0으로 설정
         yield return new WaitForSeconds(seconds);
         agent.speed = moveSpeed / 2; // 이동을 재개하기 위해 원래 속도로 설정 (원래 속도로 변경)
+    }
+
+    private bool isIdle;
+    float posy;
+    float delay = 0.15f;
+    IEnumerator ChangeSpriteRoutine()
+    {
+        while (true)
+        {
+            switch (moveState)
+            {
+                case 0:
+                    if (!isIdle)
+                    {
+                        posy = transform.GetChild(1).position.y;
+                        isIdle = true;
+                    }
+                    // 스프라이트 변경
+                    transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = sprites[0];
+                    currentSpriteIndex = (currentSpriteIndex + 1) % 2;
+                    transform.GetChild(1).position = new Vector3(transform.GetChild(1).position.x, posy + 0.1f * currentSpriteIndex, 0);
+
+                    // 설정된 간격만큼 대기
+                    yield return new WaitForSeconds(delay);
+                    break;
+                case 1:
+                    isIdle = false;
+                    // 스프라이트 변경
+                    transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = sprites[ 1 + currentSpriteIndex];
+                    currentSpriteIndex =(currentSpriteIndex + 1) % 4;
+
+                    // 설정된 간격만큼 대기
+                    yield return new WaitForSeconds(delay / agent.speed * transform.GetChild(1).localScale.x*2);
+                    break;
+                case 2:
+                    isIdle = false;
+                    // 스프라이트 변경
+                    transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = sprites[ 5 + currentSpriteIndex];
+                    currentSpriteIndex =(currentSpriteIndex + 1) % 4;
+
+                    // 설정된 간격만큼 대기
+                    yield return new WaitForSeconds(delay / agent.speed* transform.GetChild(1).localScale.x*2);
+                    break;
+            }
+        }
     }
 }
