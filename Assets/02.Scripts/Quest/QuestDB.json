@@ -6,7 +6,7 @@
             "ExplaneText": "사과 케이크를 만들자!",
             "cakeToMakeIdx": 1,
             "CurrnetValue1": 0,
-            "ClearValue1": 1,
+            "ClearValue1": 2,
             "MoneyAmount": 100,
             "ExpAmount": 10
         },
@@ -16,7 +16,7 @@
             "ExplaneText": "바나나케이크를 만들자!",
             "cakeToMakeIdx": 2,
             "CurrnetValue1": 0,
-            "ClearValue1": 1,
+            "ClearValue1": 2,
             "MoneyAmount": 200,
             "ExpAmount": 20
         },
@@ -26,7 +26,7 @@
             "ExplaneText": "체리 케이크를 만들자!",
             "cakeToMakeIdx": 3,
             "CurrnetValue1": 0,
-            "ClearValue1": 1,
+            "ClearValue1": 2,
             "MoneyAmount": 300,
             "ExpAmount":30
         },
@@ -36,7 +36,7 @@
             "ExplaneText": "오렌지 케이크를 만들자!",
             "cakeToMakeIdx": 4,
             "CurrnetValue1": 0,
-            "ClearValue1": 1,
+            "ClearValue1": 2,
             "MoneyAmount": 400,
             "ExpAmount": 40
         },
@@ -46,7 +46,7 @@
             "ExplaneText": "딸기케이크를 만들자!",
             "cakeToMakeIdx": 5,
             "CurrnetValue1": 0,
-            "ClearValue1": 1,
+            "ClearValue1": 2,
             "MoneyAmount": 500,
             "ExpAmount": 50
         }

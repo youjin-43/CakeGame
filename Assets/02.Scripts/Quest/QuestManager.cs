@@ -120,10 +120,24 @@ public class QuestManager : MonoBehaviour
             QuestUIs[i].GetChild(0).Find("MoneyText").GetComponent<Text>().text = havingQuests.HavingQuestList[i].MoneyAmount.ToString();//얻을수 있는돈 
             QuestUIs[i].GetChild(0).Find("PopularityText").GetComponent<Text>().text = havingQuests.HavingQuestList[i].ExpAmount.ToString();//얻을수 있는 명성
 
+            //만들어야하는 케이크 인덱스 
+            int cakeIdx = havingQuests.HavingQuestList[i].cakeToMakeIdx;
+
             //제작해야하는 케이크 이미지셋팅
-            Sprite img = (Sprite)Resources.Load($"CakeImage/{havingQuests.HavingQuestList[i].cakeToMakeIdx}");
-            //Debug.Log("이미지 이름 : " + img.name);
+            Sprite img = (Sprite)Resources.Load($"CakeImage/{cakeIdx}");
             QuestUIs[i].Find("CakeImage").GetComponent<Image>().sprite = img;
+
+            //현재 가지고있는 양 / 퀘스트 완료를 위해 필요한 양 텍스트 셋팅 
+            int toMakeCnt = havingQuests.HavingQuestList[i].ClearValue1; //만들어야하는 양
+
+            ////현재 인벤토리에 가지고 있는 양 가져오기 -> 인벤토리를 돌면서 아이디가 같은 케이크의 갯수 가져옴 
+            int haveCnt=0;
+            //for(int i=0;i< UIInventoryManager.instance.cakeInventoryData.inventoryItems.Count; i++)
+            //{
+            //    if (UIInventoryManager.instance.cakeInventoryData.inventoryItems[i].item)
+            //}
+
+            QuestUIs[i].Find("needCnt").GetChild(0).GetComponent<Text>().text = haveCnt+"/"+toMakeCnt;
         }
         for (; i < QuestUIs.Count; i++)
         {
