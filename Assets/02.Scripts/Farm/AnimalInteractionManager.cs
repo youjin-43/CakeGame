@@ -78,14 +78,6 @@ public class AnimalInteractionManager : MonoBehaviour
     public Button gameStartButton;
 
 
-    
-
-    // 동물 게임 망치기 로직 관련
-    [SerializeField]
-    public Action<int> OnFailRequested; // 농사 망치기 함수 연결해줄것..
-
-
-
 
     // UI 관련
     public Button backgroundButton; // 게임 끝나고 누르면 진짜 팜씬 시작.. 
@@ -93,8 +85,11 @@ public class AnimalInteractionManager : MonoBehaviour
 
 
 
+    [Header("BGM & SFX")]
     // BGM 관련
     public Action OnAnimalGameClosed; // 동물 게임 끝났을 때 호출되어야 하는 함수 연결하는 델리게이트 선언..
+    public AudioManager audioManager; // 음악 관리하기 위함..
+
 
 
     [Header("Close Farm Interaction Button")]
@@ -105,6 +100,7 @@ public class AnimalInteractionManager : MonoBehaviour
     {
         backgroundButton.onClick.AddListener(CloseAnimalGame);
         backgroundButton.onClick.AddListener(PressedBackgroundButton);
+        backgroundButton.onClick.AddListener(farmingManager.CheckFailedFarm); // 농사땅이 망했는지 확인하고, 망했으면 그에 맞는 행동을 하도록 해주는 함수 연결..
         //gameStartButton.onClick.AddListener(() => GetAnimalGameRun(10));
     }
 
@@ -232,16 +228,25 @@ public class AnimalInteractionManager : MonoBehaviour
 
     public void GetAnimal()
     {
+        // 음향
+        audioManager.SetSFX(AudioManager.SFX.ATTACK); // 동물 잡았을 때 나는 효과음..
+
         catchAnimalCount++;
     }
 
     public void GetDamage()
     {
+        // 음향
+        audioManager.SetSFX(AudioManager.SFX.DAMAGED); // 동물이 씨앗이 자라는 일수를 늘릴 때 나는 효과음..
+
         damageFarmCount++;
     }
 
     public void GetFail()
     {
+        // 음향
+        audioManager.SetSFX(AudioManager.SFX.FAILFARM); // 동물이 땅을 망쳤을 때 나는 효과음..
+
         failFarmCount++;
     }
 
@@ -276,10 +281,6 @@ public class AnimalInteractionManager : MonoBehaviour
         UICanvas.SetActive(false);
         UIInventoryManager.instance.buttonParentGameObject.SetActive(true); // 농사땅 버튼 이제 켜주기..
         gameStartButton.gameObject.SetActive(true);
-
-        // 못잡은 너구리 수만큼 농사땅 망치기 위한 로직..
-        // 연결해놓은 함수에 매개변수 전달하는 것..
-        OnFailRequested?.Invoke(targetAnimalCount - catchAnimalCount);
     }
 
     public void ExitGame()
