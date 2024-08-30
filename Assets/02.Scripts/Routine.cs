@@ -50,19 +50,24 @@ public class Routine : MonoBehaviour
         //}
 
 
-        // 배경 사진 바꾸는 로직
-        switch (routineState)
+        Scene scene = SceneManager.GetActiveScene();
+        if (scene.name == "CakeStore 1")
         {
-            case RoutineState.None:
-            case RoutineState.Prepare:
-            case RoutineState.Open:
-                backgroundImage.sprite = backgroundImages[0]; // 이미지 아침으로 변경..
-                break;
-            case RoutineState.Close:
-                backgroundImage.sprite = backgroundImages[1]; // 이미지 밤으로 변경..
-                break;
+            // 배경 사진 바꾸는 로직
+            switch (routineState)
+            {
+                case RoutineState.None:
+                case RoutineState.Prepare:
+                case RoutineState.Open:
+                    backgroundImage.sprite = backgroundImages[0]; // 이미지 아침으로 변경..
+                    break;
+                case RoutineState.Close:
+                    backgroundImage.sprite = backgroundImages[1]; // 이미지 밤으로 변경..
+                    break;
+            }
         }
     }
+
     public void SetPrepare()
     {
         routineState = RoutineState.Prepare;
@@ -80,8 +85,12 @@ public class Routine : MonoBehaviour
         yield return null;
 
 
-        // 씬이 로드될 때 참조 변수 설정
-        backgroundImage = GameObject.Find("BackgroundImage").GetComponent<Image>();
+        Scene scene = SceneManager.GetActiveScene();
+        if (scene.name == "CakeStore 1")
+        {
+            // 씬이 로드될 때 참조 변수 설정
+            backgroundImage = GameObject.Find("BackgroundImage").GetComponent<Image>();
+        }
     }
 }
 public enum RoutineState
