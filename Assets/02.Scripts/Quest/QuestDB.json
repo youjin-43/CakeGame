@@ -3,52 +3,52 @@
         {
             "QuestID": 1,
             "QuestCategory": 1,
-            "ExplaneText": "딸기 케이크를 만들자!",
-            "cakeToMakeIdx": 0,
+            "ExplaneText": "사과 케이크를 만들자!",
+            "cakeToMakeIdx": 1,
             "CurrnetValue1": 0,
-            "ClearValue1": 1,
-            "reward1": 1,
-            "reward1Amount": 101
+            "ClearValue1": 2,
+            "MoneyAmount": 100,
+            "ExpAmount": 10
         },
         {
             "QuestID": 2,
             "QuestCategory": 1,
-            "ExplaneText": "티라미수케이크를 만들자!",
-            "cakeToMakeIdx": 1,
+            "ExplaneText": "바나나케이크를 만들자!",
+            "cakeToMakeIdx": 2,
             "CurrnetValue1": 0,
-            "ClearValue1": 1,
-            "reward1": 1,
-            "reward1Amount": 102
+            "ClearValue1": 2,
+            "MoneyAmount": 200,
+            "ExpAmount": 20
         },
         {
             "QuestID": 3,
             "QuestCategory": 1,
-            "ExplaneText": "초콜릿 케이크를 만들자!",
-            "cakeToMakeIdx": 2,
+            "ExplaneText": "체리 케이크를 만들자!",
+            "cakeToMakeIdx": 3,
             "CurrnetValue1": 0,
-            "ClearValue1": 1,
-            "reward1": 1,
-            "reward1Amount": 103
+            "ClearValue1": 2,
+            "MoneyAmount": 300,
+            "ExpAmount":30
         },
         {
             "QuestID": 4,
             "QuestCategory": 1,
-            "ExplaneText": "치즈 케이크를 만들자!",
-            "cakeToMakeIdx": 3,
+            "ExplaneText": "오렌지 케이크를 만들자!",
+            "cakeToMakeIdx": 4,
             "CurrnetValue1": 0,
-            "ClearValue1": 1,
-            "reward1": 1,
-            "reward1Amount": 104
+            "ClearValue1": 2,
+            "MoneyAmount": 400,
+            "ExpAmount": 40
         },
         {
             "QuestID": 5,
             "QuestCategory": 1,
-            "ExplaneText": "레인보우 케이크를 만들자!",
-            "cakeToMakeIdx": 4,
+            "ExplaneText": "딸기케이크를 만들자!",
+            "cakeToMakeIdx": 5,
             "CurrnetValue1": 0,
-            "ClearValue1": 1,
-            "reward1": 1,
-            "reward1Amount": 105
+            "ClearValue1": 2,
+            "MoneyAmount": 500,
+            "ExpAmount": 50
         }
     ]
 }
