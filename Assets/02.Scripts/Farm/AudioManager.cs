@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 public class AudioManager : MonoBehaviour
 {
     [Header("#BGM")]
-    public AudioClip[] bgmClips; // [0]: 가게, [1]: 농장
+    public AudioClip[] bgmClips; // [0]: 가게, [1]: 농장(동물게임), [2]: 농장(기본)
     public float bgmVolume;
     public AudioSource bgmPlayer;
 
@@ -17,8 +17,8 @@ public class AudioManager : MonoBehaviour
     public AudioSource sfxPlayer;
 
 
-    public enum BGM { CAKESTORE, FARM }
-    public enum SFX { PLOW, PLANT, HARVEST, FAIL, BUTTON, UPGRADE, RETURN, COMPLETE }
+    public enum BGM { CAKESTORE, FARMANIMAL, FARMBASIC }
+    public enum SFX { PLOW, PLANT, HARVEST, FAIL, BUTTON, UPGRADE, RETURN, COMPLETE, ATTACK, DAMAGED, FAILFARM }
 
 
     private void Awake()
@@ -59,7 +59,7 @@ public class AudioManager : MonoBehaviour
                 bgmPlayer.Play(); // 가게씬에서는 바로 bgm 실행하도록..
                 break;
             case "Farm":
-                SetBGM(BGM.FARM); // 농장씬은 동물 게임이 일정 확률로 뜨니까 바로 실행하지는 않도록..
+                SetBGM(BGM.FARMBASIC); // 농장씬은 동물 게임이 일정 확률로 뜨니까 바로 실행하지는 않도록..
                 break;
         }
     }

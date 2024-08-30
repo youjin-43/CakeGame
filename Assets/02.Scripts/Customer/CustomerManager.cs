@@ -8,12 +8,12 @@ public class CustomerController : MonoBehaviour
 {
     public GameObject customersPrefab;    // Customers 프리팹
     public Transform[] spawnPoint;          // Customers가 생성될 위치
-    public Transform leftEnd, rightEnd;
+    public Transform leftEnd, middleCorner, rightEnd;
     public Transform linePosition;
     public Transform enterOutPosition;
     public Transform enterInPosition;
     public Transform cashierPosition;
-    public Sprite[] customerImages;
+    public CustomerSprites[] customerImages;
     public Sprite heart;
 
     public float customersSpawnInterval = 2.0f; // Customers 생성 간격
@@ -50,12 +50,14 @@ public class CustomerController : MonoBehaviour
             Customers customers = customersObject.GetComponent<Customers>();
             if (r % 2 == 0) customers.targetPosition = leftEnd.position;
             else customers.targetPosition = rightEnd.position;
+            customers.moveState = r+1;
             int wantedCakeIndex = Random.Range(0, CakeManager.instance.TOTALCAKENUM);
             customers.GetComponent<NavMeshAgent>().speed = Random.Range(moveSpeed * 0.7f, moveSpeed * 1.3f);
-            customers.transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = customerImages[Random.Range(0, customerImages.Length)];
             float randomSize = Random.Range(0.7f, 1.3f);
             customers.transform.GetChild(1).GetComponent<Transform>().localScale = new Vector3(randomSize, randomSize, 1);
-            customers.Initialize(leftEnd, rightEnd, linePosition, enterOutPosition, enterInPosition, cashierPosition, moveSpeed, lineSpacing, sideSpacing, wantedCakeIndex, this);
+            customers.sprites = new Sprite[9];
+            customers.sprites = customerImages[Random.Range(0,customerImages.Length)].sprites;
+            customers.Initialize(leftEnd, middleCorner,rightEnd, linePosition, enterOutPosition, enterInPosition, cashierPosition, moveSpeed, lineSpacing, sideSpacing, wantedCakeIndex, this);
             yield return new WaitForSeconds(customersSpawnInterval);
             if (Routine.instance.routineState == RoutineState.Close)
             {
@@ -109,4 +111,9 @@ public class CustomersMoveType
     { None, Check, Shop, Pay, In, Out }
     public enum MoveType
     { None, Move, Line, Enter, Random, Shop }
+}
+[System.Serializable]
+public class CustomerSprites
+{
+    public Sprite[] sprites;
 }
