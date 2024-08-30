@@ -22104,6 +22104,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bgmClips:
   - {fileID: 8300000, guid: 9cfb4c69838329042854330aafd65559, type: 3}
+  - {fileID: 8300000, guid: d514e6938a0a9684db428da80bb9ae64, type: 3}
   - {fileID: 8300000, guid: e175481f9cd00be419e7bb24b01c46cf, type: 3}
   bgmVolume: 0.2
   bgmPlayer: {fileID: 0}
@@ -22116,6 +22117,9 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 52320e590bf774734a288886eba557ba, type: 3}
   - {fileID: 8300000, guid: 657578e4be6b64dbf9b09deada272e55, type: 3}
   - {fileID: 8300000, guid: 0c008ee3ee72a4362a35be25fa5de043, type: 3}
+  - {fileID: 8300000, guid: 29bde6326b4c34ad8a12da475f79b50a, type: 3}
+  - {fileID: 8300000, guid: 7e9ee6dc04a5d40d1a5dfc4beb9865e7, type: 3}
+  - {fileID: 8300000, guid: 5fdb13d3756c84fecac96f5a2d124370, type: 3}
   sfxVolume: 0.5
   sfxPlayer: {fileID: 0}
 --- !u!4 &1422544569
