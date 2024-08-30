@@ -266,8 +266,6 @@ public class FarmingManager : MonoBehaviour
 
         farmingData = new Dictionary<Vector3Int, FarmingData>(); // 딕셔너리 생성
         clickPosition = Vector2.zero;
-
-        animalInteractionManager.OnFailRequested += FailFarm; // 델리게이트에 함수 연결해주기..
     }
 
     private void OnEnable()
@@ -335,10 +333,14 @@ public class FarmingManager : MonoBehaviour
         // 저장하기
         SaveFarmingData(); // 변경 사항 생겼으니까 저장해주기..
 
-        //// 아래 코드들은 그냥 임시로 확인하기 위한 거... 나중에 없앨 것...
-        //PlayerPrefs.SetInt("FarmLevel", farmLevel); // 농장 레벨 저장..
-        //scarecrowLevel = 1;
-        //PlayerPrefs.SetInt("ScareCrowLevel", scarecrowLevel); // 허수아비 레벨 저장..
+
+        CheckGrowedFruit(); // 과일이 다 자랐는지 확인하고, 다 자랐으면 그에 맞는 행동을 하도록 해주는 함수..
+
+
+        // 아래 코드들은 그냥 임시로 확인하기 위한 거... 나중에 없앨 것...
+        PlayerPrefs.SetInt("FarmLevel", farmLevel); // 농장 레벨 저장..
+        scarecrowLevel = 1;
+        PlayerPrefs.SetInt("ScareCrowLevel", scarecrowLevel); // 허수아비 레벨 저장..
     }
 
 
@@ -360,12 +362,6 @@ public class FarmingManager : MonoBehaviour
             // 땅을 왼쪽 마우스키로 눌렀을 때, 땅의 현재 상태를 파악한 후 버튼 등 전반적인 UI 조정하는 것과 관련된 로직 함수..
             FarmingSystemPC();
         }
-
-
-        //GrowTimeUpdate(); // 과일이 다 자라기까지 남은 시간 업데이트 해주는 함수..
-
-        CheckGrowedFruit(); // 과일이 다 자랐는지 확인하고, 다 자랐으면 그에 맞는 행동을 하도록 해주는 함수..
-        CheckFailedFarm(); // 농사땅이 망했는지 확인하고, 망했으면 그에 맞는 행동을 하도록 해주는 함수..
     }
 
     private void OnDisable()
@@ -531,26 +527,36 @@ public class FarmingManager : MonoBehaviour
         }
     }
 
-    private void CheckFailedFarm()
+
+    public void CheckFailedFarm()
     {
         // 농사가 망했는지 안 망했는지 판단하는 함수..
+        // AnimalInteractionManager 클래스의 backgroundButton 에 연결해줄 것..
+        // background 버튼은 동물 게임이 종료되면 나타나는 버튼임..
 
         foreach (Vector3Int pos in farmingData.Keys)
         {
             // 농사땅 망했으면
             if (farmingData[pos].failedState)
             {
-                farmTilemap.SetTile(pos, failedTile); // 일단 임시로
+                //farmTilemap.SetTile(pos, failedTile); // 일단 임시로
                 farmingData[pos].stateButton.gameObject.SetActive(true); // 망한거 없애기 버튼은 항상 떠있어야 함
             }
         }
     }
 
 
-
     public void FailFarmAt(Vector3Int pos)
     {
         // 특정 위치의 농사땅을 망하게 하는 함수
+
+        // 만약 망치려는 땅이 다 자라있는 상태라면
+        if (farmingData[pos].currentState == "harvest")
+        {
+            farmingData[pos].stateButton.gameObject.SetActive(false); // 버튼 활성화 끄기
+        }
+
+        farmTilemap.SetTile(pos, failedTile); // 망한 땅 모습으로..
         farmingData[pos].stateButton = farmingData[pos].buttons[3]; // 망한 버튼으로 바꾸기
         farmingData[pos].seedOnTile = false;
         farmingData[pos].currentState = "failed";
@@ -562,67 +568,6 @@ public class FarmingManager : MonoBehaviour
         SaveFarmingData(); // 데이터 저장!
     }
 
-
-    public void FailFarm(int count)
-    {
-        // 매개변수만큼 농사 망치는 함수
-        int cnt = 0;
-        List<Vector3Int> randomList = new List<Vector3Int>();
-        foreach (Vector3Int pos in farmingData.Keys)
-        {
-            // 땅에 씨앗이 있는 상태만 리스트에 넣기..
-            if (farmingData[pos].seedOnTile) randomList.Add(pos);
-        }
-
-        // 땅에 아무것도 안 되어있는 상태면 망칠게 없으니까 그냥 빠져나오도록.. 
-        if (randomList.Count == 0) return;
-
-        if (randomList.Count < count)
-        {
-            while (cnt < randomList.Count)
-            {
-                int random = Random.Range(0, randomList.Count);
-
-                // 이미 땅이 망해있는 상태면 넘어가도록..
-                if (farmingData[randomList[random]].failedState) continue;
-                else
-                {
-                    farmingData[randomList[random]].stateButton = farmingData[randomList[random]].buttons[3]; // 망함 버튼으로 바꾸기
-                    farmingData[randomList[random]].seedOnTile = false;
-                    farmingData[randomList[random]].currentState = "failed";
-                    farmingData[randomList[random]].plowEnableState = false;
-                    farmingData[randomList[random]].plantEnableState = false;
-                    farmingData[randomList[random]].harvestEnableState = false;
-                    farmingData[randomList[random]].failedState = true;
-                    cnt++;
-                }
-            }
-        }
-        else
-        {
-            while (cnt < count)
-            {
-                int random = Random.Range(0, randomList.Count);
-
-                // 이미 땅이 망해있는 상태면 넘어가도록..
-                if (farmingData[randomList[random]].failedState) continue;
-                else
-                {
-                    farmingData[randomList[random]].stateButton = farmingData[randomList[random]].buttons[3]; // 망함 버튼으로 바꾸기
-                    farmingData[randomList[random]].seedOnTile = false;
-                    farmingData[randomList[random]].currentState = "failed";
-                    farmingData[randomList[random]].plowEnableState = false;
-                    farmingData[randomList[random]].plantEnableState = false;
-                    farmingData[randomList[random]].harvestEnableState = false;
-                    farmingData[randomList[random]].failedState = true;
-                    cnt++;
-                }
-            }
-        }
-
-
-        SaveFarmingData(); // 데이터 저장!
-    }
 
     private bool IsPointerOverUIObjectPC()
     {
@@ -795,23 +740,20 @@ public class FarmingManager : MonoBehaviour
 
     public void FailedTile(Vector3Int pos)
     {
-        // 농사땅 망했으면 그냥 맨 초기 상태로 돌리는 로직..
-
-        farmingData[pos].plowEnableState = true;
-        farmingData[pos].currentState = "None"; // 과일을 수확한 상태니까 None 으로 바꿔주기
-
         farmingData[pos].stateButton.gameObject.SetActive(false); // 버튼 한 번 눌렀으니까 꺼지도록..
-        farmingData[pos].stateButton = farmingData[pos].buttons[0]; // plow 버튼을 가지고 있도록..
+
+        // 농사땅 망했으면 그냥 맨 초기 상태로 돌리는 로직..
+        farmingData[pos].isGrown = false; // 이제 땅에 아무것도 없으므로 isGrown 값도 false 로 바꿔주기..
         farmingData[pos].seedOnTile = false; // 수확했으니까 seedOnTile 변수의 값을 다시 false 로 설정해주기..
         farmingData[pos].seedIdx = -1; // 씨앗 인덱스 다시 -1로 바꿔주기..
         farmingData[pos].curDay = 0; // 씨앗 심은 후 지난 일자 다시 0으로 바꿔주기..
-        farmingData[pos].isGrown = false; // 이제 땅에 아무것도 없으므로 isGrown 값도 false 로 바꿔주기..
-
         farmingData[pos].failedState = false;
 
-
+        farmingData[pos].plowEnableState = true;
+        farmingData[pos].currentState = "None"; // 과일을 수확한 상태니까 None 으로 바꿔주기
+        
+        farmingData[pos].stateButton = farmingData[pos].buttons[0]; // plow 버튼을 가지고 있도록..
         farmTilemap.SetTile(pos, grassTile); // 타일 모습을 초기 상태로 바꿔주기
-
 
         // 음향
         audioManager.SetSFX(SFX.FAIL);
@@ -1397,9 +1339,11 @@ public class FarmingManager : MonoBehaviour
 
         if (Random.Range(0, probability) == 0)
         {
-            // 델리게이트에 아무것도 연겨 안 되어 있을 때에만 함수 연결해줄 것..
+            StartFarmAnimalBGM(); // 동물 게임 활성화 된거니까 그에 맞는 배경음 틀어주기..
+
+            // 델리게이트에 아무것도 연결 안 되어 있을 때에만 함수 연결해줄 것..
             if (animalInteractionManager.OnAnimalGameClosed == null)
-                animalInteractionManager.OnAnimalGameClosed += StartBGM; // bgm 시작하는 함수 연결..
+                animalInteractionManager.OnAnimalGameClosed += StartFarmBasicBGM; // bgm 시작하는 함수 연결..
 
             animalInteractionManager.UICanvas.gameObject.SetActive(true);
             animalInteractionManager.backgroundButton.gameObject.SetActive(true);
@@ -1414,16 +1358,27 @@ public class FarmingManager : MonoBehaviour
         {
             animalInteractionManager.UICanvas.gameObject.SetActive(false);
             UIInventoryManager.instance.buttonParentGameObject.SetActive(true);
-            StartBGM(); // bgm 시작..
+            StartFarmBasicBGM(); // bgm 시작..
         }
+
+
+        CheckFailedFarm(); // 망한 땅 상태 반영..
     }
 
 
-    public void StartBGM()
+    public void StartFarmAnimalBGM()
+    {
+        // 이 함수는 동물 게임이 활성화 됐을 때 호출할 함수..
+
+        audioManager.SetBGM(BGM.FARMANIMAL); // bgm 을 농장 동물 게임에 맞는 음악으로 변경..
+        audioManager.bgmPlayer.Play();
+    }
+
+    public void StartFarmBasicBGM()
     {
         // 이 함수는 AnimalinteractionManager 의 OnAnimalGameClosed 델리게이트에 연결해줄것..
 
-        audioManager.SetBGM(BGM.FARM); // bgm 을 농장 씬에 맞는 음악으로 변경..
+        audioManager.SetBGM(BGM.FARMBASIC); // bgm 을 농장 기본에 맞는 음악으로 변경..
         audioManager.bgmPlayer.Play();
     }
 
