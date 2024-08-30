@@ -4,6 +4,7 @@ using UnityEngine;
 //using System.Data; //DataTable 사용을 위해 추가
 using UnityEngine.UI;
 using System.IO; // 파일, 폴더 생성을 위해 
+using Inventory.Model; // 파일, 폴더 생성을 위해
 
 public class QuestManager : MonoBehaviour
 {
@@ -38,8 +39,6 @@ public class QuestManager : MonoBehaviour
         }
     }
 
-
-
     public QuestDB questDB; //생성될 수있는 모든 퀘스트 리스트 
     private string QuestjsonPath = Application.dataPath + "/02.Scripts/Quest/QuestDB.json"; //dataPath
 
@@ -54,6 +53,33 @@ public class QuestManager : MonoBehaviour
     public List<Transform> QuestUIs;
 
     public GameObject QuestUIprefab;
+
+    private void Update()
+    {
+        //딸기케이크 임시 추가 코드 
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            CakeManager.instance.cakeMakerController.CompleteCake(5);
+        }
+
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            tmp(5, 1);
+        }
+    }
+
+
+
+    void tmp(int idx,int cnt)
+    {
+        InventoryItem tmpItem = new InventoryItem()
+        {
+            item = CakeManager.instance.cakeSODataList[idx],
+            quantity = cnt,
+        };
+
+        UIInventoryManager.instance.MinusItem(tmpItem);
+    }
 
     //현재 가지고 있는 퀘스트 정보를 업데이트하여 새로 json에 저장하는 함수 
     public void UpdateCurrnetQuestList()
@@ -131,14 +157,11 @@ public class QuestManager : MonoBehaviour
             int toMakeCnt = havingQuests.HavingQuestList[i].ClearValue1; //만들어야하는 양
 
             ////현재 인벤토리에 가지고 있는 양 가져오기 -> 인벤토리를 돌면서 아이디가 같은 케이크의 갯수 가져옴 
-            int haveCnt=0;
-            //for(int i=0;i< UIInventoryManager.instance.cakeInventoryData.inventoryItems.Count; i++)
-            //{
-            //    if (UIInventoryManager.instance.cakeInventoryData.inventoryItems[i].item)
-            //}
-
+            int haveCnt= CakeManager.instance.cakeCounts[i];
+            
             QuestUIs[i].Find("needCnt").GetChild(0).GetComponent<Text>().text = haveCnt+"/"+toMakeCnt;
         }
+
         for (; i < QuestUIs.Count; i++)
         {
             QuestUIs[i].gameObject.SetActive(false); //나머지는 비활성화 
