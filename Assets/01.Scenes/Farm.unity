@@ -11139,6 +11139,10 @@ MonoBehaviour:
   prepareTime: 40
   openTime: 100
   routineState: 0
+  backgroundImages:
+  - {fileID: 21300000, guid: e8e8a0121758e914795a51c54d6449a1, type: 3}
+  - {fileID: 21300000, guid: 45bca30c39508ae49b4013022cd7c297, type: 3}
+  backgroundImage: {fileID: 0}
 --- !u!4 &821948358
 Transform:
   m_ObjectHideFlags: 0
