@@ -54,7 +54,6 @@ public class Customers : MonoBehaviour
         agent.updateRotation = false;
         agent.updateUpAxis = false;
         moveType = CustomersMoveType.MoveType.Move;
-        StartCoroutine(ChangeSpriteRoutine());
     }
 
     void Update()
@@ -83,8 +82,46 @@ public class Customers : MonoBehaviour
             customerController.customersList.Remove(this);
             Destroy(gameObject);
         }
+        UpdateAnimation();
     }
+    private float nextFrameTime = 0.1f;
+    private bool isIdle;
+    float posy;
+    float delay = 0.5f;
+    void UpdateAnimation()
+    {
+        if (Time.time >= nextFrameTime)
+        {
+            if (agent.speed != 0)
+            {
+                nextFrameTime = Time.time + (delay / agent.speed) / (transform.GetChild(1).localScale.x*2); // 다음 프레임 시간 설정
+            }
 
+            switch (moveState)
+            {
+                case 0: // Idle 상태
+                    if (!isIdle)
+                    {
+                        posy = transform.GetChild(1).position.y;
+                        isIdle = true;
+                    }
+                    transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = sprites[0];
+                    currentSpriteIndex = (currentSpriteIndex + 1) % 2;
+                    transform.GetChild(1).position = new Vector3(transform.position.x, posy + 0.1f * currentSpriteIndex, 0);
+                    break;
+                case 1: // 움직이는 상태 (위로 이동)
+                    transform.GetChild(1).position = new Vector3(transform.position.x, transform.position.y, 0);
+                    transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = sprites[1 + currentSpriteIndex];
+                    currentSpriteIndex = (currentSpriteIndex + 1) % 4; // 애니메이션 프레임 순환
+                    break;
+                case 2: // 움직이는 상태 (아래로 이동)
+                    transform.GetChild(1).position = new Vector3(transform.position.x, transform.position.y, 0);
+                    transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = sprites[5 + currentSpriteIndex];
+                    currentSpriteIndex = (currentSpriteIndex + 1) % 4; // 애니메이션 프레임 순환
+                    break;
+            }
+        }
+    }
     void MoveTo()
     {
         agent.SetDestination(targetPosition);
@@ -198,7 +235,6 @@ public class Customers : MonoBehaviour
                     }
                     if (frontCustomer.GetComponent<Customers>().moveType == CustomersMoveType.MoveType.Random || frontCustomer.GetComponent<Customers>().moveType == CustomersMoveType.MoveType.Shop)
                     {
-                        Debug.Log(0);
                         StartCoroutine(StopForSeconds(1f));
                         agent.speed = moveSpeed / 2;
                         customerController.customersList.Remove(this);
@@ -265,7 +301,6 @@ public class Customers : MonoBehaviour
         timer += Time.deltaTime;
         if (Vector2.Distance(transform.position, targetPosition) <= 0.01f)
         {
-            Debug.Log(1);
             StartCoroutine(StopForSeconds(1f)); // 3초 멈춤
             randomIndex = Random.Range(0, showcasePosition.Length);
             targetPosition = showcasePosition[randomIndex].position;
@@ -353,7 +388,7 @@ public class Customers : MonoBehaviour
                     transform.GetChild(0).gameObject.SetActive(false);
                     shopType = CustomersMoveType.ShopType.In;
                     GameManager.instance.getMoney(100);
-                    SoundManager.instance.GetMoneyClip();
+                    //SoundManager.instance.GetMoneyClip();
                     Debug.Log("케이크가 판매 되었습니다.");
                 }
                 break;
@@ -375,54 +410,8 @@ public class Customers : MonoBehaviour
 
     IEnumerator StopForSeconds(float seconds)
     {
-        moveState = 1;
         agent.speed = 0f; // 이동을 멈추기 위해 속도를 0으로 설정
         yield return new WaitForSeconds(seconds);
         agent.speed = moveSpeed / 2; // 이동을 재개하기 위해 원래 속도로 설정 (원래 속도로 변경)
-    }
-
-    private bool isIdle;
-    float posy;
-    float delay = 0.15f;
-    IEnumerator ChangeSpriteRoutine()
-    {
-        while (true)
-        {
-            switch (moveState)
-            {
-                case 0:
-                    if (!isIdle)
-                    {
-                        posy = transform.GetChild(1).position.y;
-                        isIdle = true;
-                    }
-                    // 스프라이트 변경
-                    transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = sprites[0];
-                    currentSpriteIndex = (currentSpriteIndex + 1) % 2;
-                    transform.GetChild(1).position = new Vector3(transform.GetChild(1).position.x, posy + 0.1f * currentSpriteIndex, 0);
-
-                    // 설정된 간격만큼 대기
-                    yield return new WaitForSeconds(delay);
-                    break;
-                case 1:
-                    isIdle = false;
-                    // 스프라이트 변경
-                    transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = sprites[ 1 + currentSpriteIndex];
-                    currentSpriteIndex =(currentSpriteIndex + 1) % 4;
-
-                    // 설정된 간격만큼 대기
-                    yield return new WaitForSeconds(delay / agent.speed * transform.GetChild(1).localScale.x*2);
-                    break;
-                case 2:
-                    isIdle = false;
-                    // 스프라이트 변경
-                    transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = sprites[ 5 + currentSpriteIndex];
-                    currentSpriteIndex =(currentSpriteIndex + 1) % 4;
-
-                    // 설정된 간격만큼 대기
-                    yield return new WaitForSeconds(delay / agent.speed* transform.GetChild(1).localScale.x*2);
-                    break;
-            }
-        }
     }
 }
