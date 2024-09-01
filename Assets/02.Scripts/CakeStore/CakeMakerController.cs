@@ -39,8 +39,6 @@ public class CakeMakerController : MonoBehaviour
 
     private CakeManager cakeManager;         // 케이크 매니저 참조
     private CakeUIController cakeUIController;
-
-    private FarmingManager farmingManager;
     void Start()
     {
         InitializeCakeMakerController();
@@ -123,7 +121,7 @@ public class CakeMakerController : MonoBehaviour
         {
             InventoryItem tempItem = new InventoryItem()
             {
-                item = farmingManager.fruitItems[cakeData.materialIdxs[i]],
+                item = UIInventoryManager.instance.fruitItems[cakeData.materialIdxs[i]],
                 quantity = cakeData.materialCounts[i],
             };
             UIInventoryManager.instance.MinusItem(tempItem);
