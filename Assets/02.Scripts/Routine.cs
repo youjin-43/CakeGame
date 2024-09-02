@@ -59,10 +59,10 @@ public class Routine : MonoBehaviour
                 case RoutineState.None:
                 case RoutineState.Prepare:
                 case RoutineState.Open:
-                    backgroundImage.sprite = backgroundImages[0]; // 이미지 아침으로 변경..
+                    //backgroundImage.sprite = backgroundImages[0]; // 이미지 아침으로 변경..
                     break;
                 case RoutineState.Close:
-                    backgroundImage.sprite = backgroundImages[1]; // 이미지 밤으로 변경..
+                    //backgroundImage.sprite = backgroundImages[1]; // 이미지 밤으로 변경..
                     break;
             }
         }

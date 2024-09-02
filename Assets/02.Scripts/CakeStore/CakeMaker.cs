@@ -31,6 +31,7 @@ public class CakeMaker : MonoBehaviour
         {
             // 케이크 메이커 패널 활성화
             CakeManager.instance.cakeMakerController.OpenPanel(cakeMakerIndex);
+            CakeManager.instance.CallOpenAudio();
         }
         else if (isMakeComplete) // 케이크 제작 완료 시
         {
@@ -79,7 +80,7 @@ public class CakeMaker : MonoBehaviour
     public void UpdateColliders() // 타이머와 오븐의 콜리더를 설정 
     // !!!!!!!반드시 isMakingCake 값의 변화 이후에 와야함.!!!!!!!
     {
-        if(timerUI==null) timerUI = transform.GetChild(0).GetComponent<SpriteRenderer>();
+        if (timerUI == null) timerUI = transform.GetChild(0).GetComponent<SpriteRenderer>();
         timerUI.gameObject.SetActive(isMakingCake);
         GetComponent<PolygonCollider2D>().enabled = !isMakingCake;
         GetComponent<BoxCollider2D>().enabled = isMakingCake;
