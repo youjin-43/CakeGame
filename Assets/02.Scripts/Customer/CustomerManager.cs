@@ -22,7 +22,7 @@ public class CustomerController : MonoBehaviour
 
     void Update()
     {
-        if (Routine.instance.routineState == RoutineState.Prepare && !isStartSpawning)
+        if (Routine.instance.routineState == RoutineState.Open && !isStartSpawning)
         {
             StartCoroutine(SpawnCustomers());
             isStartSpawning = true;
