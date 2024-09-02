@@ -12,12 +12,15 @@ public class CakeManager : MonoBehaviour
     public CakeShowcaseController cakeShowcaseController;
     public CakeMakerController cakeMakerController;
     public CakeUIController cakeUIController;
+    public AudioManager audioManager;
+    public AudioManager.SFX openSFX;
     public List<CakeSO> cakeSODataList;    // 케이크 데이터를 저장하는 리스트 (Unity Editor에서 설정)
     public int[] cakeCounts;             // 각 케이크의 개수를 관리하는 배열
     private string filePath;             // 케이크 데이터 저장 파일 경로
     public static CakeManager instance;
     public int TOTALCAKENUM = 6;
     public int CAKEPLACENUM = 4;
+    public int[] soldCakeCount;
     void Awake()
     {
         // 싱글톤 변수 instance가 비어있는가?
@@ -50,7 +53,9 @@ public class CakeManager : MonoBehaviour
         LoadCakeData();
         cakeShowcaseController = FindObjectOfType<CakeShowcaseController>();
         cakeMakerController = FindObjectOfType<CakeMakerController>();
+        audioManager = FindAnyObjectByType<AudioManager>();
         cakeUIController = CakeUIController.instance;
+        soldCakeCount = new int[TOTALCAKENUM];
     }
     public void CakeBack()
     {
@@ -77,7 +82,7 @@ public class CakeManager : MonoBehaviour
         {
             CakeSO cakeData = cakeSODataList[i];
             cakeCounts[i] = 0; // 초기 케이크 개수는 0으로 설정
-            cakeData.isLocked = (cakeData.cakeIdx != 0); // 첫 번째 케이크만 잠금 해제
+            cakeData.isLocked = cakeData.cakeIdx != 0; // 첫 번째 케이크만 잠금 해제
         }
     }
 
@@ -127,6 +132,13 @@ public class CakeManager : MonoBehaviour
         SaveCakeData();
     }
 
+    //인테리어 클릭 효과음
+    public void CallOpenAudio()
+    {
+        audioManager.SetSFX(openSFX);
+    }
+    
+    
     // 케이크 데이터를 JSON 파일로 저장
     private void SaveCakeData()
     {
@@ -250,7 +262,7 @@ public class CakeManager : MonoBehaviour
         // 그래서 key 가 0, 1, 2, 3, 4, 5... 이런식으로 순차적으로 온다는 보장이 없으므로 그냥 키값들을 가져와서 반복문 도는 것..
         foreach (int idx in curInventory.Keys)
         {
-            cakeCounts[((CakeSO)(curInventory[idx].item)).cakeIdx] += curInventory[idx].quantity; // 해당 아이템의 아이템 인덱스에 맞는 요소의 값을 증가시켜줌..
+            cakeCounts[((CakeSO)curInventory[idx].item).cakeIdx] += curInventory[idx].quantity; // 해당 아이템의 아이템 인덱스에 맞는 요소의 값을 증가시켜줌..
         }
     }
 

@@ -99,7 +99,6 @@ public class CakeMakerController : MonoBehaviour
     {
         var cakeData = cakeManager.cakeSODataList[index];
         var fruitCounts = UIInventoryManager.instance.fruitCount;
-        var inventory = UIInventoryManager.instance.fruitInventoryData;
 
         if (GameManager.instance.money < cakeData.cakeCost)    // 돈이 충분한지 확인
         {
@@ -141,7 +140,7 @@ public class CakeMakerController : MonoBehaviour
             quantity = 1,
         };
         UIInventoryManager.instance.AddItem(tmpItem); // 만든 아이템 인벤토리에 추가해주기..
-
+        cakeManager.soldCakeCount[index]++;
         ExpManager.instance.getExp(cakeManager.cakeSODataList[index].exp);
         UpdateUI();                           // UI 업데이트
     }

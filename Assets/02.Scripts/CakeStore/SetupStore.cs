@@ -121,8 +121,8 @@ public class IsoMapCreatorWindow : EditorWindow
                 for (int j = 0; j < cols; j++)
                 {
                     int index = i * cols + j;
-                    GameObject prefabToInstantiate = tileSprite;
-                    Transform objectParent = floorPool.transform;
+                    GameObject prefabToInstantiate = null;
+                    Transform objectParent = newPool.transform;
 
                     foreach (var interior in interiorLists)
                     {
@@ -134,7 +134,7 @@ public class IsoMapCreatorWindow : EditorWindow
                                 case 2: prefabToInstantiate = Player; objectParent = newPool.transform;break;
                                 case 3: prefabToInstantiate = Showcase; objectParent = showcasePool.transform;break;
                                 case 4: prefabToInstantiate = Maker; objectParent = makerPool.transform; break;
-                                default: prefabToInstantiate = tileSprite; objectParent = floorPool.transform; break;
+                                default: break;
                             }
                             break;
                         }

@@ -25,6 +25,7 @@ public class CakeShowcase : MonoBehaviour
     void OnMouseDown()
     {
         CakeManager.instance.cakeShowcaseController.OpenPanel(cakeShowcaseIndex);
+        CakeManager.instance.CallOpenAudio();
     }
     public void GetBack()
     {
