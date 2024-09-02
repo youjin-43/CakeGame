@@ -144,7 +144,7 @@ public class Customers : MonoBehaviour
         timer += Time.deltaTime;
         if (Vector2.Distance(transform.position, targetPosition) <= 0.01f)
         {
-            StartCoroutine(StopForSeconds(1f)); // 3초 멈춤
+            StartCoroutine(StopForSeconds(.5f)); // 3초 멈춤
             randomIndex = Random.Range(0, showcasePosition.Length);
             targetPosition = showcasePosition[randomIndex].position;
         }
@@ -172,6 +172,7 @@ public class Customers : MonoBehaviour
             }
             else
             {
+                isCakeCheck = true;
                 timer = 0;
                 randomTime *= 2;
                 transform.GetChild(0).gameObject.SetActive(true);
