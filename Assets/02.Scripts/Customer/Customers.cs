@@ -231,6 +231,7 @@ public class Customers : MonoBehaviour
                     shopType = CustomersMoveType.ShopType.Out;
                     GameManager.instance.getMoney(CakeManager.instance.cakeSODataList[wantedCakeIndex].cakePrice);
                     customerController.SellAudio();
+                    UIManager.instance.RaiseUpCakeCntForEndBoard(wantedCakeIndex);
                     Debug.Log("케이크가 판매 되었습니다.");
                 }
                 break;

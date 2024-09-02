@@ -123,7 +123,7 @@ public class GameManager : MonoBehaviour
         //isRunning = false; //운영 끝!
         Routine.instance.routineState = RoutineState.Close;
 
-        Routine.instance.backgroundImage.sprite = Routine.instance.backgroundImages[1]; // 이미지 밤으로 변경..
+        //Routine.instance.backgroundImage.sprite = Routine.instance.backgroundImages[1]; // 이미지 밤으로 변경..
 
         UIManager.instance.SetEndBoard();//정산보드 데이터 셋팅
         UIManager.instance.runningOverBoard.SetActive(true); // 정산 화면 뜨기
