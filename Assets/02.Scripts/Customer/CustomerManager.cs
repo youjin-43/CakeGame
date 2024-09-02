@@ -8,17 +8,13 @@ public class CustomerController : MonoBehaviour
 {
     public GameObject customersPrefab;    // Customers 프리팹
     public Transform[] spawnPoint;          // Customers가 생성될 위치
-    public Transform leftEnd, middleCorner, rightEnd;
-    public Transform linePosition;
-    public Transform enterOutPosition;
-    public Transform enterInPosition;
-    public Transform cashierPosition;
+    public Transform currentSpawnPoint, cashierPosition;
     public CustomerSprites[] customerImages;
     public Sprite heart;
+    public AudioManager audioManager;
+    public AudioManager.SFX sfxState;
 
     public float customersSpawnInterval = 2.0f; // Customers 생성 간격
-    public float lineSpacing = 0.5f;      // 줄서기 간격
-    public float sideSpacing = 0.5f;      // 줄옆 간격
     public float moveSpeed = 2.0f;        // 이동 속도
 
     public List<Customers> customersList = new List<Customers>();
@@ -26,7 +22,7 @@ public class CustomerController : MonoBehaviour
 
     void Update()
     {
-        if (Routine.instance.routineState == RoutineState.Prepare && !isStartSpawning)
+        if (Routine.instance.routineState == RoutineState.Open && !isStartSpawning)
         {
             StartCoroutine(SpawnCustomers());
             isStartSpawning = true;
@@ -39,7 +35,10 @@ public class CustomerController : MonoBehaviour
             }
         }
     }
-
+    public void SellAudio()
+    {
+        audioManager.SetSFX(sfxState);
+    }
     IEnumerator SpawnCustomers()
     {
         while (true)
@@ -48,16 +47,13 @@ public class CustomerController : MonoBehaviour
             GameObject customersObject = Instantiate(customersPrefab, spawnPoint[r].position, Quaternion.identity);
             customersObject.transform.parent = this.transform;
             Customers customers = customersObject.GetComponent<Customers>();
-            if (r % 2 == 0) customers.targetPosition = leftEnd.position;
-            else customers.targetPosition = rightEnd.position;
-            customers.moveState = r+1;
             int wantedCakeIndex = Random.Range(0, CakeManager.instance.TOTALCAKENUM);
-            customers.GetComponent<NavMeshAgent>().speed = Random.Range(moveSpeed * 0.7f, moveSpeed * 1.3f);
+            customers.GetComponent<NavMeshAgent>().speed = moveSpeed;
             float randomSize = Random.Range(0.7f, 1.3f);
             customers.transform.GetChild(1).GetComponent<Transform>().localScale = new Vector3(randomSize, randomSize, 1);
             customers.sprites = new Sprite[9];
             customers.sprites = customerImages[Random.Range(0,customerImages.Length)].sprites;
-            customers.Initialize(leftEnd, middleCorner,rightEnd, linePosition, enterOutPosition, enterInPosition, cashierPosition, moveSpeed, lineSpacing, sideSpacing, wantedCakeIndex, this);
+            customers.Initialize(currentSpawnPoint, cashierPosition, moveSpeed, wantedCakeIndex, this);
             yield return new WaitForSeconds(customersSpawnInterval);
             if (Routine.instance.routineState == RoutineState.Close)
             {
@@ -106,9 +102,9 @@ public class CustomersMoveType
     public enum LineType
     { None, Start, During, End }
     public enum EnterType
-    { None, In, Out }
+    { None, Out }
     public enum ShopType
-    { None, Check, Shop, Pay, In, Out }
+    { None, Check, Shop, Pay, Out }
     public enum MoveType
     { None, Move, Line, Enter, Random, Shop }
 }
