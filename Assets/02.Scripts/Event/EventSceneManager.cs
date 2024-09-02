@@ -44,6 +44,7 @@ public class EventSceneManager : MonoBehaviour
 
     public GameObject dialogBox;
     public Text dialogText;
+    public GameObject BackgroundImage;
     public string[] currntDialog;
     public int idx=0;
 
@@ -54,6 +55,7 @@ public class EventSceneManager : MonoBehaviour
         LoadEventDialogJson(); //대사 정보 가져오기 
 
         //대사 출력을 위한 오브젝트 셋팅
+        BackgroundImage = GameObject.Find("BackgroundImages");
         dialogBox = GameObject.Find("DialogButton");
         dialogBox.GetComponent<Button>().onClick.AddListener(EventSceneManager.instance.PassDialog);
         //dialogBox.onClick.AddListener(PassDialog);
@@ -72,22 +74,27 @@ public class EventSceneManager : MonoBehaviour
         if (i == 1)
         {
             currntDialog = eventDialogs.Level2;
+            BackgroundImage.transform.GetChild(0).gameObject.SetActive(true);
         }
         else if (i == 2)
         {
             currntDialog = eventDialogs.Level4;
+            BackgroundImage.transform.GetChild(1).gameObject.SetActive(true);
         }
         else if (i == 3)
         {
             currntDialog = eventDialogs.Level6;
+            BackgroundImage.transform.GetChild(2).gameObject.SetActive(true);
         }
         else if (i == 4)
         {
             currntDialog = eventDialogs.Level8;
+            BackgroundImage.transform.GetChild(3).gameObject.SetActive(true);
         }
         else if(i == 5)
         {
             currntDialog = eventDialogs.Level10;
+            BackgroundImage.transform.GetChild(4).gameObject.SetActive(true);
         }
         idx = 0;
         dialogText.text = currntDialog[idx];
