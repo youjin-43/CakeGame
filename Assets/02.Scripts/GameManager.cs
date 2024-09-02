@@ -108,6 +108,7 @@ public class GameManager : MonoBehaviour
         Routine.instance.routineState = RoutineState.Open;
 
         UIManager.instance.runningOverBoard.SetActive(false); //정산화면 끄기
+        UIManager.instance.initSelledCakeCnt();//팔린 케이크 배열 초기화
 
         date++;
         UIManager.instance.dateText.text = date.ToString();//UI 적용 
@@ -124,6 +125,7 @@ public class GameManager : MonoBehaviour
 
         Routine.instance.backgroundImage.sprite = Routine.instance.backgroundImages[1]; // 이미지 밤으로 변경..
 
+        UIManager.instance.SetEndBoard();//정산보드 데이터 셋팅
         UIManager.instance.runningOverBoard.SetActive(true); // 정산 화면 뜨기
         //UIManager.instance.RunStartButton.SetActive(true); // 가게 운영이 끝나면 농장으로 가도록 
 
