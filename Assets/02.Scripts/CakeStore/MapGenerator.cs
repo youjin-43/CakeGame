@@ -3,31 +3,28 @@ using UnityEditor;
 using System;  // Array.Resize를 사용하기 위해 System 네임스페이스를 추가
 using System.Collections.Generic;
 
-public class IsoMapCreatorWindow : EditorWindow
+public class MapGenerator : EditorWindow
 {
-    private GameObject tileSprite; // 타일로 사용할 스프라이트
     private GameObject Cashier;
     private GameObject Player;
     private GameObject Showcase;
     private GameObject Maker;
-    private Vector2 top = new Vector2(-1.5f,3);       // 상단 꼭짓점 좌표
-    private Vector2 right = new Vector2(2.5f,.5f);     // 우측 꼭짓점 좌표
-    private Vector2 bottom = new Vector2(-1.5f,-2);    // 하단 꼭짓점 좌표
-    private Vector2 left = new Vector2(-6.5f,.5f);      // 좌측 꼭짓점 좌표
+    private Vector2 top = new Vector2(-1.5f, 3);       // 상단 꼭짓점 좌표
+    private Vector2 right = new Vector2(2.5f, .5f);     // 우측 꼭짓점 좌표
+    private Vector2 bottom = new Vector2(-1.5f, -2);    // 하단 꼭짓점 좌표
+    private Vector2 left = new Vector2(-6.5f, .5f);      // 좌측 꼭짓점 좌표
     private Vector2 tileSize = new Vector2(.5f, 0.25f); // 타일의 크기 (아이소매트릭)
     private interiorList[] interiorLists = new interiorList[0]; // Interior 리스트
 
-    [MenuItem("Utilities/Iso Map Creator")]
+    [MenuItem("Utilities/Map Generator")]
     public static void ShowWindow()
     {
-        GetWindow<IsoMapCreatorWindow>("Iso Map Creator");
+        GetWindow<MapGenerator>("Map Generator");
     }
 
     private void OnGUI()
     {
-        GUILayout.Label("Iso Map Creator", EditorStyles.boldLabel);
-
-        tileSprite = (GameObject)EditorGUILayout.ObjectField("Tile Sprite", tileSprite, typeof(GameObject), false);
+        GUILayout.Label("Map Generator", EditorStyles.boldLabel);
         Cashier = (GameObject)EditorGUILayout.ObjectField("Cashier", Cashier, typeof(GameObject), false);
         Player = (GameObject)EditorGUILayout.ObjectField("Player", Player, typeof(GameObject), false);
         Showcase = (GameObject)EditorGUILayout.ObjectField("Showcase", Showcase, typeof(GameObject), false);
@@ -93,71 +90,66 @@ public class IsoMapCreatorWindow : EditorWindow
     private void CreateIsoMap()
     {
         GameObject newPool = new GameObject("MapPool");
+        CakeManager.instance.cakeUIController.spritesToDisable = newPool;
         newPool.transform.position = Vector3.zero;
-        GameObject floorPool = new GameObject("FloorPool");
-        floorPool.transform.position = Vector3.zero;
-        floorPool.transform.parent = newPool.transform;
         GameObject showcasePool = new GameObject("ShowcasePool");
+        CakeManager.instance.cakeShowcaseController.cakeShowcasePool = showcasePool.transform;
         showcasePool.transform.position = Vector3.zero;
         showcasePool.transform.parent = newPool.transform;
         GameObject makerPool = new GameObject("MakerPool");
+        CakeManager.instance.cakeMakerController.cakeMakersPool = makerPool.transform;
         makerPool.transform.position = Vector3.zero;
         makerPool.transform.parent = newPool.transform;
 
-        if (tileSprite != null)
+
+        float x = 0;
+        float y = 0;
+
+        int cols = Mathf.CeilToInt((top.x - left.x) / tileSize.x);
+        int rows = Mathf.CeilToInt((left.y - bottom.y) / tileSize.y);
+
+        // 루프 범위 설정
+        for (int i = 0; i < rows; i++)
         {
-            float x = 0;
-            float y = 0;
+            x = left.x + i * tileSize.x;
+            y = left.y - i * tileSize.y;
 
-            int cols = Mathf.CeilToInt((top.x - left.x) / tileSize.x);
-            int rows = Mathf.CeilToInt((left.y - bottom.y) / tileSize.y);
-
-            // 루프 범위 설정
-            for (int i = 0; i < rows; i++)
+            for (int j = 0; j < cols; j++)
             {
-                x = left.x + i * tileSize.x;
-                y = left.y - i * tileSize.y;
+                int index = i * cols + j;
+                GameObject prefabToInstantiate = null;
+                Transform objectParent = newPool.transform;
 
-                for (int j = 0; j < cols; j++)
+                foreach (var interior in interiorLists)
                 {
-                    int index = i * cols + j;
-                    GameObject prefabToInstantiate = null;
-                    Transform objectParent = newPool.transform;
-
-                    foreach (var interior in interiorLists)
+                    if (interior.index == index)
                     {
-                        if (interior.index == index)
+                        switch (interior.type)
                         {
-                            switch (interior.type)
-                            {
-                                case 1: prefabToInstantiate = Cashier; objectParent = newPool.transform; break;
-                                case 2: prefabToInstantiate = Player; objectParent = newPool.transform;break;
-                                case 3: prefabToInstantiate = Showcase; objectParent = showcasePool.transform;break;
-                                case 4: prefabToInstantiate = Maker; objectParent = makerPool.transform; break;
-                                default: break;
-                            }
-                            break;
+                            case 1: prefabToInstantiate = Cashier; objectParent = newPool.transform; break;
+                            case 2: prefabToInstantiate = Player; objectParent = newPool.transform; break;
+                            case 3: prefabToInstantiate = Showcase; objectParent = showcasePool.transform; break;
+                            case 4: prefabToInstantiate = Maker; objectParent = makerPool.transform; break;
+                            default: break;
                         }
+                        break;
                     }
-
-                    if (prefabToInstantiate != null)
-                    {
-                        GameObject newObject = Instantiate(prefabToInstantiate, new Vector3(x, y, 0), Quaternion.identity);
-                        newObject.transform.parent = objectParent;
-                        newObject.name = $"Object_{index}";
-                    }
-
-                    x += tileSize.x;
-                    y += tileSize.y;
                 }
-            }
 
-            Debug.Log("아이소매트릭 맵 생성 완료.");
+                if (prefabToInstantiate != null)
+                {
+                    GameObject newObject = Instantiate(prefabToInstantiate, new Vector3(x, y, 0), Quaternion.identity);
+                    newObject.transform.parent = objectParent;
+                    newObject.name = $"Object_{index}";
+                }
+
+                x += tileSize.x;
+                y += tileSize.y;
+            }
         }
-        else
-        {
-            Debug.LogWarning("타일 스프라이트가 설정되지 않았습니다.");
-        }
+
+        Debug.Log("아이소매트릭 맵 생성 완료.");
+
     }
 }
 

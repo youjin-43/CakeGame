@@ -27664,7 +27664,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   colliders: []
-  spritesToDisable: {fileID: 0}
+  spritesToDisable: {fileID: 1699139504}
 --- !u!1 &818456990
 GameObject:
   m_ObjectHideFlags: 0
