@@ -56,21 +56,24 @@ public class QuestManager : MonoBehaviour
 
     private void Update()
     {
-        //딸기케이크 임시 추가 코드 
-        if (Input.GetKeyDown(KeyCode.K))
+        //케이크 임시 추가 코드 
+        if (Input.GetKeyDown(KeyCode.M))
         {
-            CakeManager.instance.cakeMakerController.CompleteCake(5);
+            CakeManager.instance.cakeMakerController.CompleteCake(1);
+            setCurrentQuestUIs();
         }
 
+        //케이크 하나 없애는 임시코드 
         if (Input.GetKeyDown(KeyCode.L))
         {
-            tmp(5, 1);
+            RemoveCake(1, 1);
+            setCurrentQuestUIs();
         }
     }
 
 
-
-    void tmp(int idx,int cnt)
+    //cnt만큼 가지고 있는 케이크의 갯수르 인벤토리에서 없애는 함수 
+    void RemoveCake(int idx,int cnt)
     {
         InventoryItem tmpItem = new InventoryItem()
         {
@@ -155,11 +158,21 @@ public class QuestManager : MonoBehaviour
 
             //현재 가지고있는 양 / 퀘스트 완료를 위해 필요한 양 텍스트 셋팅 
             int toMakeCnt = havingQuests.HavingQuestList[i].ClearValue1; //만들어야하는 양
+            int haveCnt= CakeManager.instance.cakeCounts[cakeIdx];  //현재 인벤토리에 가지고 있는 양
+            QuestUIs[i].Find("needCnt").GetChild(0).GetComponent<Text>().text = haveCnt+"/"+toMakeCnt; //텍스트 설정 
 
-            ////현재 인벤토리에 가지고 있는 양 가져오기 -> 인벤토리를 돌면서 아이디가 같은 케이크의 갯수 가져옴 
-            int haveCnt= CakeManager.instance.cakeCounts[i];
-            
-            QuestUIs[i].Find("needCnt").GetChild(0).GetComponent<Text>().text = haveCnt+"/"+toMakeCnt;
+            //퀘스트 완료 조건 확인
+            if (toMakeCnt <= haveCnt)
+            {
+                //퀘스트 완료 조건이 충족된다면 
+                QuestUIs[i].Find("completeButton").gameObject.SetActive(true); //완료 버튼 활성화
+                //퀘스트 완료
+            }
+            else
+            {
+                //조건이 충족되지 않는다면 
+                QuestUIs[i].Find("completeButton").gameObject.SetActive(false); //완료 버튼 비활성화
+            }
         }
 
         for (; i < QuestUIs.Count; i++)
@@ -183,16 +196,36 @@ public class QuestManager : MonoBehaviour
         //setCurrentQuestUIs();//UI 적용
     }
 
-    //해당 퀘스트를 가지고 있는 퀘스트리스트에서 삭제 
+    //퀘스트 완료 함수
+    public void CompleteQuest(int questId)
+    {
+        //퀘스트
+        for (int i = havingQuests.HavingQuestList.Count - 1; i >= 0; i--)
+        {
+            if (havingQuests.HavingQuestList[i].QuestID == questId)
+            {
+                GameManager.instance.getMoney(havingQuests.HavingQuestList[i].MoneyAmount);//돈 증가
+                ExpManager.instance.getExp(10);//명성 증가
+
+                //퀘스트에 사용된 아이템 인벤토리에서 삭제
+                RemoveCake(havingQuests.HavingQuestList[i].cakeToMakeIdx, havingQuests.HavingQuestList[i].ClearValue1);
+
+                havingQuests.HavingQuestList.Remove(havingQuests.HavingQuestList[i]);
+                Debug.Log("Quest ID : " + i + " 를 완료했습니다.");
+                UpdateCurrnetQuestList();//json에 반영 
+                setCurrentQuestUIs();//UI반영
+                break;
+            }
+        }
+    }
+
+    //해당 퀘스트를 가지고 있는 퀘스트리스트에서 삭제 (개발용)
     public void EraseQuest(int questId)
     {
         for(int i= havingQuests.HavingQuestList.Count-1; i >= 0; i--)
         {
             if (havingQuests.HavingQuestList[i].QuestID == questId)
             {
-                GameManager.instance.getMoney(havingQuests.HavingQuestList[i].MoneyAmount);//돈 증가
-                ExpManager.instance.getExp(10);//명성 증가 
-
                 havingQuests.HavingQuestList.Remove(havingQuests.HavingQuestList[i]);
                 Debug.Log("Quest ID : " + i + " 를 현재 가지고 있는 퀘스트 리스트에서 삭제했습니다.");
                 UpdateCurrnetQuestList();//json에 반영 
