@@ -10,4 +10,9 @@ public class Quest : MonoBehaviour
     {
         QuestManager.instance.EraseQuest(QuestId);
     }
+
+    public void CompleteQuest()
+    {
+        QuestManager.instance.CompleteQuest(QuestId);
+    }
 }
