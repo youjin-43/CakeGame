@@ -34,6 +34,8 @@ public class UIManager : MonoBehaviour
 
     [Header("About UI")]
     public GameObject runningOverBoard; //가게 운영이 끝났을때 활성화 할 오브젝트
+    public GameObject EndBoardContent;
+    public int[] SelledCakeCnt; //해당 케이크가 얼마다 팔렸는지 갯수 저장 (배열 인덱스 == 케이크id idx)
 
     public Text dateText;
     public Text moneyText;//현재 돈을 표시할 텍스트 컴포넌트
@@ -54,6 +56,7 @@ public class UIManager : MonoBehaviour
 
         //정산보드 
         runningOverBoard = GameObject.Find("SettingAnchors").transform.GetChild(1).gameObject;
+        EndBoardContent = runningOverBoard.transform.GetComponentInChildren<VerticalLayoutGroup>().gameObject;
         if (runningOverBoard != null) runningOverBoard.gameObject.SetActive(false); //정산보드 꺼놓음
 
         //이벤트 버튼
@@ -85,5 +88,42 @@ public class UIManager : MonoBehaviour
     public void SetExpBarUI()
     {
         ExpBar.GetComponent<Image>().fillAmount = ExpManager.instance.exp / ExpManager.instance.exp_max;
+    }
+
+    
+    public void initSelledCakeCnt()
+    {
+        SelledCakeCnt = new int[6] { 0, 0, 0, 0, 0,0 };
+    }
+
+    public void RaiseUpCakeCntForEndBoard(int idx)
+    {
+        SelledCakeCnt[idx]++;
+    }
+    
+    public void SetEndBoard()
+    {
+        int total = 0;
+       
+        for (int i = 0; i < EndBoardContent.transform.childCount; i++)
+        {
+            if (SelledCakeCnt[i] == 0)
+            {
+                EndBoardContent.transform.GetChild(i).gameObject.SetActive(false);
+            }
+            else
+            {
+                Transform content = EndBoardContent.transform.GetChild(i);
+                content.gameObject.SetActive(true);
+                content.Find("ItemCnt").GetComponent<Text>().text = SelledCakeCnt[i].ToString();//팔린갯수 셋팅
+
+                int cost = SelledCakeCnt[i] * 100; //100은 케이크 가격. 나중에 수정 해야함 
+                content.Find("sum").GetComponent<Text>().text = cost.ToString();//팔린갯수 셋팅
+                total += cost;
+            }
+            
+        }
+        runningOverBoard.transform.Find("totalMoneyText").GetComponent<Text>().text = total.ToString();//팔린갯수 셋팅
+
     }
 }

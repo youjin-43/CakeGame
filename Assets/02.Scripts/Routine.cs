@@ -89,7 +89,7 @@ public class Routine : MonoBehaviour
         if (scene.name == "CakeStore 1")
         {
             // 씬이 로드될 때 참조 변수 설정
-            backgroundImage = GameObject.Find("BackgroundImage").GetComponent<Image>();
+            //backgroundImage = GameObject.Find("BackgroundImage").GetComponent<Image>();
         }
     }
 }
