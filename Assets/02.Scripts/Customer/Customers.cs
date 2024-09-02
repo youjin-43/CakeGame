@@ -10,8 +10,6 @@ public class Customers : MonoBehaviour
     private int SHOWCASELOCATE = 11;
     NavMeshAgent agent;
     private float moveSpeed;
-    private float lineSpacing;
-    private float sideSpacing;
     public int wantedCakeIndex;
     private int randomIndex = 0;
     private int randomShowcaseIndex;
@@ -20,12 +18,9 @@ public class Customers : MonoBehaviour
     private bool isCakeCheck;
     private bool isDestroy;
     private CustomerController customerController;
-    private Transform frontCustomer;
-    public CustomersMoveType.LineType lineType;
-    private CustomersMoveType.EnterType enterType;
     private CustomersMoveType.ShopType shopType;
     public CustomersMoveType.MoveType moveType;
-    private Transform leftEnd, middleCorner, rightEnd, linePostion, enterOutPosition, enterInPosition, cashierPosition;
+    private Transform cashierPosition, spawnPoint;
     private Transform[] showcasePosition;
     public Vector2 targetPosition;
     public Sprite[] sprites;
@@ -33,18 +28,11 @@ public class Customers : MonoBehaviour
     public int moveState = 0;
     public int MAXLiNENUM = 10;
 
-    public void Initialize(Transform leftEnd, Transform middleCorner, Transform rightEnd, Transform linePostion, Transform enterOutPosition, Transform enterInPosition, Transform cashierPosition, float moveSpeed, float lineSpacing, float sideSpacing, int wantedCakeIndex, CustomerController customerController)
+    public void Initialize(Transform spawnPoint, Transform cashierPosition, float moveSpeed, int wantedCakeIndex, CustomerController customerController)
     {
-        this.leftEnd = leftEnd;
-        this.middleCorner = middleCorner;
-        this.rightEnd = rightEnd;
-        this.linePostion = linePostion;
-        this.enterOutPosition = enterOutPosition;
-        this.enterInPosition = enterInPosition;
+        this.spawnPoint = spawnPoint;
         this.cashierPosition = cashierPosition;
         this.moveSpeed = moveSpeed;
-        this.lineSpacing = lineSpacing;
-        this.sideSpacing = sideSpacing;
         this.wantedCakeIndex = wantedCakeIndex;
         this.customerController = customerController;
         isCakeCheck = false;
@@ -53,23 +41,21 @@ public class Customers : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
         agent.updateUpAxis = false;
-        moveType = CustomersMoveType.MoveType.Move;
-    }
+        moveType = CustomersMoveType.MoveType.Random;
+        CakeShowcaseController cakeShowcaseController = CakeManager.instance.cakeShowcaseController;
+        showcasePosition = new Transform[cakeShowcaseController.cakeShowcasePool.childCount];
+        timer = 0;
+        randomTime = Random.Range(4, 7);
+        for (int i = 0; i < cakeShowcaseController.cakeShowcasePool.childCount; i++) showcasePosition[i] = cakeShowcaseController.cakeShowcasePool.GetChild(i).GetChild(SHOWCASELOCATE).transform;
 
+        randomIndex = Random.Range(0, showcasePosition.Length);
+        targetPosition = showcasePosition[randomIndex].position;
+        moveState = 2;
+    }
     void Update()
     {
         switch (moveType)
         {
-            case CustomersMoveType.MoveType.Move:
-                BeforeLineUp();
-                break;
-            case CustomersMoveType.MoveType.Line:
-                GoToLineUp();
-                UpdateCustomer();
-                break;
-            case CustomersMoveType.MoveType.Enter:
-                GoToEnter();
-                break;
             case CustomersMoveType.MoveType.Random:
                 GoToRandom();
                 break;
@@ -92,10 +78,7 @@ public class Customers : MonoBehaviour
     {
         if (Time.time >= nextFrameTime)
         {
-            if (agent.speed != 0)
-            {
-                nextFrameTime = Time.time + (delay / agent.speed) / (transform.GetChild(1).localScale.x*2); // 다음 프레임 시간 설정
-            }
+            nextFrameTime = Time.time + delay; // 다음 프레임 시간 설정
 
             switch (moveState)
             {
@@ -122,19 +105,29 @@ public class Customers : MonoBehaviour
             }
         }
     }
+
+
     void MoveTo()
     {
-        agent.SetDestination(targetPosition);
-        if (Vector2.Distance(transform.position, targetPosition) > 1f)
+
+        if (agent.speed == 0)
         {
-            if (targetPosition.y > transform.position.y)
+            moveState = 1;
+        }
+        else
+        {
+            agent.SetDestination(targetPosition);
+            
+            Vector3 direction = agent.velocity.normalized;
+            if(direction.y > 0.1f)
             {
                 moveState = 1;
             }
-            else
+            else if (direction.y > -0.1f)
             {
                 moveState = 2;
             }
+
             if (targetPosition.x < transform.position.x)
             {
                 transform.GetChild(1).GetComponent<SpriteRenderer>().flipX = false;
@@ -145,163 +138,13 @@ public class Customers : MonoBehaviour
             }
         }
     }
-
-    void UpdateCustomer()
-    {
-        frontCustomer = customerController.GetFrontCustomer(this);
-    }
-
-    void BeforeLineUp()
-    {
-        if (Vector2.Distance(transform.position, targetPosition) > 0.01f)
-        {
-            MoveTo();
-        }
-        else
-        {
-            if (isDestroy)
-            {
-                Destroy(gameObject);
-            }
-            int r = Random.Range(0, 3);
-            switch (r)
-            {
-                case 0:
-                    if (customerController.customersList.Count > MAXLiNENUM)
-                    {
-                        r = Random.Range(0, 3);
-                        return;
-                    }
-                    if ((Vector3)targetPosition != middleCorner.position) targetPosition = middleCorner.position;
-                    else
-                    {
-                        moveType = CustomersMoveType.MoveType.Line;
-                        lineType = CustomersMoveType.LineType.Start;
-                        UpdateCustomer();
-                    }
-                    break;
-                case 1:
-                    if ((Vector3)targetPosition != middleCorner.position) targetPosition = middleCorner.position;
-                    else if ((Vector3)targetPosition == leftEnd.position) isDestroy = true;
-                    else targetPosition = leftEnd.position;
-                    break;
-                case 2:
-                    if ((Vector3)targetPosition != middleCorner.position) targetPosition = middleCorner.position;
-                    else if ((Vector3)targetPosition == rightEnd.position) isDestroy = true;
-                    else targetPosition = rightEnd.position;
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
-    void GoToLineUp()
-    {
-        switch (lineType)
-        {
-            case CustomersMoveType.LineType.Start:
-                targetPosition = (Vector2)linePostion.position + ((2 * Vector2.right + Vector2.down) * sideSpacing);
-                MoveTo();
-                if (Vector2.Distance(transform.position, targetPosition) <= 0.01f)
-                {
-                    customerController.customersList.Add(this);
-                    lineType = CustomersMoveType.LineType.During;
-                }
-                break;
-            case CustomersMoveType.LineType.During:
-                if (frontCustomer != null)
-                {
-                    targetPosition = (Vector2)linePostion.position + customerController.GetCustomerNum(this) * ((2 * Vector2.right + Vector2.up) * lineSpacing) + ((2 * Vector2.right + Vector2.down) * sideSpacing);
-                }
-                else
-                {
-                    targetPosition = linePostion.position;
-                }
-                MoveTo();
-                if (Vector2.Distance(transform.position, targetPosition) <= 0.01f) lineType = CustomersMoveType.LineType.End;
-                break;
-            case CustomersMoveType.LineType.End:
-                if (frontCustomer != null)
-                {
-                    targetPosition = (Vector2)linePostion.position + customerController.GetCustomerNum(this) * ((2 * Vector2.right + Vector2.up) * lineSpacing);
-                    if (Vector2.Distance(transform.position, targetPosition) > 0.01f)
-                    {
-                        MoveTo();
-                    }
-                    else
-                    {
-                        moveState = 0;
-                    }
-                    if (frontCustomer.GetComponent<Customers>().moveType == CustomersMoveType.MoveType.Random || frontCustomer.GetComponent<Customers>().moveType == CustomersMoveType.MoveType.Shop)
-                    {
-                        StartCoroutine(StopForSeconds(1f));
-                        agent.speed = moveSpeed / 2;
-                        customerController.customersList.Remove(this);
-                        lineType = CustomersMoveType.LineType.None;
-                        moveType = CustomersMoveType.MoveType.Enter;
-                        enterType = CustomersMoveType.EnterType.None;
-                    }
-
-                }
-                else
-                {
-                    moveState = 0;
-                    if (Routine.instance.routineState == RoutineState.Open)
-                    {
-                        agent.speed = moveSpeed / 2;
-                        customerController.customersList.Remove(this);
-                        lineType = CustomersMoveType.LineType.None;
-                        moveType = CustomersMoveType.MoveType.Enter;
-                        enterType = CustomersMoveType.EnterType.None;
-                    }
-                }
-                break;
-        }
-    }
-
-    void GoToEnter()
-    {
-        switch (enterType)
-        {
-            case CustomersMoveType.EnterType.None:
-                enterType = CustomersMoveType.EnterType.Out;
-                break;
-            case CustomersMoveType.EnterType.Out:
-                targetPosition = enterOutPosition.position;
-                MoveTo();
-                if (Vector2.Distance(transform.position, targetPosition) <= 0.01f) enterType = CustomersMoveType.EnterType.In;
-                break;
-            case CustomersMoveType.EnterType.In:
-                targetPosition = enterInPosition.position;
-                MoveTo();
-                if (Vector2.Distance(transform.position, targetPosition) <= 0.01f)
-                {
-                    CakeShowcaseController cakeShowcaseController = CakeManager.instance.cakeShowcaseController;
-                    showcasePosition = new Transform[cakeShowcaseController.cakeShowcasePool.childCount];
-                    timer = 0;
-                    randomTime = Random.Range(4, 7);
-                    for (int i = 0; i < cakeShowcaseController.cakeShowcasePool.childCount; i++)
-                    {
-                        showcasePosition[i] = cakeShowcaseController.cakeShowcasePool.GetChild(i).GetChild(SHOWCASELOCATE).transform;
-                    }
-
-                    randomIndex = Random.Range(0, showcasePosition.Length);
-                    targetPosition = showcasePosition[randomIndex].position;
-                    enterType = CustomersMoveType.EnterType.None;
-                    moveType = CustomersMoveType.MoveType.Random;
-                    UpdateCustomer();
-                }
-                break;
-        }
-    }
-
     void GoToRandom()
     {
+
         timer += Time.deltaTime;
         if (Vector2.Distance(transform.position, targetPosition) <= 0.01f)
         {
-            StartCoroutine(StopForSeconds(1f)); // 3초 멈춤
+            StartCoroutine(StopForSeconds(.5f)); // 3초 멈춤
             randomIndex = Random.Range(0, showcasePosition.Length);
             targetPosition = showcasePosition[randomIndex].position;
         }
@@ -316,7 +159,6 @@ public class Customers : MonoBehaviour
                 transform.GetChild(0).gameObject.SetActive(false);
                 moveType = CustomersMoveType.MoveType.Shop;
                 shopType = CustomersMoveType.ShopType.Check;
-                UpdateCustomer();
                 isCakeCheck = false;
             }
         }
@@ -326,11 +168,11 @@ public class Customers : MonoBehaviour
             {
                 moveType = CustomersMoveType.MoveType.Shop;
                 shopType = CustomersMoveType.ShopType.Check;
-                UpdateCustomer();
                 isCakeCheck = false;
             }
             else
             {
+                isCakeCheck = true;
                 timer = 0;
                 randomTime *= 2;
                 transform.GetChild(0).gameObject.SetActive(true);
@@ -360,7 +202,7 @@ public class Customers : MonoBehaviour
                 }
                 else
                 {
-                    shopType = CustomersMoveType.ShopType.In;
+                    shopType = CustomersMoveType.ShopType.Out;
                 }
                 break;
             case CustomersMoveType.ShopType.Shop:
@@ -386,19 +228,14 @@ public class Customers : MonoBehaviour
                     transform.GetChild(0).GetChild(0).GetComponent<SpriteRenderer>().sprite = customerController.heart;
                     StartCoroutine(StopForSeconds(1f));
                     transform.GetChild(0).gameObject.SetActive(false);
-                    shopType = CustomersMoveType.ShopType.In;
-                    GameManager.instance.getMoney(100);
-                    //SoundManager.instance.GetMoneyClip();
+                    shopType = CustomersMoveType.ShopType.Out;
+                    GameManager.instance.getMoney(CakeManager.instance.cakeSODataList[wantedCakeIndex].cakePrice);
+                    customerController.SellAudio();
                     Debug.Log("케이크가 판매 되었습니다.");
                 }
                 break;
-            case CustomersMoveType.ShopType.In:
-                targetPosition = enterInPosition.position;
-                MoveTo();
-                if (Vector2.Distance(transform.position, targetPosition) <= 0.01f) shopType = CustomersMoveType.ShopType.Out;
-                break;
             case CustomersMoveType.ShopType.Out:
-                targetPosition = enterOutPosition.position;
+                targetPosition = spawnPoint.position;
                 MoveTo();
                 if (Vector2.Distance(transform.position, targetPosition) <= 0.01f)
                 {
@@ -412,6 +249,6 @@ public class Customers : MonoBehaviour
     {
         agent.speed = 0f; // 이동을 멈추기 위해 속도를 0으로 설정
         yield return new WaitForSeconds(seconds);
-        agent.speed = moveSpeed / 2; // 이동을 재개하기 위해 원래 속도로 설정 (원래 속도로 변경)
+        agent.speed = moveSpeed; // 이동을 재개하기 위해 원래 속도로 설정 (원래 속도로 변경)
     }
 }
