@@ -52,6 +52,12 @@ public class Animal : MonoBehaviour, IPointerClickHandler
 
 
 
+    // 애니메이션 관련
+    [SerializeField]
+    public Animator animator;
+
+
+
     private void Awake()
     {
         farmTilemap = GameObject.Find("farmTilemap").GetComponent<Tilemap>();
@@ -60,6 +66,8 @@ public class Animal : MonoBehaviour, IPointerClickHandler
 
         seedFarmingDataPos = new List<Vector3Int>();
         farmingDataPos = new List<Vector3Int>();
+
+        animator = GetComponent<Animator>();
     }
 
     private void OnEnable()
@@ -118,8 +126,10 @@ public class Animal : MonoBehaviour, IPointerClickHandler
                 if (!farmingManager.farmingData[farmTilemap.WorldToCell(targetPos)].isGrown)
                 {
                     // 1.5초 지날 때마다 일수 +1..
-                    if (tmpTime >= 1.5f)
+                    if (tmpTime >= 1f)
                     {
+                        animator.SetTrigger("Attack");
+
                         // 만약 이미 망한 상태면
                         if (farmingManager.farmingData[farmTilemap.WorldToCell(targetPos)].failedState)
                             return; // 그냥 빠져나가도록..

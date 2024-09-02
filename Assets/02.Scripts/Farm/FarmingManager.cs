@@ -1234,7 +1234,7 @@ public class FarmingManager : MonoBehaviour
         if (farmLevel == 5)
         {
             farmSizeUpgradeCostText.text = "max";
-            nextScareCrowLevelText.text = "X";
+            nextFarmSizeLevelText.text = "X";
         } 
         else
         {

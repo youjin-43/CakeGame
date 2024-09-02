@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5762139587425595608}
   - component: {fileID: 3932543082639307485}
   - component: {fileID: -4737020683414229948}
+  - component: {fileID: 7344473323913371620}
   m_Layer: 0
   m_Name: Animal
   m_TagString: Untagged
@@ -30,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -1.4750669, y: 1.0754546, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -100,16 +101,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 2
-  seedFarmingDataPos: []
-  farmingDataPos: []
   farmingManager: {fileID: 0}
   animalInteractionManager: {fileID: 0}
   startPos: {x: 0, y: 0, z: 0}
   targetPos: {x: 0, y: 0, z: 0}
-  farmTilemap: {fileID: 0}
   stopTime: 0
   failTime: 3
   tmpTime: 0
+  seedFarmingDataPos: []
+  farmingDataPos: []
+  farmTilemap: {fileID: 0}
+  animator: {fileID: 0}
 --- !u!50 &3932543082639307485
 Rigidbody2D:
   serializedVersion: 4
@@ -171,4 +173,25 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.2
+  m_Radius: 0.5
+--- !u!95 &7344473323913371620
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5925064638614667170}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 29162f87ee3191341a47a87ef3f1dd1b, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
