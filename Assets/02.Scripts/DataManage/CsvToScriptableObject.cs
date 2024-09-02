@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEditor;
 using System.IO;
-public class CsvToScriptableObject
+using System;
+public class CsvToScriptableObject : EditorWindow
 {
     private static string SeedCSVPath = Application.dataPath + "/08.Data/SeedItemSOData.csv";
     private static string FruitCSVPath = Application.dataPath + "/08.Data/FruitItemSOData.csv";
@@ -71,6 +72,7 @@ public class CsvToScriptableObject
     [MenuItem("Utilities/Generate Cake - youjin")]
     public static void GenerateCake()
     {
+        CakeManager cakeManager = FindObjectOfType<CakeManager>();
         string[] allLines = File.ReadAllLines(CakeCSVPath);
 
         for (int i = 1; i < allLines.Length; i++)
@@ -94,18 +96,21 @@ public class CsvToScriptableObject
 
             //materialIdxs 배열
             string[] materials = splitData[8].Split('/');
+            cake.materialIdxs = new int[materials.Length];
             for (int m=0;m<materials.Length;m++) cake.materialIdxs[m]= int.Parse(materials[m]);
             
             //materialCount 배열 
             string[] materialCnts = splitData[9].ToString().Split('/');
+            cake.materialCounts = new int[materials.Length];
             for (int m = 0; m < materials.Length; m++) cake.materialCounts[m] = int.Parse(materialCnts[m]);
             cake.exp =  int.Parse(splitData[10].ToString());
             cake.isLocked = (splitData[11].ToString() == "TRUE") ? true : false;
             cake.cakeIdx = int.Parse(splitData[12].ToString());
 
-            cake.itemImage = (Sprite)AssetDatabase.LoadAssetAtPath($"Assets/04.Images/CakeImage/{cake.cakeIdx}.asset", typeof(Sprite));
+            cake.itemImage = (Sprite)AssetDatabase.LoadAssetAtPath($"Assets/Resources/CakeImage/{cake.cakeIdx}.asset", typeof(Sprite));
 
             AssetDatabase.CreateAsset(cake, $"Assets/SO/CakeSO/{cake.Name}.asset");
+            cakeManager.AddCakeData(cake);
         }
         AssetDatabase.SaveAssets();
     }
