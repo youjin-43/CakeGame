@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using Inventory.Model;
 
 public class CakeShowcaseController : MonoBehaviour
 {
@@ -146,6 +147,12 @@ public class CakeShowcaseController : MonoBehaviour
         // 케이크 선택 상태 업데이트
         cakeShowcase.isCakeSelected[cakeShowcasePlaceIndex] = true;
         cakeShowcase.cakeType[cakeShowcasePlaceIndex] = index;
+        InventoryItem tempItem = new InventoryItem()
+        {
+            item = UIInventoryManager.instance.cakeItems[index],
+            quantity = 1,
+        };
+        UIInventoryManager.instance.MinusItem(tempItem);
         cakeManager.MinusCakeCount(index);
         cakeUIController.CloseMenu(cakeShowcaseMenu);
         UpdateShowcaseUI(cakeShowcaseIndex);               // 쇼케이스 UI 업데이트
