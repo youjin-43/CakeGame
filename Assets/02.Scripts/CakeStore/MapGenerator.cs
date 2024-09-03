@@ -50,10 +50,10 @@ public class MapGenerator : EditorWindow
                 interiorLists[i] = new interiorList(); // 배열 요소가 null이면 초기화
             }
 
-            EditorGUILayout.BeginHorizontal();
-            interiorLists[i].index = EditorGUILayout.IntField("Index", interiorLists[i].index);
-            interiorLists[i].type = EditorGUILayout.IntField("Type", interiorLists[i].type);
-            EditorGUILayout.EndHorizontal();
+            // EditorGUILayout.BeginHorizontal();
+            // interiorLists[i].index = EditorGUILayout.IntField("Index", interiorLists[i].index);
+            // interiorLists[i].type = EditorGUILayout.IntField("Type", interiorLists[i].type);
+            // EditorGUILayout.EndHorizontal();
         }
 
         if (GUILayout.Button("Create IsoMap"))
@@ -74,7 +74,7 @@ public class MapGenerator : EditorWindow
             for (int x = 0; x < cols.Length; x++)
             {
                 int type = int.Parse(cols[x]);
-                if (type != 0) // type이 0이 아니면 interiorList에 추가
+                if (true) // type이 0이 아니면 interiorList에 추가
                 {
                     interiorList item = new interiorList();
                     item.index = y * cols.Length + x;
@@ -89,15 +89,19 @@ public class MapGenerator : EditorWindow
 
     private void CreateIsoMap()
     {
+        CustomerController customerController =FindAnyObjectByType<CustomerController>();
         GameObject newPool = new GameObject("MapPool");
-        CakeManager.instance.cakeUIController.spritesToDisable = newPool;
+        CakeUIController cakeUIController = FindAnyObjectByType<CakeUIController>();
+        cakeUIController.spritesToDisable = newPool;
         newPool.transform.position = Vector3.zero;
         GameObject showcasePool = new GameObject("ShowcasePool");
-        CakeManager.instance.cakeShowcaseController.cakeShowcasePool = showcasePool.transform;
+        CakeShowcaseController cakeShowcaseController = FindAnyObjectByType<CakeShowcaseController>();
+        cakeShowcaseController.cakeShowcasePool = showcasePool.transform;
         showcasePool.transform.position = Vector3.zero;
         showcasePool.transform.parent = newPool.transform;
         GameObject makerPool = new GameObject("MakerPool");
-        CakeManager.instance.cakeMakerController.cakeMakersPool = makerPool.transform;
+        CakeMakerController cakeMakerController = FindAnyObjectByType<CakeMakerController>();
+        cakeMakerController.cakeMakersPool = makerPool.transform;
         makerPool.transform.position = Vector3.zero;
         makerPool.transform.parent = newPool.transform;
 
@@ -111,8 +115,8 @@ public class MapGenerator : EditorWindow
         // 루프 범위 설정
         for (int i = 0; i < rows; i++)
         {
-            x = left.x + i * tileSize.x;
-            y = left.y - i * tileSize.y;
+            x = top.x + i * tileSize.x;
+            y = top.y - i * tileSize.y;
 
             for (int j = 0; j < cols; j++)
             {
@@ -126,7 +130,8 @@ public class MapGenerator : EditorWindow
                     {
                         switch (interior.type)
                         {
-                            case 1: prefabToInstantiate = Cashier; objectParent = newPool.transform; break;
+                            case 0: prefabToInstantiate = Player; objectParent = newPool.transform; break;
+                            case 1: prefabToInstantiate = Cashier; objectParent = newPool.transform; customerController.cashierPosition = Cashier.transform; break;
                             case 2: prefabToInstantiate = Player; objectParent = newPool.transform; break;
                             case 3: prefabToInstantiate = Showcase; objectParent = showcasePool.transform; break;
                             case 4: prefabToInstantiate = Maker; objectParent = makerPool.transform; break;
@@ -143,8 +148,8 @@ public class MapGenerator : EditorWindow
                     newObject.name = $"Object_{index}";
                 }
 
-                x += tileSize.x;
-                y += tileSize.y;
+                x -= tileSize.x;
+                y -= tileSize.y;
             }
         }
 
