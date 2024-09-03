@@ -16,7 +16,6 @@ public class Customers : MonoBehaviour
     private float randomTime = 0;
     private float timer;
     private bool isCakeCheck;
-    private bool isDestroy;
     private CustomerController customerController;
     private CustomersMoveType.ShopType shopType;
     public CustomersMoveType.MoveType moveType;
@@ -36,7 +35,6 @@ public class Customers : MonoBehaviour
         this.wantedCakeIndex = wantedCakeIndex;
         this.customerController = customerController;
         isCakeCheck = false;
-        isDestroy = false;
         transform.GetChild(0).gameObject.SetActive(false);
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
