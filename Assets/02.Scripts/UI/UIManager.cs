@@ -80,7 +80,11 @@ public class UIManager : MonoBehaviour
         moneyText = GameObject.Find("MoneyText").GetComponent<Text>();
         levelText = GameObject.Find("LevelText").GetComponent<Text>();
 
-        RunStartButton = GameObject.Find("RunStartButoon");//가게 운영 스타트 버튼 
+        RunStartButton = GameObject.Find("RunStartButoon");//가게 운영 스타트 버튼
+        if(RunStartButton != null)
+        {
+            RunStartButton.GetComponent<Button>().onClick.AddListener(GameManager.instance.StartRunning);//버튼 기능 세팅 -> 이렇게 코드로 하면 인스펙터에서 안보이네..?
+        }
         GoFarmButton = tmp.transform.GetChild(2).gameObject; // 농장으로 가는 버튼 
         ExpBar = GameObject.Find("ExpBar");
     }
