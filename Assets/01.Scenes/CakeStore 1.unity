@@ -31360,6 +31360,7 @@ MonoBehaviour:
   moneyText: {fileID: 1237246375}
   levelText: {fileID: 366538721}
   RunStartButton: {fileID: 1186895305}
+  GoFarmButton: {fileID: 0}
   EventButton: {fileID: 0}
   ExpBar: {fileID: 0}
 --- !u!1 &956260203
@@ -38961,6 +38962,7 @@ MonoBehaviour:
     Level10: []
   dialogBox: {fileID: 0}
   dialogText: {fileID: 0}
+  BackgroundImage: {fileID: 0}
   currntDialog: []
   idx: 0
 --- !u!4 &1406259862
@@ -40626,6 +40628,10 @@ PrefabInstance:
     - target: {fileID: 2572777382527431534, guid: 4cc24e04c57a046f1b1a582fba78d48d, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -198.41776
+      objectReference: {fileID: 0}
+    - target: {fileID: 3921327077703869862, guid: 4cc24e04c57a046f1b1a582fba78d48d, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5122204859199955649, guid: 4cc24e04c57a046f1b1a582fba78d48d, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -44670,9 +44676,9 @@ RectTransform:
   m_Children:
   - {fileID: 762999392}
   - {fileID: 460607972}
+  - {fileID: 1772270499}
   - {fileID: 366538720}
   - {fileID: 1186895306}
-  - {fileID: 1772270499}
   - {fileID: 2040984524}
   - {fileID: 586319359}
   - {fileID: 1750781119}
@@ -46100,7 +46106,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1772270499
 RectTransform:
   m_ObjectHideFlags: 0
@@ -46179,7 +46185,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1772270500}
         m_TargetAssemblyTypeName: GoFarmButton, Assembly-CSharp
-        m_MethodName: SceneChange
+        m_MethodName: ChageSceneToFarm
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -47778,19 +47784,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9011108925836840852, guid: 389e25e9a9fe01944a642cad5e6b0ee7, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9011108925836840852, guid: 389e25e9a9fe01944a642cad5e6b0ee7, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9011108925836840852, guid: 389e25e9a9fe01944a642cad5e6b0ee7, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 38.2117
       objectReference: {fileID: 0}
     - target: {fileID: 9011108925836840852, guid: 389e25e9a9fe01944a642cad5e6b0ee7, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -33.177902
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -49991,7 +49997,7 @@ MonoBehaviour:
   date: 0
   money: 0
   runTime: 0
-  MaxRunTime: 140
+  MaxRunTime: 5
   RuntimeBar: {fileID: 1788262705}
 --- !u!1 &1987588559
 GameObject:
