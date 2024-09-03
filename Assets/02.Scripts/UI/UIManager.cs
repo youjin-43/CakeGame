@@ -42,6 +42,7 @@ public class UIManager : MonoBehaviour
     public Text levelText;
 
     public GameObject RunStartButton; //가게 운영을 시작시키는 버튼
+    public GameObject GoFarmButton; //가게 운영이 끝나고 농장으로 가는 버튼 
 
     public GameObject EventButton;//이벤트가 있는경우 클릭해서 이벤트를 실행할 버튼
 
@@ -54,15 +55,25 @@ public class UIManager : MonoBehaviour
     {
         //Debug.Log("SetDatainUI 실행됨 ");
 
-        //정산보드 
-        runningOverBoard = GameObject.Find("SettingAnchors").transform.GetChild(1).gameObject;
-        EndBoardContent = runningOverBoard.transform.GetComponentInChildren<VerticalLayoutGroup>().gameObject;
-        if (runningOverBoard != null) runningOverBoard.gameObject.SetActive(false); //정산보드 꺼놓음
+        //부모에 접근 
+        GameObject tmp = GameObject.Find("SettingAnchors");
 
-        ////이벤트 버튼
+        //씬에 정산보드(EndBoard) UI 오브젝트가 있다면 
+        if (tmp.transform.GetChild(1).name == "EndBoard")
+        {
+            runningOverBoard = tmp.transform.GetChild(1).gameObject;//EndBoard 오브젝트 셋팅하고
+            runningOverBoard.gameObject.SetActive(false); //정산보드 꺼놓음
+            EndBoardContent = runningOverBoard.transform.GetComponentInChildren<VerticalLayoutGroup>().gameObject;//정산보드 컨텐츠를 구성할 오브젝트도 할당 
+        }
+        
+        //이벤트 버튼
         EventButton = GameObject.Find("EventButton");
-        if (EventSceneManager.instance.toShowEvnetList.events.Count < 1) EventButton.gameObject.SetActive(false); // 실행해야하는 이벤트 없으면 비활성화
-        EventButton.GetComponent<Button>().onClick.AddListener(EventSceneManager.instance.StartEventScene);//버튼 기능 세팅 
+        if(EventButton != null)
+        {
+            // 실행해야하는 이벤트 없으면 비활성화
+            if (EventSceneManager.instance.toShowEvnetList.events.Count < 1) EventButton.gameObject.SetActive(false); 
+            EventButton.GetComponent<Button>().onClick.AddListener(EventSceneManager.instance.StartEventScene);//버튼 기능 세팅 
+        }
 
         //각종 데이터(텍스트)를 표시할 오브젝트들 
         dateText = GameObject.Find("DateText").GetComponent<Text>();
@@ -70,7 +81,7 @@ public class UIManager : MonoBehaviour
         levelText = GameObject.Find("LevelText").GetComponent<Text>();
 
         RunStartButton = GameObject.Find("RunStartButoon");//가게 운영 스타트 버튼 
-
+        GoFarmButton = tmp.transform.GetChild(2).gameObject; // 농장으로 가는 버튼 
         ExpBar = GameObject.Find("ExpBar");
     }
 

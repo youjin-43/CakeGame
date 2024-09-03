@@ -38961,6 +38961,7 @@ MonoBehaviour:
     Level10: []
   dialogBox: {fileID: 0}
   dialogText: {fileID: 0}
+  BackgroundImage: {fileID: 0}
   currntDialog: []
   idx: 0
 --- !u!4 &1406259862
@@ -47778,19 +47779,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9011108925836840852, guid: 389e25e9a9fe01944a642cad5e6b0ee7, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9011108925836840852, guid: 389e25e9a9fe01944a642cad5e6b0ee7, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9011108925836840852, guid: 389e25e9a9fe01944a642cad5e6b0ee7, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 38.2117
       objectReference: {fileID: 0}
     - target: {fileID: 9011108925836840852, guid: 389e25e9a9fe01944a642cad5e6b0ee7, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -33.177902
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -49991,7 +49992,7 @@ MonoBehaviour:
   date: 0
   money: 0
   runTime: 0
-  MaxRunTime: 140
+  MaxRunTime: 5
   RuntimeBar: {fileID: 1788262705}
 --- !u!1 &1987588559
 GameObject:

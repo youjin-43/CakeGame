@@ -127,7 +127,7 @@ public class GameManager : MonoBehaviour
 
         UIManager.instance.SetEndBoard();//정산보드 데이터 셋팅
         UIManager.instance.runningOverBoard.SetActive(true); // 정산 화면 뜨기
-        //UIManager.instance.RunStartButton.SetActive(true); // 가게 운영이 끝나면 농장으로 가도록 
+        UIManager.instance.GoFarmButton.SetActive(true); //가게 운영이 끝나면 농장으로 가도록 농장으로 가는 버튼 활성화 
 
         //정산 결과 저장 -> 돈, 인지도 등 데이터 갱신
         PlayerPrefs.SetInt("date", date);
