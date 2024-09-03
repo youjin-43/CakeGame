@@ -9,13 +9,13 @@ public class MapGenerator : EditorWindow
     private GameObject Player;
     private GameObject Showcase;
     private GameObject Maker;
-    private Vector2 top = new Vector2(-1.5f, 3);       // 상단 꼭짓점 좌표
+    private Vector2 top = new Vector2(-2f, 2.75f);       // 상단 꼭짓점 좌표
     private Vector2 right = new Vector2(2.5f, .5f);     // 우측 꼭짓점 좌표
-    private Vector2 bottom = new Vector2(-1.5f, -2);    // 하단 꼭짓점 좌표
-    private Vector2 left = new Vector2(-6.5f, .5f);      // 좌측 꼭짓점 좌표
+    private Vector2 bottom = new Vector2(-2f, -2.25f);    // 하단 꼭짓점 좌표
+    private Vector2 left = new Vector2(-7f, .25f);      // 좌측 꼭짓점 좌표
     private Vector2 tileSize = new Vector2(.5f, 0.25f); // 타일의 크기 (아이소매트릭)
     private interiorList[] interiorLists = new interiorList[0]; // Interior 리스트
-
+ 
     [MenuItem("Utilities/Map Generator")]
     public static void ShowWindow()
     {
@@ -38,7 +38,7 @@ public class MapGenerator : EditorWindow
         // CSV 데이터에서 interiorList 가져오기
         if (GUILayout.Button("Load CSV"))
         {
-            string csvData = "4,4,4,0,0,0,0,0,0,3\n0,0,0,0,0,0,0,0,0,3\n0,0,0,2,0,0,0,0,0,3\n3,3,3,1,3,3,3,0,0,3\n0,0,0,0,0,0,0,0,0,3\n0,0,0,0,0,0,0,0,0,3\n3,3,3,3,3,3,3,0,0,3\n0,0,0,0,0,0,0,0,0,0\n0,0,0,0,0,0,0,0,0,0\n0,0,0,0,0,0,0,0,0,0";
+            string csvData = "0,0,0,0,0,4,4,4,4,4\n0,0,0,0,0,0,0,0,0,0\n0,0,0,0,0,0,2,0,0,0\n3,3,3,3,0,0,1,3,3,3\n0,0,0,0,0,0,0,0,0,0\n0,0,0,0,0,0,0,0,0,0\n3,3,3,3,0,0,3,3,3,3\n0,0,0,0,0,0,0,0,0,0\n0,0,0,0,0,0,0,0,0,0\n0,0,0,0,0,0,0,0,0,0";
             LoadInteriorListFromCSV(csvData);
         }
 
@@ -130,7 +130,7 @@ public class MapGenerator : EditorWindow
                     {
                         switch (interior.type)
                         {
-                            case 0: prefabToInstantiate = Player; objectParent = newPool.transform; break;
+                            case 0: prefabToInstantiate = Player.transform.GetChild(0).gameObject; objectParent = newPool.transform; prefabToInstantiate.SetActive(false); break;
                             case 1: prefabToInstantiate = Cashier; objectParent = newPool.transform; customerController.cashierPosition = Cashier.transform; break;
                             case 2: prefabToInstantiate = Player; objectParent = newPool.transform; break;
                             case 3: prefabToInstantiate = Showcase; objectParent = showcasePool.transform; break;
