@@ -123,12 +123,12 @@ public class Customers : MonoBehaviour
             {
                 moveState = 1;
             }
-            else if (direction.y > -0.1f)
+            else if (direction.y < -0.1f)
             {
                 moveState = 2;
             }
 
-            if (targetPosition.x < transform.position.x)
+            if ((targetPosition.x < transform.position.x && moveState == 1) || (targetPosition.x > transform.position.x && moveState == 2))
             {
                 transform.GetChild(1).GetComponent<SpriteRenderer>().flipX = false;
             }
