@@ -16,7 +16,6 @@ public class Customers : MonoBehaviour
     private float randomTime = 0;
     private float timer;
     private bool isCakeCheck;
-    private bool isDestroy;
     private CustomerController customerController;
     private CustomersMoveType.ShopType shopType;
     public CustomersMoveType.MoveType moveType;
@@ -36,7 +35,6 @@ public class Customers : MonoBehaviour
         this.wantedCakeIndex = wantedCakeIndex;
         this.customerController = customerController;
         isCakeCheck = false;
-        isDestroy = false;
         transform.GetChild(0).gameObject.SetActive(false);
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
@@ -135,12 +133,12 @@ public class Customers : MonoBehaviour
             {
                 moveState = 1;
             }
-            else if (direction.y > -0.1f)
+            else if (direction.y < -0.1f)
             {
                 moveState = 2;
             }
 
-            if (targetPosition.x < transform.position.x)
+            if ((targetPosition.x < transform.position.x && moveState == 1) || (targetPosition.x > transform.position.x && moveState == 2))
             {
                 transform.GetChild(1).GetComponent<SpriteRenderer>().flipX = false;
             }
@@ -243,6 +241,7 @@ public class Customers : MonoBehaviour
                     shopType = CustomersMoveType.ShopType.Out;
                     GameManager.instance.getMoney(CakeManager.instance.cakeSODataList[wantedCakeIndex].cakePrice);
                     customerController.SellAudio();
+                    CakeManager.instance.soldCakeCount[wantedCakeIndex]++;
                     UIManager.instance.RaiseUpCakeCntForEndBoard(wantedCakeIndex);
                     Debug.Log("케이크가 판매 되었습니다.");
                 }
