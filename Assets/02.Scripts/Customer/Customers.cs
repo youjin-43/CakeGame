@@ -69,6 +69,18 @@ public class Customers : MonoBehaviour
             Destroy(gameObject);
         }
         UpdateAnimation();
+        if (GameManager.instance.MaxRunTime - GameManager.instance.runTime < 5)
+        {
+            if (moveType == CustomersMoveType.MoveType.Shop)
+            {
+                agent.speed = moveSpeed * 2;
+            }
+            else
+            {
+                moveType = CustomersMoveType.MoveType.Shop;
+                shopType = CustomersMoveType.ShopType.Out;
+            }
+        }
     }
     private float nextFrameTime = 0.1f;
     private bool isIdle;
@@ -117,9 +129,9 @@ public class Customers : MonoBehaviour
         else
         {
             agent.SetDestination(targetPosition);
-            
+
             Vector3 direction = agent.velocity.normalized;
-            if(direction.y > 0.1f)
+            if (direction.y > 0.1f)
             {
                 moveState = 1;
             }
