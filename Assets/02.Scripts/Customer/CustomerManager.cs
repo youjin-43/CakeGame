@@ -55,7 +55,7 @@ public class CustomerController : MonoBehaviour
             customers.sprites = customerImages[Random.Range(0,customerImages.Length)].sprites;
             customers.Initialize(currentSpawnPoint, cashierPosition, moveSpeed, wantedCakeIndex, this);
             yield return new WaitForSeconds(customersSpawnInterval);
-            if (Routine.instance.routineState == RoutineState.Close)
+            if(GameManager.instance.MaxRunTime - GameManager.instance.runTime < 0)
             {
                 StopCoroutine(SpawnCustomers());
                 isStartSpawning = false;

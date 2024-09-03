@@ -29389,7 +29389,7 @@ MonoBehaviour:
   heart: {fileID: 21300000, guid: 0faf5e9f2cb5540428d3b8d7753cbda8, type: 3}
   audioManager: {fileID: 1422544568}
   sfxState: 7
-  customersSpawnInterval: 10000
+  customersSpawnInterval: 3
   moveSpeed: 2
   customersList: []
 --- !u!4 &856972507
@@ -49997,7 +49997,7 @@ MonoBehaviour:
   date: 0
   money: 0
   runTime: 0
-  MaxRunTime: 5
+  MaxRunTime: 30
   RuntimeBar: {fileID: 1788262705}
 --- !u!1 &1987588559
 GameObject:
