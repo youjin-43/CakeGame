@@ -115,7 +115,8 @@ public class CakeMakerController : MonoBehaviour
             }
         }
 
-        GameManager.instance.money -= cakeData.cakeCost;       // 돈 감소
+       
+        GameManager.instance.getMoney(-CakeManager.instance.cakeSODataList[index].cakeCost);       // 돈 감소
         for (int i = 0; i < cakeData.materialIdxs.Length; i++) // 재료 감소
         {
             InventoryItem tempItem = new InventoryItem()
@@ -140,7 +141,6 @@ public class CakeMakerController : MonoBehaviour
             quantity = 1,
         };
         UIInventoryManager.instance.AddItem(tmpItem); // 만든 아이템 인벤토리에 추가해주기..
-        GameManager.instance.getMoney(-CakeManager.instance.cakeSODataList[index].cakeCost);
         cakeManager.soldCakeCount[index]++;
         ExpManager.instance.getExp(cakeManager.cakeSODataList[index].exp);
         UpdateUI();                           // UI 업데이트
