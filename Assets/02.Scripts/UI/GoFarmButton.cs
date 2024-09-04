@@ -23,6 +23,7 @@ public class GoFarmButton : MonoBehaviour
         if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("CakeStore 1"))
         {
             SceneManager.LoadScene("Farm");
+            Routine.instance.SetPrepare();
         }
     }
 }
