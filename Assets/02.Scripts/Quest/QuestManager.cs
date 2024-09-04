@@ -60,7 +60,7 @@ public class QuestManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.M))
         {
             CakeManager.instance.cakeMakerController.CompleteCake(1);
-            setCurrentQuestUIs();
+            //setCurrentQuestUIs();
         }
 
         //케이크 하나 없애는 임시코드 

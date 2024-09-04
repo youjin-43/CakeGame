@@ -45,6 +45,7 @@ public class UIManager : MonoBehaviour
     public GameObject GoFarmButton; //가게 운영이 끝나고 농장으로 가는 버튼 
 
     public GameObject EventButton;//이벤트가 있는경우 클릭해서 이벤트를 실행할 버튼
+    public GameObject QuestButton;//퀘스트 버튼 
 
     [Header("About EXP")]
     public GameObject ExpBar;
@@ -74,6 +75,11 @@ public class UIManager : MonoBehaviour
             if (EventSceneManager.instance.toShowEvnetList.events.Count < 1) EventButton.gameObject.SetActive(false); 
             EventButton.GetComponent<Button>().onClick.AddListener(EventSceneManager.instance.StartEventScene);//버튼 기능 세팅 
         }
+
+        //퀘스트  버튼
+        QuestButton = GameObject.Find("QuestButton");
+        QuestButton.GetComponent<Button>().onClick.AddListener(QuestManager.instance.setCurrentQuestUIs);//버튼 기능 세팅 
+        
 
         //각종 데이터(텍스트)를 표시할 오브젝트들 
         dateText = GameObject.Find("DateText").GetComponent<Text>();
