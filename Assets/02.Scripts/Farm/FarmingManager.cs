@@ -1377,7 +1377,7 @@ public class FarmingManager : MonoBehaviour
 
         Debug.Log("probability: " + probability);
 
-        if (Random.Range(0, probability) == 0)
+        if (/*Random.Range(0, probability) == 0*/true)
         {
             StartFarmAnimalBGM(); // 동물 게임 활성화 된거니까 그에 맞는 배경음 틀어주기..
 
@@ -1385,6 +1385,7 @@ public class FarmingManager : MonoBehaviour
             if (animalInteractionManager.OnAnimalGameClosed == null)
                 animalInteractionManager.OnAnimalGameClosed += StartFarmBasicBGM; // bgm 시작하는 함수 연결..
 
+            animalInteractionManager.titlePanel.SetActive(true);
             animalInteractionManager.UICanvas.gameObject.SetActive(true);
             animalInteractionManager.backgroundButton.gameObject.SetActive(true);
 
