@@ -27,19 +27,22 @@ public class CakeMaker : MonoBehaviour
     }
     void OnMouseDown()
     {
-        if (!isMakingCake) // 케이크 제작 중 아닐 시
+        if (CakeManager.instance.canClick)
         {
-            // 케이크 메이커 패널 활성화
-            CakeManager.instance.cakeMakerController.OpenPanel(cakeMakerIndex);
-            CakeManager.instance.CallOpenAudio();
-        }
-        else if (isMakeComplete) // 케이크 제작 완료 시
-        {
-            isMakingCake = false;
-            isMakeComplete = false;
-            UpdateColliders();
-            // 케이크 제작 완료 호출
-            CakeManager.instance.cakeMakerController.CompleteCake(currentCakeIndex);
+            if (!isMakingCake) // 케이크 제작 중 아닐 시
+            {
+                // 케이크 메이커 패널 활성화
+                CakeManager.instance.cakeMakerController.OpenPanel(cakeMakerIndex);
+                CakeManager.instance.CallOpenAudio();
+            }
+            else if (isMakeComplete) // 케이크 제작 완료 시
+            {
+                isMakingCake = false;
+                isMakeComplete = false;
+                UpdateColliders();
+                // 케이크 제작 완료 호출
+                CakeManager.instance.cakeMakerController.CompleteCake(currentCakeIndex);
+            }
         }
     }
 
