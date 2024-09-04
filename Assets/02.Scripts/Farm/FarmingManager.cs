@@ -1377,7 +1377,7 @@ public class FarmingManager : MonoBehaviour
 
         Debug.Log("probability: " + probability);
 
-        if (/*Random.Range(0, probability) == 0*/true)
+        if (Random.Range(0, probability) == 0)
         {
             StartFarmAnimalBGM(); // 동물 게임 활성화 된거니까 그에 맞는 배경음 틀어주기..
 
