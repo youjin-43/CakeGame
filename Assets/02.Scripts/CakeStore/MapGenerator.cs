@@ -9,13 +9,13 @@ public class MapGenerator : EditorWindow
     private GameObject Player;
     private GameObject Showcase;
     private GameObject Maker;
-    private Vector2 top = new Vector2(-1.5f, 3);       // 상단 꼭짓점 좌표
+    private Vector2 top = new Vector2(-2f, 2.75f);       // 상단 꼭짓점 좌표
     private Vector2 right = new Vector2(2.5f, .5f);     // 우측 꼭짓점 좌표
-    private Vector2 bottom = new Vector2(-1.5f, -2);    // 하단 꼭짓점 좌표
-    private Vector2 left = new Vector2(-6.5f, .5f);      // 좌측 꼭짓점 좌표
+    private Vector2 bottom = new Vector2(-2f, -2.25f);    // 하단 꼭짓점 좌표
+    private Vector2 left = new Vector2(-7f, .25f);      // 좌측 꼭짓점 좌표
     private Vector2 tileSize = new Vector2(.5f, 0.25f); // 타일의 크기 (아이소매트릭)
     private interiorList[] interiorLists = new interiorList[0]; // Interior 리스트
-
+ 
     [MenuItem("Utilities/Map Generator")]
     public static void ShowWindow()
     {
@@ -38,7 +38,7 @@ public class MapGenerator : EditorWindow
         // CSV 데이터에서 interiorList 가져오기
         if (GUILayout.Button("Load CSV"))
         {
-            string csvData = "4,4,4,0,0,0,0,0,0,3\n0,0,0,0,0,0,0,0,0,3\n0,0,0,2,0,0,0,0,0,3\n3,3,3,1,3,3,3,0,0,3\n0,0,0,0,0,0,0,0,0,3\n0,0,0,0,0,0,0,0,0,3\n3,3,3,3,3,3,3,0,0,3\n0,0,0,0,0,0,0,0,0,0\n0,0,0,0,0,0,0,0,0,0\n0,0,0,0,0,0,0,0,0,0";
+            string csvData = "0,0,0,0,0,4,4,4,4,4\n0,0,0,0,0,0,0,0,0,0\n0,0,0,0,0,0,2,0,0,0\n3,3,3,3,0,0,1,3,3,3\n0,0,0,0,0,0,0,0,0,0\n0,0,0,0,0,0,0,0,0,0\n3,3,3,3,0,0,3,3,3,3\n0,0,0,0,0,0,0,0,0,0\n0,0,0,0,0,0,0,0,0,0\n0,0,0,0,0,0,0,0,0,0";
             LoadInteriorListFromCSV(csvData);
         }
 
@@ -50,10 +50,10 @@ public class MapGenerator : EditorWindow
                 interiorLists[i] = new interiorList(); // 배열 요소가 null이면 초기화
             }
 
-            EditorGUILayout.BeginHorizontal();
-            interiorLists[i].index = EditorGUILayout.IntField("Index", interiorLists[i].index);
-            interiorLists[i].type = EditorGUILayout.IntField("Type", interiorLists[i].type);
-            EditorGUILayout.EndHorizontal();
+            // EditorGUILayout.BeginHorizontal();
+            // interiorLists[i].index = EditorGUILayout.IntField("Index", interiorLists[i].index);
+            // interiorLists[i].type = EditorGUILayout.IntField("Type", interiorLists[i].type);
+            // EditorGUILayout.EndHorizontal();
         }
 
         if (GUILayout.Button("Create IsoMap"))
@@ -74,7 +74,7 @@ public class MapGenerator : EditorWindow
             for (int x = 0; x < cols.Length; x++)
             {
                 int type = int.Parse(cols[x]);
-                if (type != 0) // type이 0이 아니면 interiorList에 추가
+                if (true) // type이 0이 아니면 interiorList에 추가
                 {
                     interiorList item = new interiorList();
                     item.index = y * cols.Length + x;
@@ -89,15 +89,19 @@ public class MapGenerator : EditorWindow
 
     private void CreateIsoMap()
     {
+        CustomerController customerController =FindAnyObjectByType<CustomerController>();
         GameObject newPool = new GameObject("MapPool");
-        CakeManager.instance.cakeUIController.spritesToDisable = newPool;
+        CakeUIController cakeUIController = FindAnyObjectByType<CakeUIController>();
+        cakeUIController.spritesToDisable = newPool;
         newPool.transform.position = Vector3.zero;
         GameObject showcasePool = new GameObject("ShowcasePool");
-        CakeManager.instance.cakeShowcaseController.cakeShowcasePool = showcasePool.transform;
+        CakeShowcaseController cakeShowcaseController = FindAnyObjectByType<CakeShowcaseController>();
+        cakeShowcaseController.cakeShowcasePool = showcasePool.transform;
         showcasePool.transform.position = Vector3.zero;
         showcasePool.transform.parent = newPool.transform;
         GameObject makerPool = new GameObject("MakerPool");
-        CakeManager.instance.cakeMakerController.cakeMakersPool = makerPool.transform;
+        CakeMakerController cakeMakerController = FindAnyObjectByType<CakeMakerController>();
+        cakeMakerController.cakeMakersPool = makerPool.transform;
         makerPool.transform.position = Vector3.zero;
         makerPool.transform.parent = newPool.transform;
 
@@ -111,8 +115,8 @@ public class MapGenerator : EditorWindow
         // 루프 범위 설정
         for (int i = 0; i < rows; i++)
         {
-            x = left.x + i * tileSize.x;
-            y = left.y - i * tileSize.y;
+            x = top.x + i * tileSize.x;
+            y = top.y - i * tileSize.y;
 
             for (int j = 0; j < cols; j++)
             {
@@ -126,7 +130,8 @@ public class MapGenerator : EditorWindow
                     {
                         switch (interior.type)
                         {
-                            case 1: prefabToInstantiate = Cashier; objectParent = newPool.transform; break;
+                            case 0: prefabToInstantiate = Player.transform.GetChild(0).gameObject; objectParent = newPool.transform; prefabToInstantiate.SetActive(false); break;
+                            case 1: prefabToInstantiate = Cashier; objectParent = newPool.transform; customerController.cashierPosition = Cashier.transform; break;
                             case 2: prefabToInstantiate = Player; objectParent = newPool.transform; break;
                             case 3: prefabToInstantiate = Showcase; objectParent = showcasePool.transform; break;
                             case 4: prefabToInstantiate = Maker; objectParent = makerPool.transform; break;
@@ -143,8 +148,8 @@ public class MapGenerator : EditorWindow
                     newObject.name = $"Object_{index}";
                 }
 
-                x += tileSize.x;
-                y += tileSize.y;
+                x -= tileSize.x;
+                y -= tileSize.y;
             }
         }
 

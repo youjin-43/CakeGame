@@ -1,3 +1,4 @@
+using Inventory.Model;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -31,11 +32,16 @@ public class CakeShowcase : MonoBehaviour
     {
         for (int i = 0; i < cakeType.Length; i++)
         {
-            cakeType[i] = -1;
             if (isCakeSelected[i])
             {
-                CakeManager.instance.PlusCakeCount(i);
+                InventoryItem tempItem = new InventoryItem()
+                {
+                    item = UIInventoryManager.instance.cakeItems[cakeType[i]],
+                    quantity = 1,
+                };
+                UIInventoryManager.instance.AddItem(tempItem);
                 isCakeSelected[i] = false;
+                cakeType[i] = -1;
             }
         }
     }
