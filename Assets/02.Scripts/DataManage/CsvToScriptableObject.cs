@@ -1,4 +1,4 @@
-using UnityEngine;
+/*using UnityEngine;
 using UnityEditor;
 using System.IO;
 using System;
@@ -128,4 +128,4 @@ public class CsvToScriptableObject : EditorWindow
         }
         AssetDatabase.SaveAssets();
     }
-}
+}*/

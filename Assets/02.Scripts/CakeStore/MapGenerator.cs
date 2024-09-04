@@ -1,4 +1,4 @@
-using UnityEngine;
+/*using UnityEngine;
 using UnityEditor;
 using System;  // Array.Resize를 사용하기 위해 System 네임스페이스를 추가
 using System.Collections.Generic;
@@ -164,3 +164,4 @@ public class interiorList
     public int index;
     public int type; // 0: Floor, 1: Cashier, 2: Player, 3: ShowCase, 4: Maker
 }
+*/
