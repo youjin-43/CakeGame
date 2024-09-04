@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Newtonsoft.Json;
 using Inventory.Model;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 // 케이크 전반적인 관리 및 다른 매니저 참조
 public class CakeManager : MonoBehaviour
@@ -21,6 +22,7 @@ public class CakeManager : MonoBehaviour
     public int TOTALCAKENUM = 6;
     public int CAKEPLACENUM = 4;
     public int[] soldCakeCount;
+    public bool canClick;
     void Awake()
     {
         // 싱글톤 변수 instance가 비어있는가?
@@ -36,6 +38,30 @@ public class CakeManager : MonoBehaviour
             Destroy(gameObject);
         }
 
+    }
+    void Update()
+    {
+        if (IsPointerOverUIObjectPC() && canClick) { canClick = false; return; }
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (!canClick)
+            {
+                canClick = true;
+            }
+        }
+    }
+    private bool IsPointerOverUIObjectPC()
+    {
+        // 컴퓨터용
+
+        PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current)
+        {
+            // 핸드폰 터치도 mousePosition 으로 이용할 수 있으므로 간단한 건 그냥 이것처럼 mousePosition 쓸 예정..
+            position = new Vector2(Input.mousePosition.x, Input.mousePosition.y)
+        };
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
+        return results.Count > 0;
     }
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -137,8 +163,8 @@ public class CakeManager : MonoBehaviour
     {
         audioManager.SetSFX(openSFX);
     }
-    
-    
+
+
     // 케이크 데이터를 JSON 파일로 저장
     private void SaveCakeData()
     {
@@ -247,7 +273,7 @@ public class CakeManager : MonoBehaviour
         // 이거 케이크 개수 배열 초기화 하기 위한 함수
 
         // 모든 요소의 값을 0으로 리셋해주기..
-        for (int i=0; i<cakeCounts.Length; i++)
+        for (int i = 0; i < cakeCounts.Length; i++)
         {
             cakeCounts[i] = 0;
         }
