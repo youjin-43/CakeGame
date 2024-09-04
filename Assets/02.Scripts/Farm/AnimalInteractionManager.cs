@@ -82,6 +82,7 @@ public class AnimalInteractionManager : MonoBehaviour
     // UI 관련
     public Button backgroundButton; // 게임 끝나고 누르면 진짜 팜씬 시작.. 
     public Text gameText;
+    public GameObject titlePanel; // 게임 끝나면 안 보이도록 해야함..
 
 
 
@@ -147,6 +148,7 @@ public class AnimalInteractionManager : MonoBehaviour
                 curAnimalCount = 0;
                 gameStart = false;
 
+                titlePanel.SetActive(false); // 제목 판넬 꺼버리기..
                 if (catchAnimalCount >= targetAnimalCount)
                 {
                     gameText.text = "게임 클리어! 농장을 무사히 지켜냈다!";

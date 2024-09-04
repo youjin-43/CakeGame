@@ -336,7 +336,7 @@ public class UIInventoryManager : MonoBehaviour
 
                 // 현재 마우스로 클릭한 아이템의 인덱스 요소를 판매하려는 아이템의 수만큼 감소시키기.. 
                 fruitInventoryData.MinusItemAt(inventoryUI.currentMouseClickIndex, count);
-                GameManager.instance.money += price; // 판매 가격만큼 돈을 더해줌..
+                GameManager.instance.getMoney(price); // 판매 가격만큼 돈 더해주기..
                 SetFruitInventoryToFruitContainer(); // 현재 인벤토리의 과일 개수를 과일 개수 저장하는 배열에 반영..
 
                 break;
