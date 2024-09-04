@@ -31,8 +31,8 @@ public class CsvToScriptableObject : EditorWindow
             //SeedItemSO 변수 
             seed.seedPrice = int.Parse(splitData[6].ToString());
             seed.seedIdx = int.Parse(splitData[7].ToString());
-            seed.growDay = int.Parse(splitData[8].ToString()); 
-            
+            seed.growDay = int.Parse(splitData[8].ToString());
+
 
             AssetDatabase.CreateAsset(seed, $"Assets/SO/SeedSO/{seed.Name}.asset");
         }
@@ -73,6 +73,7 @@ public class CsvToScriptableObject : EditorWindow
     public static void GenerateCake()
     {
         CakeManager cakeManager = FindObjectOfType<CakeManager>();
+        cakeManager.cakeSODataList = null;
         string[] allLines = File.ReadAllLines(CakeCSVPath);
 
         for (int i = 1; i < allLines.Length; i++)
@@ -91,19 +92,32 @@ public class CsvToScriptableObject : EditorWindow
 
             //CakeSO 변수 
             cake.cakeCost = int.Parse(splitData[5].ToString());
-            cake.bakeTime = int.Parse(splitData[6].ToString()); 
+            cake.bakeTime = int.Parse(splitData[6].ToString());
             cake.cakePrice = int.Parse(splitData[7].ToString());
 
             //materialIdxs 배열
             string[] materials = splitData[8].Split('/');
             cake.materialIdxs = new int[materials.Length];
-            for (int m=0;m<materials.Length;m++) cake.materialIdxs[m]= int.Parse(materials[m]);
-            
+            for (int m = 0; m < materials.Length; m++)
+            {
+                Debug.Log(materials.Length);
+                Debug.Log(materials[m]);
+                int materNum;
+                if (int.TryParse(materials[m], out materNum)) cake.materialIdxs[m] = materNum;
+                else cake.materialIdxs = null;
+                
+            }
+
             //materialCount 배열 
             string[] materialCnts = splitData[9].ToString().Split('/');
             cake.materialCounts = new int[materials.Length];
-            for (int m = 0; m < materials.Length; m++) cake.materialCounts[m] = int.Parse(materialCnts[m]);
-            cake.exp =  int.Parse(splitData[10].ToString());
+            for (int m = 0; m < materials.Length; m++)
+            {
+                int materNum;
+                if (int.TryParse(materialCnts[m], out materNum)) cake.materialCounts[m] = materNum;
+                else cake.materialCounts = null;
+            }
+            cake.exp = int.Parse(splitData[10].ToString());
             cake.isLocked = (splitData[11].ToString() == "TRUE") ? true : false;
             cake.cakeIdx = int.Parse(splitData[12].ToString());
 
