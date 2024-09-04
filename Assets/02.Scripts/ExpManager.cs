@@ -39,7 +39,7 @@ public class ExpManager : MonoBehaviour
 
     public int level = 1;
     public float exp; // 이거 getset으로 하면 인스펙터 창에 안뜨던데 우선 이렇게 해놓겟음 
-    public float exp_max=100;
+    public float exp_max=2000;
 
     private void Start()
     {
@@ -60,7 +60,7 @@ public class ExpManager : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.C))
         {
             level = 1;
-            exp_max = 100;
+            exp_max = 2000;
             exp = 0;
 
             //UI 업데이트
@@ -93,8 +93,8 @@ public class ExpManager : MonoBehaviour
             PlayerPrefs.SetFloat("exp", exp);//exp데이터 업데이트
 
             //임시로 지워놓음. 나중에 밸런스 조절할때 주석 풀고 조정해주면 됨
-            //exp_max += 100; //다음 레벨업까지 얻어야하는 양 증가 
-            //PlayerPrefs.SetFloat("exp_max", exp_max);
+            exp_max += 2000; //다음 레벨업까지 얻어야하는 양 증가 
+            PlayerPrefs.SetFloat("exp_max", exp_max);
 
             UIManager.instance.SetExpBarUI();//UI 업데이트
 
