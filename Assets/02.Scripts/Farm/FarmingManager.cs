@@ -257,6 +257,12 @@ public class FarmingManager : MonoBehaviour
     public AudioManager audioManager; // 오디오 매니저.. 인스펙터 창에서 오디오 매니저 게임 오브젝트 할당해줄것..
 
 
+    // 안내 판넬
+    [Header("Info Panel UI")]
+    public Text returnText;
+    public GameObject returnPanel;
+
+
 
     private void Awake()
     {
@@ -659,11 +665,15 @@ public class FarmingManager : MonoBehaviour
         // 씨앗의 개수가 0보다 작거나 같으면 그냥 빠져나가도록..
         if (seedContainer.seedCount[seedIdx] <= 0)
         {
+            returnText.text = "씨앗이 부족합니다";
+            returnPanel.GetComponent<Animator>().SetTrigger("Start"); // 애니메이션 실행..
+
             // 음향
             // 음향
             audioManager.SetSFX(SFX.RETURN);
 
             Debug.Log("씨앗 없어!!!!");
+            
             return;
         }
 
@@ -769,10 +779,14 @@ public class FarmingManager : MonoBehaviour
         // 돈이 부족하면 씨앗 못사!
         if (GameManager.instance.money < seedContainer.prefabs[idx].GetComponent<Seed>().seedData.seedPrice * count)
         {
+            returnText.text = "돈이 부족합니다";
+            returnPanel.GetComponent<Animator>().SetTrigger("Start"); // 애니메이션 실행..
+
             // 음향
             audioManager.SetSFX(SFX.RETURN);
 
             Debug.Log("돈 없어!!!");
+            
             return;
         }
 
@@ -787,11 +801,14 @@ public class FarmingManager : MonoBehaviour
 
         // 음향
         audioManager.SetSFX(SFX.COMPLETE);
-        GameManager.instance.money -= seedContainer.prefabs[idx].GetComponent<Seed>().seedData.seedPrice * count; // 가진 돈에서 차감!
+        GameManager.instance.getMoney(-(seedContainer.prefabs[idx].GetComponent<Seed>().seedData.seedPrice * count)); // 가진 돈에서 차감!
     }
 
     public void SellFruit(int count, int idx)
     {
+        returnText.text = "과일이 부족합니다";
+        returnPanel.GetComponent<Animator>().SetTrigger("Start"); // 애니메이션 실행..
+
         // 만약 판매하려고 하는 과일의 개수가 현재 과일의 개수보다 적으면 그냥 빠져나가도록..
         if (fruitContainer.fruitCount[idx] < count)
         {
@@ -799,6 +816,7 @@ public class FarmingManager : MonoBehaviour
             audioManager.SetSFX(SFX.RETURN);
 
             Debug.Log("과일이 부족해!!!");
+            
             return;
         }
 
@@ -817,9 +835,7 @@ public class FarmingManager : MonoBehaviour
         // 음향
         audioManager.SetSFX(SFX.COMPLETE);
 
-        GameManager.instance.money += fruitItems[idx].fruitPrice * count; // 가진 돈에 더하기!
-
-        PlayerPrefs.SetInt("money", GameManager.instance.money); // 현재 돈 저장
+        GameManager.instance.getMoney(fruitItems[idx].fruitPrice * count); // 가진 돈에서 차감!
     }
 
     public void SetFarmingData(Vector3Int pos)
@@ -988,8 +1004,12 @@ public class FarmingManager : MonoBehaviour
         // 농장 레벨은 5렙까지 존재하도록..
         // 5 에서 더 업그레이드 하려고 하면 그냥 빠져나가도록..
         if (farmLevel >= 5) {
+            returnText.text = "이미 최고레벨입니다";
+            returnPanel.GetComponent<Animator>().SetTrigger("Start"); // 애니메이션 실행..
+
             // 음향
             audioManager.SetSFX(SFX.RETURN);
+            
             return;
         }
 
@@ -1013,12 +1033,20 @@ public class FarmingManager : MonoBehaviour
         // 돈 부족하면 그냥 빠져나가도록..
         if (GameManager.instance.money < farmSizeLevelUpCost)
         {
+            returnText.text = "돈이 부족합니다";
+            returnPanel.GetComponent<Animator>().SetTrigger("Start"); // 애니메이션 실행..
+
             // 음향
             audioManager.SetSFX(SFX.RETURN);
 
             Debug.Log("돈 없어!");
+            
             return;
         }
+
+
+        // 돈 관리
+        GameManager.instance.getMoney(farmSizeLevelUpCost);
 
 
         // 땅의 크기를 업그레이드 하는 함수
@@ -1167,8 +1195,12 @@ public class FarmingManager : MonoBehaviour
         // 허수아비 레벨은 5렙까지 존재하도록..
         // 5 에서 더 업그레이드 하려고 하면 그냥 빠져나가도록..
         if (scarecrowLevel >= 5) {
+            returnText.text = "이미 최고레벨입니다";
+            returnPanel.GetComponent<Animator>().SetTrigger("Start"); // 애니메이션 실행..
+
             // 음향
             audioManager.SetSFX(SFX.RETURN);
+            
             return; 
         }
 
@@ -1191,12 +1223,20 @@ public class FarmingManager : MonoBehaviour
 
         if (GameManager.instance.money < scarecrowLevelUpCost)
         {
+            returnText.text = "돈이 부족합니다";
+            returnPanel.GetComponent<Animator>().SetTrigger("Start"); // 애니메이션 실행..
+
             // 음향
             audioManager.SetSFX(SFX.RETURN);
 
             Debug.Log("돈 없어!");
+            
             return;
         }
+
+
+        // 돈 관리
+        GameManager.instance.getMoney(scarecrowLevelUpCost);
 
         scarecrowLevel++;
 
