@@ -54424,7 +54424,13 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a2576668bf4713841b2aa0870c71022a, type: 2}
   - {fileID: 11400000, guid: db99d362f9e8fba42a202e19142bcd2a, type: 2}
   - {fileID: 11400000, guid: aed95d68b3f35d4469a9490bb7118295, type: 2}
-  cakeItems: []
+  cakeItems:
+  - {fileID: 11400000, guid: 41609b44a39798740991e8e237a38960, type: 2}
+  - {fileID: 11400000, guid: 401cd712ebc92764db5fb2b866b82e01, type: 2}
+  - {fileID: 11400000, guid: 1c93ea79cf79a4840a8fc14139983aa6, type: 2}
+  - {fileID: 11400000, guid: 2712d6f1a0b35b8439ae500d5130aa7d, type: 2}
+  - {fileID: 11400000, guid: 35503add5371afe439fa332f57965f94, type: 2}
+  - {fileID: 11400000, guid: a7ba05b71e1a2b4479302c54b63d4f9b, type: 2}
   seedContainer: {fileID: 0}
   fruitContainer: {fileID: 0}
   initialItems: []
