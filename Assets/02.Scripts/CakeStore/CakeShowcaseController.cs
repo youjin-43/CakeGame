@@ -98,6 +98,8 @@ public class CakeShowcaseController : MonoBehaviour
         {
             int index = i; // 로컬 변수로 캡처
             cakeManager.SetupButton(cakeShowcasePlace.transform.GetChild(i).GetComponent<Button>(), () => OnPlaceSelect(index));
+            
+            cakeManager.SetupButton(cakeShowcasePlace.transform.GetChild(i).GetComponent<Button>(), () => cakeManager.audioManager.SetUISFX());
         }
 
         // 메뉴 선택 버튼 설정
@@ -105,6 +107,7 @@ public class CakeShowcaseController : MonoBehaviour
         {
             int index = i; // 로컬 변수로 캡처
             cakeManager.SetupButton(cakeShowcaseScrollViewContent.GetChild(i).GetComponent<Button>(), () => OnMenuSelect(index));
+            cakeManager.SetupButton(cakeShowcaseScrollViewContent.GetChild(i).GetComponent<Button>(), () => cakeManager.audioManager.SetUISFX());
         }
     }
 

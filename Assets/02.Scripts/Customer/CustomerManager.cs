@@ -43,6 +43,8 @@ public class CustomerController : MonoBehaviour
     {
         while (true)
         {
+            CakeManager.instance.CallPortalAudio();
+            yield return new WaitForSeconds(0.5f);
             int r = Random.Range(0, spawnPoint.Length);
             GameObject customersObject = Instantiate(customersPrefab, spawnPoint[r].position, Quaternion.identity);
             customersObject.transform.parent = this.transform;

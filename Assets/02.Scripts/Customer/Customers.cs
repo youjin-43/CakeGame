@@ -242,6 +242,7 @@ public class Customers : MonoBehaviour
                     GameManager.instance.getMoney(CakeManager.instance.cakeSODataList[wantedCakeIndex].cakePrice);
                     customerController.SellAudio();
                     CakeManager.instance.soldCakeCount[wantedCakeIndex]++;
+                    CakeManager.instance.CallSellAudio();
                     UIManager.instance.RaiseUpCakeCntForEndBoard(wantedCakeIndex);
                     Debug.Log("케이크가 판매 되었습니다.");
                 }
@@ -251,6 +252,8 @@ public class Customers : MonoBehaviour
                 MoveTo();
                 if (Vector2.Distance(transform.position, targetPosition) <= 0.01f)
                 {
+                    CakeManager.instance.CallPortalAudio();
+                    StopForSeconds(.7f);
                     Destroy(gameObject);
                 }
                 break;

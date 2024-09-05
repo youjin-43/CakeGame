@@ -13,8 +13,7 @@ public class CakeManager : MonoBehaviour
     public CakeShowcaseController cakeShowcaseController;
     public CakeMakerController cakeMakerController;
     public CakeUIController cakeUIController;
-    public AudioManager audioManager;
-    public AudioManager.SFX openSFX;
+
     public List<CakeSO> cakeSODataList;    // 케이크 데이터를 저장하는 리스트 (Unity Editor에서 설정)
     public int[] cakeCounts;             // 각 케이크의 개수를 관리하는 배열
     private string filePath;             // 케이크 데이터 저장 파일 경로
@@ -22,7 +21,7 @@ public class CakeManager : MonoBehaviour
     public int TOTALCAKENUM = 6;
     public int CAKEPLACENUM = 4;
     public int[] soldCakeCount;
-    public bool canClick;
+    public AudioClip[] BakeSound;
     void Awake()
     {
         // 싱글톤 변수 instance가 비어있는가?
@@ -39,18 +38,7 @@ public class CakeManager : MonoBehaviour
         }
 
     }
-    void Update()
-    {
-        if (IsPointerOverUIObjectPC() && canClick) { canClick = false; return; }
-        if (Input.GetMouseButtonDown(0))
-        {
-            if (!canClick)
-            {
-                canClick = true;
-            }
-        }
-    }
-    private bool IsPointerOverUIObjectPC()
+    public bool IsPointerOverUIObjectPC()
     {
         // 컴퓨터용
 
@@ -58,6 +46,18 @@ public class CakeManager : MonoBehaviour
         {
             // 핸드폰 터치도 mousePosition 으로 이용할 수 있으므로 간단한 건 그냥 이것처럼 mousePosition 쓸 예정..
             position = new Vector2(Input.mousePosition.x, Input.mousePosition.y)
+        };
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
+        return results.Count > 0;
+    }
+    public bool IsPointerOverUIObjectMobile(Touch touch)
+    {
+        // 핸드폰용
+
+        PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current)
+        {
+            position = new Vector2(touch.position.x, touch.position.y)
         };
         List<RaycastResult> results = new List<RaycastResult>();
         EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
@@ -157,11 +157,27 @@ public class CakeManager : MonoBehaviour
         }
         SaveCakeData();
     }
-
+    public AudioManager audioManager;
+    public AudioManager.SFX openSFX = AudioManager.SFX.BUTTON;
+    public AudioManager.SFX sellSFX = AudioManager.SFX.SELLCAKE;
+    public AudioManager.SFX portalSFX= AudioManager.SFX.PORTAL;
+    public AudioManager.SFX getCakeSFX= AudioManager.SFX.HARVEST;
     //인테리어 클릭 효과음
     public void CallOpenAudio()
     {
         audioManager.SetSFX(openSFX);
+    }
+    public void CallSellAudio()
+    {
+        audioManager.SetSFX(sellSFX);
+    }
+    public void CallPortalAudio()
+    {
+        audioManager.SetSFX(portalSFX);
+    }
+    public void CallGetCakeAudio()
+    {
+        audioManager.SetSFX(getCakeSFX);
     }
 
 
