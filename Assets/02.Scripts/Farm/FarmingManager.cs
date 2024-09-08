@@ -352,22 +352,22 @@ public class FarmingManager : MonoBehaviour
 
     void Update()
     {
-        //// 모바일용
-        //if (Input.touchCount > 0)
-        //FarmingSystemMobile();
+        // 모바일용
+        if (Input.touchCount > 0)
+            FarmingSystemMobile();
 
 
-        // 버튼 눌렀을 때 뒤에 있는 타일 못 누르도록 하기 위한 구문..
-        // 이거 데스크탑용
-        if (IsPointerOverUIObjectPC()) return;
+        //// 버튼 눌렀을 때 뒤에 있는 타일 못 누르도록 하기 위한 구문..
+        //// 이거 데스크탑용
+        //if (IsPointerOverUIObjectPC()) return;
 
-        // 데스크탑용
-        // 땅을 왼쪽 마우스키로 누르면..
-        if (Input.GetMouseButtonDown(0))
-        {
-            // 땅을 왼쪽 마우스키로 눌렀을 때, 땅의 현재 상태를 파악한 후 버튼 등 전반적인 UI 조정하는 것과 관련된 로직 함수..
-            FarmingSystemPC();
-        }
+        //// 데스크탑용
+        //// 땅을 왼쪽 마우스키로 누르면..
+        //if (Input.GetMouseButtonDown(0))
+        //{
+        //    // 땅을 왼쪽 마우스키로 눌렀을 때, 땅의 현재 상태를 파악한 후 버튼 등 전반적인 UI 조정하는 것과 관련된 로직 함수..
+        //    FarmingSystemPC();
+        //}
     }
 
     private void OnDisable()
