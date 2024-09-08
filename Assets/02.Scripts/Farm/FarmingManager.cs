@@ -13,7 +13,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using static AudioManager;
-using static UnityEditor.PlayerSettings;
+//using static UnityEditor.PlayerSettings;
 using Random = UnityEngine.Random;
 
 

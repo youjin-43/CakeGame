@@ -7,8 +7,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
 using UnityEngine.SceneManagement;
-using static UnityEditor.Progress;
-using UnityEditor.Experimental.RestService;
+//using static UnityEditor.Progress;
+//using UnityEditor.Experimental.RestService;
 using UnityEngine.EventSystems;
 using static AudioManager;
 
