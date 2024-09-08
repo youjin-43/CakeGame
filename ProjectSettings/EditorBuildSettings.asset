@@ -9,23 +9,23 @@ EditorBuildSettings:
     path: Assets/Scenes/SampleScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   - enabled: 0
-    path: Assets/01.Scenes/CakeStore 1.unity
-    guid: 7266e0ef089d9f24faf796e01cf9549d
-  - enabled: 0
     path: Assets/01.Scenes/CakeStorePractice.unity
     guid: 585a954b7ecad42dc9a01f899f3b375e
   - enabled: 1
-    path: Assets/01.Scenes/Farm.unity
-    guid: a9e44f3506a16f1458c97d0eb4564fc6
-  - enabled: 1
     path: Assets/01.Scenes/CakeStore 1.unity
     guid: 7266e0ef089d9f24faf796e01cf9549d
+  - enabled: 1
+    path: Assets/01.Scenes/Farm.unity
+    guid: a9e44f3506a16f1458c97d0eb4564fc6
   - enabled: 0
     path: Assets/01.Scenes/CakeStore 2.unity
     guid: b005238c7234f48838a6d25055e031c3
   - enabled: 1
     path: Assets/01.Scenes/Event.unity
     guid: e64a5c9fc9792498b8a45d5da8c264f8
+  - enabled: 0
+    path: Assets/01.Scenes/CakeStore 1.unity
+    guid: 7266e0ef089d9f24faf796e01cf9549d
   m_configObjects:
     com.unity.adaptiveperformance.google.android.provider_settings: {fileID: 11400000, guid: f16a112f6b219c7448d9262a852dcfa0, type: 2}
     com.unity.adaptiveperformance.loader_settings: {fileID: 11400000, guid: 0cfdae7e717627c40948ced28264e60e, type: 2}

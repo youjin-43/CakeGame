@@ -268,7 +268,7 @@ PlayerSettings:
   AndroidSplashScreenScale: 0
   androidSplashScreen: {fileID: 0}
   AndroidKeystoreName: '{inproject}: user.keystore'
-  AndroidKeyaliasName: 1234
+  AndroidKeyaliasName: 123456
   AndroidEnableArmv9SecurityFeatures: 0
   AndroidBuildApkPerCpuArchitecture: 0
   AndroidTVCompatibility: 0
@@ -938,11 +938,11 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   activeInputHandler: 0
   windowsGamepadBackendHint: 0
-  cloudProjectId: b2a045b7-1994-4303-ab49-692849a7df76
+  cloudProjectId: 97d69dce-6457-474e-a1ae-2f1dbc8dee7c
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: CakeGame 2024-07-09_22-25-29
-  organizationId: likeit0210
+  projectName: CakeGame
+  organizationId: gana31133113
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}
