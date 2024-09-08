@@ -27,7 +27,7 @@ public class CakeMaker : MonoBehaviour
     }
     void OnMouseDown()
     {
-        if (/*!CakeManager.instance.IsPointerOverUIObjectMobile(Input.touches[0])*/!CakeManager.instance.IsPointerOverUIObjectPC())
+        if (!CakeManager.instance.IsPointerOverUIObjectMobile(Input.touches[0]))
         {
             if (!isMakingCake) // 케이크 제작 중 아닐 시
             {
