@@ -18,7 +18,7 @@ public class AudioManager : MonoBehaviour
 
 
     public enum BGM { CAKESTORE, FARMANIMAL, FARMBASIC }
-    public enum SFX { PLOW, PLANT, HARVEST, FAIL, BUTTON, UPGRADE, RETURN, COMPLETE, ATTACK, DAMAGED, FAILFARM }
+    public enum SFX { PLOW, PLANT, HARVEST, FAIL, BUTTON, UPGRADE, RETURN, COMPLETE, ATTACK, DAMAGED, FAILFARM, SELLCAKE, PORTAL}
 
 
     private void Awake()
@@ -66,7 +66,7 @@ public class AudioManager : MonoBehaviour
 
 
     public void SetBGM(BGM bgmState)
-    { 
+    {
         bgmPlayer.clip = bgmClips[(int)bgmState]; // 현재 씬에 맞는 배경음으로 바꿔주기..
     }
 

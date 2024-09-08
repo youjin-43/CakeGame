@@ -27,7 +27,7 @@ public class CakeMaker : MonoBehaviour
     }
     void OnMouseDown()
     {
-        if (CakeManager.instance.canClick)
+        if (/*!CakeManager.instance.IsPointerOverUIObjectMobile(Input.touches[0])*/!CakeManager.instance.IsPointerOverUIObjectPC())
         {
             if (!isMakingCake) // 케이크 제작 중 아닐 시
             {
@@ -40,6 +40,7 @@ public class CakeMaker : MonoBehaviour
                 isMakingCake = false;
                 isMakeComplete = false;
                 UpdateColliders();
+                CakeManager.instance.CallGetCakeAudio();
                 // 케이크 제작 완료 호출
                 CakeManager.instance.cakeMakerController.CompleteCake(currentCakeIndex);
             }
@@ -53,6 +54,9 @@ public class CakeMaker : MonoBehaviour
         passedTime = 0f;
         isMakingCake = true;
         UpdateColliders();
+        transform.GetChild(2).GetComponent<AudioSource>().loop = true;
+        transform.GetChild(2).GetComponent<AudioSource>().clip = CakeManager.instance.BakeSound[0];
+        transform.GetChild(2).GetComponent<AudioSource>().Play();
         StartCoroutine(TimerRoutine());
         StartCoroutine(TimerImageChangeRoutine());
     }
@@ -64,6 +68,9 @@ public class CakeMaker : MonoBehaviour
             passedTime += Time.deltaTime;
             yield return null;
         }
+        transform.GetChild(2).GetComponent<AudioSource>().loop = false;
+        transform.GetChild(2).GetComponent<AudioSource>().clip = CakeManager.instance.BakeSound[1];
+        transform.GetChild(2).GetComponent<AudioSource>().Play();
         isMakeComplete = true;
         timerUI.sprite = completedSprite; // 제작 완료 이미지로 변경
     }

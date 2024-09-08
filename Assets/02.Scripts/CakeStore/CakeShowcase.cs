@@ -25,7 +25,7 @@ public class CakeShowcase : MonoBehaviour
     }
     void OnMouseDown()
     {
-        if (CakeManager.instance.canClick)
+        if (!CakeManager.instance.IsPointerOverUIObjectMobile(Input.touches[0]))
         {
             CakeManager.instance.cakeShowcaseController.OpenPanel(cakeShowcaseIndex);
             CakeManager.instance.CallOpenAudio();

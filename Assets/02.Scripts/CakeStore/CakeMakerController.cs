@@ -74,9 +74,11 @@ public class CakeMakerController : MonoBehaviour
         {
             int index = i;
             var cakeMakingPanel = cakeMakerScrollViewContent.GetChild(index);
+            cakeManager.SetupButton(cakeMakingPanel.GetComponent<Button>(), () => cakeManager.audioManager.SetUISFX());
 
             cakeManager.SetupButton(cakeMakingPanel.GetComponent<Button>(), () => OnClicked(index));
             cakeManager.SetupButton(cakeMakingPanel.GetChild((int)CakePanelElements.Clicked).GetChild((int)CakeClickedPanelElements.BakeButton).GetComponent<Button>(), () => OnBakeClicked(index));
+            cakeManager.SetupButton(cakeMakingPanel.GetChild((int)CakePanelElements.Clicked).GetChild((int)CakeClickedPanelElements.BakeButton).GetComponent<Button>(), () => cakeManager.audioManager.SetUISFX());
         }
     }
     public void OpenPanel(int index) //케이크메이커를 눌렀을 때 패널 활성화
