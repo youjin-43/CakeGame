@@ -61,12 +61,6 @@ public class Customers : MonoBehaviour
                 GoToShop();
                 break;
         }
-        if (Routine.instance.routineState == RoutineState.Close)
-        {
-            customerController.customersList.Remove(this);
-            Destroy(gameObject);
-        }
-        UpdateAnimation();
         if (GameManager.instance.MaxRunTime - GameManager.instance.runTime < 5)
         {
             if (moveType == CustomersMoveType.MoveType.Shop)
@@ -79,6 +73,7 @@ public class Customers : MonoBehaviour
                 shopType = CustomersMoveType.ShopType.Out;
             }
         }
+        UpdateAnimation();
     }
     private float nextFrameTime = 0.1f;
     private bool isIdle;
@@ -124,21 +119,23 @@ public class Customers : MonoBehaviour
         {
             moveState = 1;
         }
-        else
+        else    
         {
             agent.SetDestination(targetPosition);
 
             Vector3 direction = agent.velocity.normalized;
-            if (direction.y > 0.1f)
+            if (direction.y > 0.1f) //상
             {
                 moveState = 1;
             }
-            else if (direction.y < -0.1f)
+            else if (direction.y < -0.1f) //하
             {
                 moveState = 2;
             }
 
-            if ((targetPosition.x < transform.position.x && moveState == 1) || (targetPosition.x > transform.position.x && moveState == 2))
+
+            //좌상 true  좌하 false 우상 false 우하 true
+            if ((direction.x > 0.1f && moveState == 1) || (direction.x < -0.1f && moveState == 2))
             {
                 transform.GetChild(1).GetComponent<SpriteRenderer>().flipX = false;
             }
