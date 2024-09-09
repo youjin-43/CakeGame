@@ -218,6 +218,7 @@ public class FarmingManager : MonoBehaviour
     public GameObject buttonsGameObject; // 버튼의 부모를 껐다 켜기 위해서 필요한 변수.. 
 
     [Header("Farm interaction Panel")]
+    public GameObject growTimePanelParent; // 판넬의 부모(동물 게임 시작되면 씨앗 있는 땅 눌렀을 때 판넬 뜨면 안되도록 하기 위해..)
     public GameObject growTimePanel; // 다 자라기까지 남은 시간 보여주는 판넬
     public Text growTimeText; // 다 자라기까지 남은 시간
 
@@ -1384,6 +1385,7 @@ public class FarmingManager : MonoBehaviour
         if (Random.Range(0, probability) == 0)
         {
             StartFarmAnimalBGM(); // 동물 게임 활성화 된거니까 그에 맞는 배경음 틀어주기..
+            growTimePanelParent.SetActive(false); // 자라기 까지 남은 시간 활성화되면 방해되므로 일단 판넬의 부모 게임오브젝트 활성화 끈채로 시작..
 
             // 델리게이트에 아무것도 연결 안 되어 있을 때에만 함수 연결해줄 것..
             if (animalInteractionManager.OnAnimalGameClosed == null)
@@ -1401,6 +1403,7 @@ public class FarmingManager : MonoBehaviour
         }
         else
         {
+            growTimePanelParent.SetActive(true); 
             animalInteractionManager.UICanvas.gameObject.SetActive(false);
             UIInventoryManager.instance.buttonParentGameObject.SetActive(true);
             StartFarmBasicBGM(); // bgm 시작..

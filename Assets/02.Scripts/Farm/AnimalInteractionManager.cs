@@ -282,6 +282,7 @@ public class AnimalInteractionManager : MonoBehaviour
         backgroundButton.enabled = false;
         UICanvas.SetActive(false);
         UIInventoryManager.instance.buttonParentGameObject.SetActive(true); // 농사땅 버튼 이제 켜주기..
+        farmingManager.growTimePanelParent.SetActive(true); // 동물 게임이 끝났으니까 이제 씨앗 있는 땅 누르면 남은 일수 뜰 수 있도록 다시 부모 게임오브젝트 활성화해주기..
         gameStartButton.gameObject.SetActive(true);
     }
 
