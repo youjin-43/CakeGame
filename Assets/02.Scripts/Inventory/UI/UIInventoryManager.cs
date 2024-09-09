@@ -20,6 +20,7 @@ public class InventoryData
 {
     public InventorySO seedInventoryData;
     public InventorySO fruitInventoryData;
+    public InventorySO cakeInventoryData;
 }
 
 
@@ -96,6 +97,43 @@ public class UIInventoryManager : MonoBehaviour
     public AudioManager audioManager; // 오디오 매니저..
 
 
+    // 인벤토리 데이터 저장
+    [Header("Inventory Data Save")]
+    public string seedFilePath;
+    public string fruitFilePath;
+    public string cakeFilePath;
+
+
+    public void SaveInventoryToJSON(InventorySO inventory, string filePath)
+    {
+        // inventory 를 JSON 으로 직렬화
+        string json = JsonUtility.ToJson(inventory, prettyPrint: true);
+        Debug.Log(json); // 인벤토리 저장 데이터 출력..
+
+        // 파일로 저장
+        File.WriteAllText(filePath, json);
+    }
+
+    public InventorySO LoadInventoryFromJSON(string filePath)
+    {
+        if (File.Exists(filePath))
+        {
+            // JSON 파일에서 데이터 읽어오기
+            string json = File.ReadAllText(filePath);
+            Debug.Log(json); // 인벤토리 저장 데이터 출력..
+
+            // JSON 데이터를 InventorySO 객체로 변환
+            InventorySO inventory = ScriptableObject.CreateInstance<InventorySO>();
+            JsonUtility.FromJsonOverwrite(json, inventory);
+            return inventory;
+        }
+        else
+        {
+            // 파일이 존재하지 않으면 그냥 null 반환..
+
+            return null;
+        }
+    }
 
 
 
@@ -149,6 +187,33 @@ public class UIInventoryManager : MonoBehaviour
         }
 
 
+
+        // 인벤토리 데이터 파일 경로 설정
+        seedFilePath = Path.Combine(Application.persistentDataPath, "seedInventoryData.json");
+        fruitFilePath = Path.Combine(Application.persistentDataPath, "fruitInventoryData.json");
+        cakeFilePath = Path.Combine(Application.persistentDataPath, "cakeInventoryData.json");
+
+
+        InventorySO tmpInventory;
+        if (File.Exists(seedFilePath)) {
+            tmpInventory = LoadInventoryFromJSON(seedFilePath);
+            seedInventoryData.inventoryItems = tmpInventory.inventoryItems;
+            Debug.Log("씨앗 인벤토리 데이터 잘 가져옴!!!");
+        }
+        if (File.Exists(fruitFilePath))
+        {
+            tmpInventory = LoadInventoryFromJSON(fruitFilePath);
+            fruitInventoryData.inventoryItems = tmpInventory.inventoryItems;
+            Debug.Log("과일 인벤토리 데이터 잘 가져옴!!!");
+        }
+        if (File.Exists(cakeFilePath))
+        {
+            tmpInventory = LoadInventoryFromJSON(cakeFilePath);
+            cakeInventoryData.inventoryItems = tmpInventory.inventoryItems;
+            Debug.Log("케이크 인벤토리 데이터 잘 가져옴!!!");
+        }
+
+
         fruitCount = new int[fruitItems.Length];
         // 시작할 때 한번 과일 컨테이너 개수 반영한다음 시작..
         SetFruitInventoryToFruitContainer(); // 현재 인벤토리의 과일 개수를 과일 개수 저장하는 배열에 반영..
@@ -192,13 +257,16 @@ public class UIInventoryManager : MonoBehaviour
         // 임시 확인 코드
         if (Input.GetKeyDown(KeyCode.C))
         {
-            InventoryItem tmpItem = new InventoryItem()
-            {
-                item = cakeItems[0],
-                quantity = 1,
-            };
+            // 인벤토리 데이터 저장!!!
+            seedInventoryData.OnApplicationQuit();
+            fruitInventoryData.OnApplicationQuit();
+            cakeInventoryData.OnApplicationQuit();
+        }
 
-            cakeInventoryData.AddItem(tmpItem);
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            InventorySO tmpInventory = LoadInventoryFromJSON(seedFilePath);
+            seedInventoryData.inventoryItems = tmpInventory.inventoryItems;
         }
     }
 

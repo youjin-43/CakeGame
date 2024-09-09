@@ -297,6 +297,8 @@ public class FarmingManager : MonoBehaviour
 
         // 농사 땅 레벨 데이터 불러오기..
         farmLevel = PlayerPrefs.GetInt("FarmLevel");
+        if (farmLevel == 0)
+            farmLevel = 1;
         // 농사 땅 레벨 데이터를 불러온 다음에 레벨 데이터에 맞게끔 땅 업그레이드 해주기.. 
         int tmpFarmLevel = farmLevel;
         while (tmpFarmLevel > 1)
@@ -806,12 +808,12 @@ public class FarmingManager : MonoBehaviour
 
     public void SellFruit(int count, int idx)
     {
-        returnText.text = "과일이 부족합니다";
-        returnPanel.GetComponent<Animator>().SetTrigger("Start"); // 애니메이션 실행..
-
         // 만약 판매하려고 하는 과일의 개수가 현재 과일의 개수보다 적으면 그냥 빠져나가도록..
         if (fruitContainer.fruitCount[idx] < count)
         {
+            returnText.text = "과일이 부족합니다";
+            returnPanel.GetComponent<Animator>().SetTrigger("Start"); // 애니메이션 실행..
+
             // 음향
             audioManager.SetSFX(SFX.RETURN);
 
@@ -1347,6 +1349,8 @@ public class FarmingManager : MonoBehaviour
     private IEnumerator InitializeAfterSceneLoad()
     {
         yield return null;
+
+        animalInteractionManager.UICanvas.gameObject.SetActive(false); // 일단 끈채로 시작하기..
 
         // 허수아비 레벨 데이터 불러오기..
         scarecrowLevel = PlayerPrefs.GetInt("ScareCrowLevel");
