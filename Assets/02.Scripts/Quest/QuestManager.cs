@@ -91,7 +91,7 @@ public class QuestManager : MonoBehaviour
 
         string saveJson = JsonUtility.ToJson(havingQuests);
         File.WriteAllText(saveFilePath, saveJson);
-        Debug.Log("HavingQuestsData Save Success: " + saveFilePath);
+        Debug.Log("HavingQuestsData 갱신됨 : " + saveFilePath);
     }
 
     //현재 가지고 있는 퀘스트 정보를 json에서 로딩하는 함수 
@@ -99,7 +99,8 @@ public class QuestManager : MonoBehaviour
     {
         if (!File.Exists(saveFilePath))
         {
-            Debug.LogError("No such saveFile exists");
+            //Debug.LogError("No such saveFile exists");
+            Debug.Log("가지고 있는 퀘스트가 없습니다.");
             return;
         }
 
@@ -205,7 +206,7 @@ public class QuestManager : MonoBehaviour
             if (havingQuests.HavingQuestList[i].QuestID == questId)
             {
                 GameManager.instance.getMoney(havingQuests.HavingQuestList[i].MoneyAmount);//돈 증가
-                ExpManager.instance.getExp(10);//명성 증가
+                ExpManager.instance.getExp(havingQuests.HavingQuestList[i].ExpAmount);//명성 증가
 
                 //퀘스트에 사용된 아이템 인벤토리에서 삭제
                 RemoveCake(havingQuests.HavingQuestList[i].cakeToMakeIdx, havingQuests.HavingQuestList[i].ClearValue1);
@@ -234,6 +235,19 @@ public class QuestManager : MonoBehaviour
                 break;
             }
         }
+    }
+
+    //가지고 있는 퀘스트 전체 삭제(개발용)
+    public void EraseAllQuest()
+    {
+        for(int i= havingQuests.HavingQuestList.Count-1;i>=0; i--)
+        {
+            havingQuests.HavingQuestList.Remove(havingQuests.HavingQuestList[i]);
+        }
+
+        UpdateCurrnetQuestList();//json에 반영 
+        setCurrentQuestUIs();//UI반영
+        Debug.Log("퀘스트를 모두 삭제했습니다.");
     }
 
     [System.Serializable]

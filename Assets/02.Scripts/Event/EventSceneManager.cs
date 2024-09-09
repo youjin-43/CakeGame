@@ -58,7 +58,6 @@ public class EventSceneManager : MonoBehaviour
         BackgroundImage = GameObject.Find("BackgroundImages");
         dialogBox = GameObject.Find("DialogButton");
         dialogBox.GetComponent<Button>().onClick.AddListener(EventSceneManager.instance.PassDialog);
-        //dialogBox.onClick.AddListener(PassDialog);
         dialogText = GameObject.Find("DialogText").GetComponent<Text>();
 
         Debug.Log(toShowEvnetList.events[0]+"-----------------");
@@ -122,7 +121,6 @@ public class EventSceneManager : MonoBehaviour
     public void LoadEventDialogJson()
     {
         string DialogJsonText = File.ReadAllText(DialogjsonPath);
-        //Debug.Log("DialogJsonText : " + DialogJsonText);
         eventDialogs = JsonUtility.FromJson<EventDialogs>(DialogJsonText);
         //Debug.Log("이벤트 대사 json에서 불러오기 완료");
     }
@@ -137,7 +135,6 @@ public class EventSceneManager : MonoBehaviour
         }
 
         string saveFile = File.ReadAllText(saveFilePath);
-        //Debug.Log("현재 가지고 있는 퀘스트 데이터 불러오기 완료");
         toShowEvnetList = JsonUtility.FromJson<ToShowEvnetList>(saveFile);
         Debug.Log("toShowEvnetList size : " + toShowEvnetList.events.Count);   
     }
@@ -149,7 +146,7 @@ public class EventSceneManager : MonoBehaviour
 
         string saveJson = JsonUtility.ToJson(toShowEvnetList);
         File.WriteAllText(saveFilePath, saveJson);
-        Debug.Log("EvnetList Save Success: " + saveFilePath);
+        Debug.Log("EvnetList 정보를 갱신했습니다: " + saveFilePath);
     }
 
     [System.Serializable]

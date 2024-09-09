@@ -21,9 +21,20 @@ public class ExpManager : MonoBehaviour
             DontDestroyOnLoad(gameObject); // 씬이 변경되어도 삭제되지 않도록
 
             //이전 데이터 가져오기
-            Debug.Log("exp매니저에서 데이터를 로드함");
-            level = PlayerPrefs.GetInt("level");
-            exp = PlayerPrefs.GetFloat("exp");
+            LoadExpData();
+
+            //주어진 키로 저장된 값이 없으면 기본값을 반환 -> 게임을 처음 시작해서 데이터가 0인경우 초기값으로 설정 후 다시 저장 
+            if (level == 0)
+            {
+                level = 1;
+                PlayerPrefs.SetInt("level", level);
+            }
+            if(exp_max == 0)
+            {
+                exp_max = 2000;
+                PlayerPrefs.SetFloat("exp_max", exp_max);
+            }
+
         }
         else
         {
@@ -35,24 +46,22 @@ public class ExpManager : MonoBehaviour
         }
     }
 
-    //public GameObject ExpBar;
-
     public int level = 1;
-    public float exp; // 이거 getset으로 하면 인스펙터 창에 안뜨던데 우선 이렇게 해놓겟음 
+    public float exp; 
     public float exp_max=2000;
 
+    //오브젝트가 
     private void Start()
     {
-        level = PlayerPrefs.GetInt("level");
-        exp_max = PlayerPrefs.GetFloat("exp_max");
-        exp = PlayerPrefs.GetFloat("exp");
+        LoadExpData();
     }
+
     private void Update()
     {
         //E를 누르면 경험치 10 씩 증가
         if (Input.GetKeyDown(KeyCode.E))
         {
-            ExpManager.instance.getExp(10);
+            ExpManager.instance.getExp(100);
             UIManager.instance.SetExpBarUI();
         }
 
@@ -62,19 +71,31 @@ public class ExpManager : MonoBehaviour
             level = 1;
             exp_max = 2000;
             exp = 0;
+            SetExpData(); //데이터 갱신
 
             //UI 업데이트
             UIManager.instance.SetExpBarUI();
-            UIManager.instance.SetDatainUI(); 
+            UIManager.instance.levelText.text = ExpManager.instance.level.ToString();
 
-            PlayerPrefs.SetInt("level",level);
-            PlayerPrefs.SetFloat("exp_max", exp_max);
-            PlayerPrefs.SetFloat("exp", exp);
+            CakeManager.instance.ResetUnlockCake(); //케이크 레시피 상태도 초기화 
 
-            CakeManager.instance.ResetUnlockCake();
-
-            Debug.Log("경험치 초기화 ");
+            Debug.Log("경험치 초기화시킴 ");
+            QuestManager.instance.EraseAllQuest();
         }
+    }
+
+    private void LoadExpData()
+    {
+        level = PlayerPrefs.GetInt("level");
+        exp = PlayerPrefs.GetFloat("exp");
+        exp_max = PlayerPrefs.GetFloat("exp_max");
+    }
+
+    private void SetExpData()
+    {
+        PlayerPrefs.SetInt("level", level);
+        PlayerPrefs.SetFloat("exp", exp);
+        PlayerPrefs.SetFloat("exp_max", exp_max);
     }
 
     public void getExp(float delta)
@@ -86,17 +107,13 @@ public class ExpManager : MonoBehaviour
         if (exp >= exp_max)
         {
             level++;
-            PlayerPrefs.SetInt("level", level);//레벨 데이터 업데이트
             UIManager.instance.levelText.text = level.ToString();//UI 업데이트 
 
             exp = exp - exp_max;
-            PlayerPrefs.SetFloat("exp", exp);//exp데이터 업데이트
-
-            //임시로 지워놓음. 나중에 밸런스 조절할때 주석 풀고 조정해주면 됨
             exp_max += 2000; //다음 레벨업까지 얻어야하는 양 증가 
-            PlayerPrefs.SetFloat("exp_max", exp_max);
-
             UIManager.instance.SetExpBarUI();//UI 업데이트
+
+            SetExpData();//데이터 저장 
 
             if (level == 2)
             {
