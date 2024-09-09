@@ -1,0 +1,24 @@
+{
+    "inventoryItems": [
+        {
+            "quantity": 0,
+            "item": {
+                "instanceID": 0
+            }
+        },
+        {
+            "quantity": 1,
+            "item": {
+                "instanceID": 25940
+            }
+        },
+        {
+            "quantity": 1,
+            "item": {
+                "instanceID": 27634
+            }
+        }
+    ],
+    "<Size>k__BackingField": 3,
+    "inventoryType": 0
+}

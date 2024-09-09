@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+
+//using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace Inventory.Model
@@ -310,6 +313,24 @@ namespace Inventory.Model
             // UpdateInventoryUI 함수가 연결되어 있음..
             OnInventoryUpdated?.Invoke(GetCurrentInventoryState());
             OnInventoryUpdatedInt?.Invoke(inventoryType);
+            OnApplicationQuit(); // 저장..
+        }
+
+
+        // 게임 종료시에 호출되도록..
+        public void OnApplicationQuit()
+        {
+            Debug.Log("OnApplicationQuit 호출됨!");
+
+            if (inventoryType == 0)
+                UIInventoryManager.instance.SaveInventoryToJSON(this, Path.Combine(Application.persistentDataPath, "seedInventoryData.json"));
+            else if (inventoryType == 1)
+                UIInventoryManager.instance.SaveInventoryToJSON(this, Path.Combine(Application.persistentDataPath, "fruitInventoryData.json"));
+            else if (inventoryType == 2) { }
+            else if (inventoryType == 3)
+                UIInventoryManager.instance.SaveInventoryToJSON(this, Path.Combine(Application.persistentDataPath, "cakeInventoryData.json"));
+
+            Debug.Log("인벤토리 저장 완료");
         }
     }
 
