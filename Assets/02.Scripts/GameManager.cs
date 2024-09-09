@@ -27,9 +27,21 @@ public class GameManager : MonoBehaviour
 
             //이전 데이터 가져오기
             //Debug.Log("게임매니저에서 기본 데이터를 로드함");
-            season = (Seasons)PlayerPrefs.GetInt("season");
             date = PlayerPrefs.GetInt("date");
-            money = PlayerPrefs.GetInt("money"); //주어진 키로 저장된 값이 없으면 기본값을 반환
+            money = PlayerPrefs.GetInt("money");
+
+            //주어진 키로 저장된 값이 없으면 기본값을 반환 -> 게임을 처음 시작해서 date와 money가 0인경우 초기값으로 설정 후 다시 저장해줌 
+            if (date == 0)
+            {
+                date = 1;
+                PlayerPrefs.SetInt("date", date);
+            }
+            if(money == 0)
+            {
+                money = 1000;
+                PlayerPrefs.SetInt("money", money);
+            }
+            
 
         }
         else
@@ -42,22 +54,22 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public enum Seasons
-    {
-        spring,
-        summer, 
-        fall,
-        winter
-    }
+    //public enum Seasons
+    //{
+    //    spring,
+    //    summer, 
+    //    fall,
+    //    winter
+    //}
 
     [Header("BasicData")]
-    public Seasons season;
+    //public Seasons season;
     public int date;
     public int money;
 
     [Header("About Running")]
     public float runTime; // 현재 시간
-    public float MaxRunTime = 60f;
+    public float MaxRunTime = 30f;
 
     public GameObject RuntimeBar;
 
