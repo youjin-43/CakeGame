@@ -9,18 +9,19 @@ public class Customers : MonoBehaviour
     private Animator animator;
     private NavMeshAgent agent;
     private CakeManager cakeManager;
-    private CakeShowcaseController cakeShowcaseController;
+    private ShowcaseController showcaseController;
 
 
 
     // 컨트롤러에서 받아오는 변수
     private float speed;
-    private Transform spawnPos, cashierPos;
+    private Transform spawnPos;
+    private Transform cashierPos;
     private int currentImgIndex;
     private int wantedCakeIndex;
     private Sprite heartImg;
     private Vector2 targetLoc;
-    private Transform[] showcasePoses;
+    private List<Transform> showcasePoses;
 
     /// <summary>
     /// 1,2: RandomMove, 3: TakeIt, 4: BuyIt, 5: Out
@@ -56,6 +57,7 @@ public class Customers : MonoBehaviour
         Sprite heartImg,
         Transform spawnPos,
         Transform cashierPos,
+        List<Transform> showcasePoses,
         Sprite idleImg,
         Sprite[] upImgs,
         Sprite[] downImgs
@@ -66,6 +68,7 @@ public class Customers : MonoBehaviour
         this.heartImg = heartImg;
         this.spawnPos = spawnPos;
         this.cashierPos = cashierPos;
+        this.showcasePoses = showcasePoses;
         customerImgs = new Sprite[4][];
         customerImgs[0] = new Sprite[1]; // Idle
         customerImgs[1] = new Sprite[upImgs.Length]; // Up 배열
@@ -80,7 +83,7 @@ public class Customers : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
         cakeManager = CakeManager.instance;
-        cakeShowcaseController = cakeManager.cakeShowcaseController;
+        showcaseController = cakeManager.showcaseController;
 
 
         // 기본 값으로 초기화
@@ -100,7 +103,7 @@ public class Customers : MonoBehaviour
 
 
         // 쇼케이스 앞 위치 가져오기
-        targetLoc = showcasePoses[Random.Range(0, showcasePoses.Length)].position;
+        targetLoc = showcasePoses[Random.Range(0, showcasePoses.Count)].position;
         StartCoroutine(UpdateAnimation());
     }
 
@@ -192,7 +195,7 @@ public class Customers : MonoBehaviour
         else return;
 
 
-        targetLoc = showcasePoses[Random.Range(0, showcasePoses.Length)].position;
+        targetLoc = showcasePoses[Random.Range(0, showcasePoses.Count)].position;
 
 
         switch (moveState)
@@ -209,7 +212,7 @@ public class Customers : MonoBehaviour
             // 원하는 케이크가 있는지 감지, 있다면 moveState를 3(TakeIt)으로 없다면 moveState를 5(Out)로 변경
             case 2:
                 CakeCheck();
-                transform.GetChild(0).GetChild(0).GetComponent<SpriteRenderer>().sprite = cakeManager.cakeSODataList[wantedCakeIndex].itemImage;
+                transform.GetChild(0).GetChild(0).GetComponent<SpriteRenderer>().sprite = cakeManager.cakeDataList[wantedCakeIndex].itemImage;
                 
 
                 if (timer > randTime)
@@ -236,19 +239,19 @@ public class Customers : MonoBehaviour
     /// </summary>
     void CakeCheck()
     {
-        List<int> wantedCakeIndexes = cakeShowcaseController.CakeFindIndex(wantedCakeIndex);
+        List<int> wantedCakeIndexes = showcaseController.CakeFindIndex(wantedCakeIndex);
 
 
         // 원하는 케이크가 있는지 판별
-        if (wantedCakeIndexes != null && wantedCakeIndexes.Count > 0)
+        if (wantedCakeIndexes.Count > 0)
         {
             // 원하는 케이크가 있는 쇼케이스 위치 번호 추출
             wantedShowcaseIndex = wantedCakeIndexes[Random.Range(0, wantedCakeIndexes.Count)];
-            List<int> cakePlaces = cakeShowcaseController.CakeFindPlace(wantedShowcaseIndex, wantedCakeIndex);
+            List<int> cakePlaces = showcaseController.CakeFindPlace(wantedShowcaseIndex, wantedCakeIndex);
 
 
-            // 쇼케이스에서 케이크 제거
-            cakeShowcaseController.CakeSell(wantedShowcaseIndex, cakePlaces[Random.Range(0, cakePlaces.Count)]);
+            // 쇼케이스에서 케이크를 가져감
+            showcaseController.TakeCake(wantedShowcaseIndex, cakePlaces[Random.Range(0, cakePlaces.Count)]);
 
 
             // 하트 말풍선
@@ -320,9 +323,9 @@ public class Customers : MonoBehaviour
 
 
             // 보유한 금액 증가, 동전 소리 재생
-            GameManager.instance.getMoney(cakeManager.cakeSODataList[wantedCakeIndex].cakePrice);
+            GameManager.instance.getMoney(cakeManager.cakeDataList[wantedCakeIndex].cakePrice);
             UIManager.instance.RaiseUpCakeCntForEndBoard(wantedCakeIndex);
-            cakeManager.soldCakeCount[wantedCakeIndex]++;
+            cakeManager.soldCakeCounts[wantedCakeIndex]++;
             cakeManager.CallSellAudio();
 
 

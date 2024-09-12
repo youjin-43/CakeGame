@@ -1,168 +1,338 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-using UnityEngine.UI;
-using Newtonsoft.Json;
 using Inventory.Model;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 
-// 케이크 전반적인 관리 및 다른 매니저 참조
+/// <summary>
+/// 케이크 전반적인 관리 및 다른 컨트롤러 참조를 위한 클래스
+/// </summary>
 public class CakeManager : MonoBehaviour
 {
-    public CakeShowcaseController cakeShowcaseController;
-    public CakeMakerController cakeMakerController;
+    //싱글톤
+    public static CakeManager instance;
+
+
+    [Header("Component")]
+    public MakerController makerController;
+    public ShowcaseController showcaseController;
     public CakeUIController cakeUIController;
 
-    public List<CakeSO> cakeSODataList;    // 케이크 데이터를 저장하는 리스트 (Unity Editor에서 설정)
-    public int[] cakeCounts;             // 각 케이크의 개수를 관리하는 배열
-    private string filePath;             // 케이크 데이터 저장 파일 경로
-    public static CakeManager instance;
+
+
+    [Header("Save Data")]
+    public List<CakeData> cakeDataList;
+    public int[] soldCakeCounts;
+    private string path;
+
+
+
+    [Header("Audio")]
+    public AudioClip[] BakeSound;
+
+
+
+    [Header("Integer")]
     public int TOTALCAKENUM = 6;
     public int CAKEPLACENUM = 4;
-    public int[] soldCakeCount;
-    public AudioClip[] BakeSound;
+    private string CSVFILENAME = "CakeItemData.csv";
+
+
+
+    private string isFirstLaunch;
+
+
+
     void Awake()
     {
-        // 싱글톤 변수 instance가 비어있는가?
+        // 싱글톤
         if (instance == null)
         {
-            // instance가 비어있다면(null) 그곳에 자기 자신을 할당
             instance = this;
-            DontDestroyOnLoad(gameObject); // 씬이 변경되어도 삭제되지 않도록 
-            SceneManager.sceneLoaded += OnSceneLoaded; // 씬이 로딩될 때마다 함수를 호출하기위해
+
+
+            // 씬이 변경되어도 삭제 X
+            DontDestroyOnLoad(gameObject);
+
+
+            // 씬 로드 시 호출
+            SceneManager.sceneLoaded += OnSceneLoaded;
         }
-        else
+        else Destroy(gameObject);
+
+
+        if (IsFirstLaunch())
         {
-            Destroy(gameObject);
+            ResetCakeData();
+            SaveCakeData();
+
+
+            PlayerPrefs.SetInt(isFirstLaunch, 0);
+            PlayerPrefs.Save();                
+            
+
+            Debug.Log("앱이 최초로 실행되었습니다.");   
         }
 
     }
-    public bool IsPointerOverUIObjectPC()
-    {
-        // 컴퓨터용
 
-        PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current)
-        {
-            // 핸드폰 터치도 mousePosition 으로 이용할 수 있으므로 간단한 건 그냥 이것처럼 mousePosition 쓸 예정..
-            position = new Vector2(Input.mousePosition.x, Input.mousePosition.y)
-        };
-        List<RaycastResult> results = new List<RaycastResult>();
-        EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
-        return results.Count > 0;
-    }
-    public bool IsPointerOverUIObjectMobile(Touch touch)
-    {
-        // 핸드폰용
 
-        PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current)
-        {
-            position = new Vector2(touch.position.x, touch.position.y)
-        };
-        List<RaycastResult> results = new List<RaycastResult>();
-        EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
-        return results.Count > 0;
-    }
 
+    // 씬 로드 시 호출
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        InitializeCakeManager();
-        //CakeBack();
-    }
-    void InitializeCakeManager()
-    {
         // 데이터 저장 파일 경로 설정
-        filePath = Path.Combine(Application.persistentDataPath, "cakeData.json");
-        Debug.Log("Save file path: " + filePath);
+        path = Path.Combine(Application.streamingAssetsPath, CSVFILENAME);
+
+
 
         // 케이크 데이터 로드
-        LoadCakeData();
-        cakeShowcaseController = FindObjectOfType<CakeShowcaseController>();
-        cakeMakerController = FindObjectOfType<CakeMakerController>();
+        cakeUIController = FindObjectOfType<CakeUIController>();
+        showcaseController = FindObjectOfType<ShowcaseController>();
+        makerController = FindObjectOfType<MakerController>();
         audioManager = FindAnyObjectByType<AudioManager>();
-        cakeUIController = CakeUIController.instance;
-        soldCakeCount = new int[TOTALCAKENUM];
+        soldCakeCounts = new int[TOTALCAKENUM];
+        cakeDataList = LoadCakeData();
     }
-    public void CakeBack()
+
+
+
+    /// <summary>
+    /// 케이크 데이터 초기화
+    /// </summary>
+    public void ResetCakeData()
     {
-        for (int i = 0; i < TOTALCAKENUM; i++)
+        for (int i = 0; i < cakeDataList.Count; i++)
         {
-            cakeShowcaseController.cakeShowcases[i].GetComponent<CakeShowcase>().GetBack();
+            cakeDataList[i].cakeCount = 0;
+            ResetUnlockCake();
         }
     }
 
-    public void SetupButton(Button button, UnityEngine.Events.UnityAction action)
+
+
+    // 첫 번째 케이크만 잠금 해제
+    public void ResetUnlockCake()
     {
-        if (button != null)
-        {
-            button.onClick.AddListener(action);
-        }
+        for (int i = 1; i < cakeDataList.Count; i++) cakeDataList[i].isLock = cakeDataList[i].cakeIdx != 0;
+        SaveCakeData();
     }
 
-    // 케이크 상태 초기화: 첫 번째 케이크만 잠금 해제, 나머지는 잠금
-    void InitializeCakeStatus()
-    {
-        cakeCounts = new int[TOTALCAKENUM];
 
-        for (int i = 0; i < cakeSODataList.Count; i++)
-        {
-            CakeSO cakeData = cakeSODataList[i];
-            cakeCounts[i] = 0; // 초기 케이크 개수는 0으로 설정
-            cakeData.isLocked = cakeData.cakeIdx != 0; // 첫 번째 케이크만 잠금 해제
-        }
+
+    // 최초 실행인지 감지
+    private bool IsFirstLaunch()
+    {
+        return PlayerPrefs.GetInt(isFirstLaunch, 1) == 1; // 저장된 값이 없으면 기본값 1 반환 (최초 실행)
     }
 
-    // 케이크 개수 증가 및 데이터 저장
-    public void PlusCakeCount(int index)
+
+
+    // 케이크 데이터를 JSON 파일로 저장
+    public void SaveCakeData()
     {
-        if (index >= 0 && index < TOTALCAKENUM)
+        // 헤더 추가
+        var csvLines = new List<string>
         {
-            cakeCounts[index]++;
-            Debug.Log("케이크 " + index + " 보유 수: " + cakeCounts[index]);
+            "IsStackable,MaxStackSize,name,Description,itemType,cakeCost,bakeTime,cakePrice,materialIdx,materialCount,exp,isLock,cakeIdx,cakeCount,imagePath"
+        };
+        
+        
+        // 데이터를 CSV 형식의 문자열로 변환
+        foreach (CakeData cakeData in cakeDataList)
+        {
+            string line = string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14}",
+                cakeData.IsStackable,
+                cakeData.MaxStackSize,
+                cakeData.name,
+                cakeData.Description,
+                cakeData.itemType,
+                cakeData.cakeCost,
+                cakeData.bakeTime,
+                cakeData.cakePrice,
+                cakeData.materialIdx,
+                cakeData.materialCount,
+                cakeData.exp,
+                cakeData.isLock,
+                cakeData.cakeIdx,
+                cakeData.cakeCount,
+                cakeData.imagePath);
+
+            csvLines.Add(line);
+        }
+        File.WriteAllLines(path, csvLines.ToArray());
+        Debug.Log("케이크 데이터 저장 완료");
+    }
+
+
+
+    // CSV 파일을 읽어서 CakeData 리스트로 변환하는 함수
+    public List<CakeData> LoadCakeData()
+    {
+       var cakeDataList = new List<CakeData>();
+
+
+        if (File.Exists(path))
+        {
+            string[] csvLines = File.ReadAllLines(path);
+
+
+            // 첫 번째 라인은 헤더이므로 스킵
+            for (int i = 1; i < csvLines.Length; i++)
+            {
+                // csv 파일의 데이터를 ,로 구분
+                string[] values = csvLines[i].Split(',');
+
+
+                // cakeData에 데이터 넣기
+                var cakeData = new CakeData
+                {
+                    IsStackable = bool.Parse(values[0]),
+                    MaxStackSize = int.Parse(values[1]),
+                    name = values[2],
+                    Description = values[3],
+                    itemType = int.Parse(values[4]),
+                    cakeCost = int.Parse(values[5]),
+                    bakeTime = int.Parse(values[6]),
+                    cakePrice = int.Parse(values[7]),
+                    materialIdx = int.Parse(values[8]),
+                    materialCount = int.Parse(values[9]),
+                    exp = int.Parse(values[10]),
+                    isLock = bool.Parse(values[11]),
+                    cakeIdx = int.Parse(values[12]),
+                    cakeCount = int.Parse(values[13]),
+                    imagePath = values[14],
+                };
+                cakeData.itemImage = Resources.Load<Sprite>(values[14]);
+
+
+                // 배열에 추가
+                cakeDataList.Add(cakeData);
+            }
+            Debug.Log("케이크 데이터 로드 완료");
+        }
+        else Debug.LogError("CSV file not found at " + path);
+
+        return cakeDataList;
+    }
+
+
+
+    /// <summary>
+    /// 메뉴 뒤의 오브젝트 클릭 방지 (모바일용)
+    /// </summary>
+    /// <param name="touch"></param>
+    /// <returns></returns>
+    public bool IsPointerOverUI_Mobile(Touch touch)
+    {
+        // 현재 터치 위치를 기반으로 PointerEventData 생성
+        var eventData = new PointerEventData(EventSystem.current)
+        {
+            position = touch.position
+        };
+
+
+        // Raycast 결과를 담을 리스트
+        var raycastResults = new List<RaycastResult>(10);
+        EventSystem.current.RaycastAll(eventData, raycastResults);
+
+
+
+        // UI 요소가 터치된 경우 결과가 하나 이상이므로 true 반환
+        return raycastResults.Count > 0;
+    }
+
+
+
+    /// <summary>
+    /// 케이크 개수 증가 및 데이터 저장
+    /// </summary>
+    /// <param name="idx">추가할 케이크 인덱스</param>
+    public void PlusCakeCount(int idx)
+    {
+        if (idx >= 0 && idx < TOTALCAKENUM)
+        {
+            cakeDataList[idx].cakeCount++;
             SaveCakeData();
         }
     }
 
-    // 케이크 개수 감소 및 데이터 저장
-    public void MinusCakeCount(int index)
+
+
+    /// <summary>
+    /// 케이크 개수 감소 및 데이터 저장
+    /// </summary>
+    /// <param name="idx">감소할 케이크 인덱스</param>
+    public void MinusCakeCount(int idx)
     {
-        if (index >= 0 && index < TOTALCAKENUM && cakeCounts[index] > 0)
+        if (idx >= 0 && idx < TOTALCAKENUM && cakeDataList[idx].cakeCount > 0)
         {
-            cakeCounts[index]--;
-            Debug.Log("케이크 " + index + " 보유 수: " + cakeCounts[index]);
+            cakeDataList[idx].cakeCount--;
             SaveCakeData();
         }
     }
 
-    // 케이크 잠금 해제 및 데이터 저장
-    public void UnlockCake(int index)
+
+
+    /// <summary>
+    /// 케이크 잠금 해제 및 데이터 저장
+    /// </summary>
+    /// <param name="idx">잠금 해제할 케이크 인덱스</param>
+    public void UnlockCake(int idx)
     {
-        if (index >= 0 && index < TOTALCAKENUM && cakeSODataList[index].isLocked)
+        if (idx >= 0 && idx < TOTALCAKENUM && cakeDataList[idx].isLock)
         {
-            cakeSODataList[index].isLocked = false;
+            cakeDataList[idx].isLock = false;
             SaveCakeData();
-            Debug.Log("케이크 잠금 해제됨: " + cakeSODataList[index].Name);
         }
         else
         {
             Debug.LogWarning("잠금 해제 실패: 유효하지 않은 인덱스 또는 이미 잠금 해제된 케이크.");
         }
     }
-    public void ResetUnlockCake()
+
+
+
+    // 애플리케이션 종료 시 데이터 저장
+    private void OnApplicationQuit()
     {
-        cakeSODataList[0].isLocked = false;
-        for (int i = 1; i < TOTALCAKENUM; i++)
-        {
-            cakeSODataList[i].isLocked = true;
-        }
         SaveCakeData();
     }
+
+
+
+    //TODO 수정 필요 내가 만든거 아닌듯
+    public void ResetContainer()
+    {
+        // 이거 케이크 개수 배열 초기화 하기 위한 함수
+
+        // 모든 요소의 값을 0으로 리셋해주기..
+        for (int i = 0; i < TOTALCAKENUM; i++)
+        {
+        //    cakeDataList[i].cakeCount = 0;
+        }
+    }
+    public void SetContainer(Dictionary<int, InventoryItem> curInventory)
+    {
+        // curInventory 에서 키값은, 인벤토리 속에서 해당 아이템의 인덱스 번호임
+        // 현재 인벤토리의 내용을 가져올 때 비어있는 아이템 칸은 제외하고 가져옴.
+        // 즉, 인벤토리 속 비어있는 아이템 칸이 있다면 가져온 아이템 딕셔너리의 내용은 [0]: 사과, [2]: 바나나, [5]: 오렌지 이럴 가능성이 있음
+        // 그래서 key 가 0, 1, 2, 3, 4, 5... 이런식으로 순차적으로 온다는 보장이 없으므로 그냥 키값들을 가져와서 반복문 도는 것..
+        foreach (int idx in curInventory.Keys)
+        {
+            cakeDataList[((CakeData)curInventory[idx].item).cakeIdx].cakeCount += curInventory[idx].quantity; // 해당 아이템의 아이템 인덱스에 맞는 요소의 값을 증가시켜줌..
+        }
+    }
+
+
+
+    //케이크 가게 내부 클릭 효과음
     public AudioManager audioManager;
     public AudioManager.SFX openSFX = AudioManager.SFX.BUTTON;
     public AudioManager.SFX sellSFX = AudioManager.SFX.SELLCAKE;
-    public AudioManager.SFX portalSFX= AudioManager.SFX.PORTAL;
-    public AudioManager.SFX getCakeSFX= AudioManager.SFX.HARVEST;
-    //인테리어 클릭 효과음
+    public AudioManager.SFX portalSFX = AudioManager.SFX.PORTAL;
+    public AudioManager.SFX getCakeSFX = AudioManager.SFX.HARVEST;
     public void CallOpenAudio()
     {
         audioManager.SetSFX(openSFX);
@@ -178,158 +348,5 @@ public class CakeManager : MonoBehaviour
     public void CallGetCakeAudio()
     {
         audioManager.SetSFX(getCakeSFX);
-    }
-
-
-    // 케이크 데이터를 JSON 파일로 저장
-    private void SaveCakeData()
-    {
-        CakeDataSave dataSave = new CakeDataSave
-        {
-            cakeDataList = SerializeCakeDataList(), // 케이크 데이터 직렬화
-        };
-
-        // JSON 파일로 저장
-        string json = JsonConvert.SerializeObject(dataSave, Formatting.Indented);
-        File.WriteAllText(filePath, json);
-    }
-
-    // 케이크 데이터를 JSON 파일에서 로드
-    private void LoadCakeData()
-    {
-        // 기본값으로 초기화
-        cakeCounts = new int[cakeSODataList.Count];
-        InitializeCakeStatus();
-
-        if (File.Exists(filePath))
-        {
-            // JSON 파일이 존재할 경우 파일에서 데이터 로드
-            string json = File.ReadAllText(filePath);
-            CakeDataSave dataSave = JsonConvert.DeserializeObject<CakeDataSave>(json);
-            DeserializeCakeDataList(dataSave.cakeDataList);
-        }
-        else
-        {
-            // JSON 파일이 없을 때 기본값으로 초기화하고 저장
-            SaveCakeData();
-        }
-    }
-
-    // 케이크 데이터를 직렬화하여 저장할 수 있는 형태로 변환
-    private List<CakeDataSerializable> SerializeCakeDataList()
-    {
-        List<CakeDataSerializable> serializableList = new List<CakeDataSerializable>();
-
-        for (int i = 0; i < cakeSODataList.Count; i++)
-        {
-            CakeDataSerializable serializable = new CakeDataSerializable
-            {
-                cakeName = cakeSODataList[i].name,
-                cakeCost = cakeSODataList[i].cakeCost,
-                bakeTime = cakeSODataList[i].bakeTime,
-                cakePrice = cakeSODataList[i].cakePrice,
-                isLocked = cakeSODataList[i].isLocked,
-                cakeIdx = cakeSODataList[i].cakeIdx,
-                cakeCount = cakeCounts[i],
-                materialIdxs = cakeSODataList[i].materialIdxs,
-                materialCounts = cakeSODataList[i].materialCounts,
-                exp = cakeSODataList[i].exp
-            };
-
-            serializableList.Add(serializable);
-        }
-
-        return serializableList;
-    }
-
-    // 직렬화된 데이터를 다시 로드하여 케이크 데이터에 반영
-    private void DeserializeCakeDataList(List<CakeDataSerializable> serializableList)
-    {
-        foreach (var serializable in serializableList)
-        {
-            CakeSO cakeData = cakeSODataList.Find(cake => cake.cakeIdx == serializable.cakeIdx);
-            if (cakeData != null)
-            {
-                cakeData.isLocked = serializable.isLocked;
-                cakeCounts[cakeData.cakeIdx] = serializable.cakeCount;
-            }
-        }
-    }
-
-    // 새로운 케이크 데이터를 리스트에 추가
-    public void AddCakeData(CakeSO cakeSO)
-    {
-        if (cakeSODataList == null)
-        {
-            cakeSODataList = new List<CakeSO>();
-        }
-
-        if (!cakeSODataList.Contains(cakeSO))
-        {
-            cakeSODataList.Add(cakeSO);
-            Debug.Log($"Added {cakeSO.Name} to CakeDataList");
-        }
-    }
-
-    // 케이크 데이터를 초기화
-    public void ResetCakeData()
-    {
-        cakeSODataList = new List<CakeSO>();
-    }
-
-    // 애플리케이션 종료 시 데이터 저장
-    private void OnApplicationQuit()
-    {
-        SaveCakeData();
-    }
-
-
-    public void ResetContainer()
-    {
-        // 이거 케이크 개수 배열 초기화 하기 위한 함수
-
-        // 모든 요소의 값을 0으로 리셋해주기..
-        for (int i = 0; i < cakeCounts.Length; i++)
-        {
-            cakeCounts[i] = 0;
-        }
-    }
-
-
-    public void SetContainer(Dictionary<int, InventoryItem> curInventory)
-    {
-        // curInventory 에서 키값은, 인벤토리 속에서 해당 아이템의 인덱스 번호임
-        // 현재 인벤토리의 내용을 가져올 때 비어있는 아이템 칸은 제외하고 가져옴.
-        // 즉, 인벤토리 속 비어있는 아이템 칸이 있다면 가져온 아이템 딕셔너리의 내용은 [0]: 사과, [2]: 바나나, [5]: 오렌지 이럴 가능성이 있음
-        // 그래서 key 가 0, 1, 2, 3, 4, 5... 이런식으로 순차적으로 온다는 보장이 없으므로 그냥 키값들을 가져와서 반복문 도는 것..
-        foreach (int idx in curInventory.Keys)
-        {
-            cakeCounts[((CakeSO)curInventory[idx].item).cakeIdx] += curInventory[idx].quantity; // 해당 아이템의 아이템 인덱스에 맞는 요소의 값을 증가시켜줌..
-        }
-    }
-
-
-    // 직렬화할 케이크 데이터를 위한 클래스
-    [System.Serializable]
-    private class CakeDataSerializable
-    {
-        public string cakeName;
-        public int cakeCost;
-        public int bakeTime;
-        public int cakePrice;
-        public int[] materialIdxs;
-        public int[] materialCounts;
-        public int exp;
-        public bool isLocked;
-        public int cakeIdx;
-        public int cakeCount;
-    }
-
-    // 케이크 데이터 저장을 위한 클래스
-    [System.Serializable]
-    private class CakeDataSave
-    {
-        public List<CakeDataSerializable> cakeDataList; // 직렬화된 케이크 데이터 리스트
-        public int unlockedIndex;                       // 마지막으로 잠금 해제된 케이크의 인덱스
     }
 }

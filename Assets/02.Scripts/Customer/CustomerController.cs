@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CustomerController : MonoBehaviour
@@ -41,10 +42,7 @@ public class CustomerController : MonoBehaviour
     IEnumerator SpawnCustomers(float delay)
     {
         //쇼케이스 위치를 가져옴
-        Transform[] showcasePoses;
-        CakeShowcaseController cakeShowcaseController = CakeManager.instance.cakeShowcaseController;
-        showcasePoses = new Transform[cakeShowcaseController.cakeShowcasePool.childCount];
-        for (int i = 0; i < cakeShowcaseController.cakeShowcasePool.childCount; i++) showcasePoses[i] = cakeShowcaseController.cakeShowcasePool.GetChild(i).GetChild(11).transform;
+        List<Transform> showcasePoses = CakeManager.instance.showcaseController.GetShowcasePos();
 
 
         while (true)
@@ -67,6 +65,7 @@ public class CustomerController : MonoBehaviour
                 heartImg,
                 spawnPos,
                 cashierPos,
+                showcasePoses,
                 customerImgs[r].idleImg,
                 customerImgs[r].upImgs,
                 customerImgs[r].downImgs
