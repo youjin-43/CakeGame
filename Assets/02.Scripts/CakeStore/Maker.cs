@@ -1,9 +1,9 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class CakeMaker : MonoBehaviour
+public class Maker : MonoBehaviour
 {
+    CakeManager cakeManager;
     public int cakeMakerIndex; // 케이커 메이커 번호
     private SpriteRenderer timerUI; // 타이머 오브젝트
     public Sprite[] timerSprites; // 0.2초마다 순환할 4개의 이미지
@@ -16,9 +16,10 @@ public class CakeMaker : MonoBehaviour
 
     void Start()
     {
-        InitializeCakeMaker();
+        cakeManager = CakeManager.instance;
+        ResetMaker();
     }
-    void InitializeCakeMaker() // 상태를 초기화함.
+    void ResetMaker() // 상태를 초기화함.
     {
         timerUI = transform.GetChild(0).GetComponent<SpriteRenderer>();
         isMakingCake = false;
@@ -27,13 +28,13 @@ public class CakeMaker : MonoBehaviour
     }
     void OnMouseDown()
     {
-        if (!CakeManager.instance.IsPointerOverUIObjectMobile(Input.touches[0]))
+        if (/*!CakeManager.instance.IsPointerOverUI_Mobile(Input.touches[0])*/true)
         {
             if (!isMakingCake) // 케이크 제작 중 아닐 시
             {
                 // 케이크 메이커 패널 활성화
-                CakeManager.instance.cakeMakerController.OpenPanel(cakeMakerIndex);
-                CakeManager.instance.CallOpenAudio();
+                cakeManager.cakeUIController.OpenMakerUI(cakeMakerIndex);
+                cakeManager.CallOpenAudio();
             }
             else if (isMakeComplete) // 케이크 제작 완료 시
             {
@@ -42,7 +43,7 @@ public class CakeMaker : MonoBehaviour
                 UpdateColliders();
                 CakeManager.instance.CallGetCakeAudio();
                 // 케이크 제작 완료 호출
-                CakeManager.instance.cakeMakerController.CompleteCake(currentCakeIndex);
+                CakeManager.instance.makerController.CompleteCake(currentCakeIndex);
             }
         }
     }
@@ -87,8 +88,11 @@ public class CakeMaker : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// !!!!!!!반드시 isMakingCake 값의 변화 이후에 와야함.!!!!!!!
+    /// </summary>
     public void UpdateColliders() // 타이머와 오븐의 콜리더를 설정 
-    // !!!!!!!반드시 isMakingCake 값의 변화 이후에 와야함.!!!!!!!
+    
     {
         if (timerUI == null) timerUI = transform.GetChild(0).GetComponent<SpriteRenderer>();
         timerUI.gameObject.SetActive(isMakingCake);
