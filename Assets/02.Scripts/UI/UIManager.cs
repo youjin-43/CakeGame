@@ -87,8 +87,9 @@ public class UIManager : MonoBehaviour
         levelText = GameObject.Find("LevelText").GetComponent<Text>();
 
         RunStartButton = GameObject.Find("RunStartButoon");//가게 운영 스타트 버튼
-        if(RunStartButton != null)
+        if(RunStartButton != null && Routine.instance.routineState == RoutineState.Prepare)
         {
+            RunStartButton.SetActive(true);
             RunStartButton.GetComponent<Button>().onClick.AddListener(GameManager.instance.StartRunning);//버튼 기능 세팅 -> 이렇게 코드로 하면 인스펙터에서 안보이네..?
         }
         GoFarmButton = tmp.transform.GetChild(2).gameObject; // 농장으로 가는 버튼 
@@ -103,6 +104,7 @@ public class UIManager : MonoBehaviour
         dateText.text = GameManager.instance.date.ToString();
         moneyText.text = GameManager.instance.money.ToString();
         levelText.text = ExpManager.instance.level.ToString();
+        SetExpBarUI();
     }
 
     //경험치 데이터에 맞게 expbar 설정 

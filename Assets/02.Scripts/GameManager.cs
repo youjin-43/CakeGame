@@ -27,9 +27,22 @@ public class GameManager : MonoBehaviour
 
             //이전 데이터 가져오기
             //Debug.Log("게임매니저에서 기본 데이터를 로드함");
-            season = (Seasons)PlayerPrefs.GetInt("season");
+            //season = (Seasons)PlayerPrefs.GetInt("season"); //계절 컨텐츠는 이후에 추가하는걸로 
             date = PlayerPrefs.GetInt("date");
-            money = PlayerPrefs.GetInt("money"); //주어진 키로 저장된 값이 없으면 기본값을 반환
+            money = PlayerPrefs.GetInt("money");
+
+            //주어진 키로 저장된 값이 없으면 기본값을 반환 -> 게임을 처음 시작해서 date와 money가 0인경우 초기값으로 설정 후 다시 저장해줌 
+            if (date == 0)
+            {
+                date = 1;
+                PlayerPrefs.SetInt("date", date);
+            }
+            if(money == 0)
+            {
+                money = 1000;
+                PlayerPrefs.SetInt("money", money);
+            }
+            
 
         }
         else
@@ -42,22 +55,22 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public enum Seasons
-    {
-        spring,
-        summer, 
-        fall,
-        winter
-    }
+    //public enum Seasons
+    //{
+    //    spring,
+    //    summer, 
+    //    fall,
+    //    winter
+    //}
 
     [Header("BasicData")]
-    public Seasons season;
+    //public Seasons season;
     public int date;
     public int money;
 
     [Header("About Running")]
     public float runTime; // 현재 시간
-    public float MaxRunTime = 60f;
+    public float MaxRunTime = 30f;
 
     public GameObject RuntimeBar;
 
@@ -82,19 +95,17 @@ public class GameManager : MonoBehaviour
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         Debug.Log("OnSceneLoaded : " + scene.name);
-        Debug.Log("mode : " + mode);
+        //Debug.Log("mode : " + mode);
 
         if (scene.name != "Event")
         {
             UIManager.instance.setUIObjects(); //오브젝트 변수에 오브젝트들 찾아서 할당 
             UIManager.instance.SetDatainUI();//각 UI오브젝트에 맞는 데이터들 할당 
-            UIManager.instance.SetExpBarUI(); //경험치 데이터에 맞게 expbar 설정 
-
             QuestManager.instance.setBasicQuestUIs();//퀘스트 UI 세팅
 
             RuntimeBar = GameObject.Find("Background").gameObject;
         }
-        else
+        else if(scene.name == "Event")
         {
             EventSceneManager.instance.SettingForEvent();
         }
@@ -107,9 +118,11 @@ public class GameManager : MonoBehaviour
     {
         Routine.instance.routineState = RoutineState.Open;
 
+        UIManager.instance.EventButton.SetActive(false); //가게 운영중에는 이벤트를 보지 못하도록 
         UIManager.instance.runningOverBoard.SetActive(false); //정산화면 끄기
         UIManager.instance.initSelledCakeCnt();//팔린 케이크 배열 초기화
 
+        Debug.Log("date : " + date);
         date++;
         UIManager.instance.dateText.text = date.ToString();//UI 적용 
 
@@ -123,24 +136,25 @@ public class GameManager : MonoBehaviour
         //isRunning = false; //운영 끝!
         Routine.instance.routineState = RoutineState.Close;
 
-        //Routine.instance.backgroundImage.sprite = Routine.instance.backgroundImages[1]; // 이미지 밤으로 변경..
 
         UIManager.instance.SetEndBoard();//정산보드 데이터 셋팅
         UIManager.instance.runningOverBoard.SetActive(true); // 정산 화면 뜨기
-        UIManager.instance.GoFarmButton.SetActive(true); //가게 운영이 끝나면 농장으로 가도록 농장으로 가는 버튼 활성화 
+        UIManager.instance.GoFarmButton.SetActive(true); //가게 운영이 끝나면 농장으로 가도록 농장으로 가는 버튼 활성화
+
+        // 실행해야하는 이벤트가 있으면 활성화
+        if (EventSceneManager.instance.toShowEvnetList.events.Count>0) UIManager.instance.EventButton.gameObject.SetActive(true);
 
         //정산 결과 저장 -> 돈, 인지도 등 데이터 갱신
         PlayerPrefs.SetInt("date", date);
-        PlayerPrefs.SetInt("season", (int)season);
         PlayerPrefs.SetFloat("money", money);
     }
 
     public void getMoney(int amount)
     {
-        Debug.Log("getmoeny 함수 실행");
-
+        int tmp = money;
         money += amount;
         UIManager.instance.moneyText.text = money.ToString();
-        PlayerPrefs.SetInt("money", money); 
+        PlayerPrefs.SetInt("money", money);
+        Debug.Log("getmoeny 함수 실행됨 : "+ tmp + "에서" + amount + "증가해서" + money + "됨.");
     }
 }
