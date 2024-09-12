@@ -96,6 +96,7 @@ GameObject:
   - component: {fileID: 8353917391110761523}
   - component: {fileID: 4609190117159054775}
   - component: {fileID: 7116678208684821733}
+  - component: {fileID: 312954252933337399}
   m_Layer: 0
   m_Name: Customer
   m_TagString: Untagged
@@ -206,14 +207,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 630cdd324cdc528478dc3cbcba45fcc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wantedCakeIndex: 0
-  lineType: 0
-  moveType: 0
-  targetPosition: {x: 0, y: 0}
-  sprites: []
-  currentSpriteIndex: 0
-  moveState: 0
-  MAXLiNENUM: 10
+  animator: {fileID: 0}
+--- !u!95 &312954252933337399
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1776102195202186369}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: c394d1386d2df0147b15a6ce39400023, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1839937667010452410
 GameObject:
   m_ObjectHideFlags: 0

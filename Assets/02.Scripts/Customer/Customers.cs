@@ -6,6 +6,7 @@ using UnityEngine.AI;
 public class Customers : MonoBehaviour
 {
     // 객체 내부의 컴포넌트
+    [SerializeField]
     private Animator animator;
     private NavMeshAgent agent;
     private CakeManager cakeManager;
@@ -112,7 +113,7 @@ public class Customers : MonoBehaviour
     void Update()
     {
         // 영업 종료 5초전 moveState를 Out상태로 변경
-        if (moveState != 5 && GameManager.instance.MaxRunTime - GameManager.instance.runTime < 5)
+        if (moveState != 5 && GameManager.instance.MaxRunTime - GameManager.instance.runTime < 2)
         {
             if (moveState > 2) moveState = 5;
             else moveState = 5;
@@ -389,7 +390,8 @@ public class Customers : MonoBehaviour
 
 
             // 이미지 순환
-            transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = customerImgs[animeState][currentImgIndex];
+            if (animeState != 0) transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = customerImgs[animeState][currentImgIndex];
+            else transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = customerImgs[0][0];
             if (animeState != 0) currentImgIndex = (currentImgIndex + 1) % 4;
 
 

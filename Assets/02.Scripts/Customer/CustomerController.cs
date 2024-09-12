@@ -80,7 +80,6 @@ public class CustomerController : MonoBehaviour
             if (GameManager.instance.MaxRunTime - GameManager.instance.runTime < 5)
             {
                 StopCoroutine(SpawnCustomers(delay));
-                isSpawn = false;
             }
         }
     }
@@ -94,6 +93,10 @@ public class CustomerController : MonoBehaviour
         {
             StartCoroutine(SpawnCustomers(spawnDelay));
             isSpawn = true;
+        } 
+        if (Routine.instance.routineState == RoutineState.Close && isSpawn)
+        {
+                isSpawn = false;
         }
 
 
