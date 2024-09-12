@@ -26,7 +26,7 @@ public class CakeUIController : MonoBehaviour
     private enum PlacePanelElements { Text = 0, Plate = 1, Image = 2 }
     private enum MenuPanelElements { Image = 1, Name = 2, Count = 3, Price = 4, Locked = 6 }
     private enum CakePanelElements { Image = 1, Name = 2, Count = 3, Locked = 4, Clicked = 5 }
-    private enum CakeClickedPanelElements { Cost = 0, MaterialPanel = 1, BakeTime = 2, BakeButton = 3 }
+    private enum CakeClickedPanelElements { Cost = 1, MaterialPanel = 4, BakeButton = 5 }
     private enum CakeMaterialPanelElements { MaterialImage = 0, MaterialCount = 1 }
 
 
@@ -246,7 +246,6 @@ public class CakeUIController : MonoBehaviour
             Transform clickedPanel = cakeMakingPanel.GetChild((int)CakePanelElements.Clicked);
             clickedPanel.gameObject.SetActive(false);
             clickedPanel.GetChild((int)CakeClickedPanelElements.Cost).GetComponent<Text>().text = $"{cakeSO.cakeCost}";
-            clickedPanel.GetChild((int)CakeClickedPanelElements.BakeTime).GetComponent<Text>().text = $"{cakeSO.bakeTime}초";
 
 
             // 재료 표시 업데이트
