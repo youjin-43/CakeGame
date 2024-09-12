@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CustomerController : MonoBehaviour
-{ 
+{
     // Customers 프리팹
     [Header("Prefab")]
     [SerializeField]
@@ -13,7 +13,7 @@ public class CustomerController : MonoBehaviour
     // Bool 값
     [Header("Bool")]
     [SerializeField]
-    public bool isSpawn = false; 
+    public bool isSpawn = false;
 
 
 
@@ -37,9 +37,8 @@ public class CustomerController : MonoBehaviour
     /// <summary>
     /// delay 간격으로 손님을 생성한다
     /// </summary>
-    /// <param name="delay">손님 생성 간격</param> 
     /// <returns></returns>
-    IEnumerator SpawnCustomers(float delay)
+    IEnumerator SpawnCustomers()
     {
         //쇼케이스 위치를 가져옴
         List<Transform> showcasePoses = CakeManager.instance.showcaseController.GetShowcasePos();
@@ -47,6 +46,7 @@ public class CustomerController : MonoBehaviour
 
         while (true)
         {
+            Debug.Log("생성");
             // 포탈음 재생
             CakeManager.instance.CallPortalAudio();
 
@@ -73,14 +73,16 @@ public class CustomerController : MonoBehaviour
 
 
             //생성 대기
-            yield return new WaitForSeconds(delay);
-
-
+            yield return new WaitForSeconds(spawnDelay);
             //영업 종료 5초전 손님 생성 멈춤
             if (GameManager.instance.MaxRunTime - GameManager.instance.runTime < 5)
             {
-                StopCoroutine(SpawnCustomers(delay));
+                Debug.Log("정지");
+                StopCoroutine("SpawnCustomers");
             }
+
+
+
         }
     }
 
@@ -91,7 +93,8 @@ public class CustomerController : MonoBehaviour
         // 루틴이 Open이고 생성 중이 아니면 생성 시작
         if (Routine.instance.routineState == RoutineState.Open && !isSpawn)
         {
-            StartCoroutine(SpawnCustomers(spawnDelay));
+            Debug.Log("콜");
+            StartCoroutine("SpawnCustomers");
             isSpawn = true;
         }
 

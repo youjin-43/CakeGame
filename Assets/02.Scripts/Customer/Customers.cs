@@ -99,7 +99,7 @@ public class Customers : MonoBehaviour
 
 
         // 무작위 값 할당
-        randTime = Random.Range(10, 15);
+        randTime = Random.Range(5, 8);
         wantedCakeIndex = Random.Range(0, cakeManager.TOTALCAKENUM);
 
 
@@ -332,6 +332,9 @@ public class Customers : MonoBehaviour
 
             // 목표 지점을 포탈 위치로 변경
             targetLoc = spawnPos.position;
+
+
+            moveState = 5;
         }
     }
 

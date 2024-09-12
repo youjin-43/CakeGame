@@ -263,7 +263,7 @@ public class CakeUIController : MonoBehaviour
 
             // 재료 갯수 참조
             material.GetChild((int)CakeMaterialPanelElements.MaterialCount).GetComponent<Text>().text =
-             $"{cakeSO.materialCount}/{UIInventoryManager.instance.fruitCount[cakeSO.materialIdx]}";
+             $"{UIInventoryManager.instance.fruitCount[cakeSO.materialIdx]}/{cakeSO.materialCount}";
         }
     }
 }
