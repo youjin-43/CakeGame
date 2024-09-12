@@ -57,11 +57,11 @@ public class QuestManager : MonoBehaviour
     private void Update()
     {
         //케이크 임시 추가 코드 
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            CakeManager.instance.cakeMakerController.CompleteCake(1);
-            //setCurrentQuestUIs();
-        }
+        //if (Input.GetKeyDown(KeyCode.M))
+        //{
+        //    CakeManager.instance.cakeMakerController.CompleteCake(1);
+        //    //setCurrentQuestUIs();
+        //}
 
         //케이크 하나 없애는 임시코드 
         if (Input.GetKeyDown(KeyCode.L))
@@ -77,7 +77,7 @@ public class QuestManager : MonoBehaviour
     {
         InventoryItem tmpItem = new InventoryItem()
         {
-            item = CakeManager.instance.cakeSODataList[idx],
+            item = CakeManager.instance.cakeDataList[idx],
             quantity = cnt,
         };
 
@@ -159,7 +159,7 @@ public class QuestManager : MonoBehaviour
 
             //현재 가지고있는 양 / 퀘스트 완료를 위해 필요한 양 텍스트 셋팅 
             int toMakeCnt = havingQuests.HavingQuestList[i].ClearValue1; //만들어야하는 양
-            int haveCnt= CakeManager.instance.cakeCounts[cakeIdx];  //현재 인벤토리에 가지고 있는 양
+            int haveCnt= CakeManager.instance.cakeDataList[cakeIdx].cakeCount;  //현재 인벤토리에 가지고 있는 양
             QuestUIs[i].Find("needCnt").GetChild(0).GetComponent<Text>().text = haveCnt+"/"+toMakeCnt; //텍스트 설정 
 
             //퀘스트 완료 조건 확인
