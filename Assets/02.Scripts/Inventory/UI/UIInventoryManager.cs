@@ -66,7 +66,7 @@ public class UIInventoryManager : MonoBehaviour
     // 아이템 스크립터블 오브젝트를 저장해놓기..
     public FruitItemSO[] fruitItems; // [0]: 사과, [1]: 바나나, [2]: 체리, [3]: 오렌지, [4]: 딸기
     // 이건 아이템 잘 추가되나 보려고 임시롤 만든 배열...
-    public CakeSO[] cakeItems; // 케이크임요!!
+    public CakeData[] cakeItems; // 케이크임요!!
 
 
 
