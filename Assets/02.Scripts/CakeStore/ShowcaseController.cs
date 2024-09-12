@@ -23,6 +23,7 @@ public class ShowcaseController : MonoBehaviour
     [SerializeField]
     private Transform showcasePool;
     private GameObject[] showcases;
+    [SerializeField]
     private Showcase currentShowcase;
     public Showcase CurrentShowcase
     {
@@ -76,6 +77,7 @@ public class ShowcaseController : MonoBehaviour
 
             // 데이터 초기화
             currentShowcase.showcaseIndex = i;
+            currentShowcase.cakeManager = CakeManager.instance;
             currentShowcase.cakeType = new int[CAKEPLACENUM];
             currentShowcase.isCakeSelected = new bool[CAKEPLACENUM];
             currentShowcase.cakeImages = new GameObject[CAKEPLACENUM];
@@ -97,7 +99,8 @@ public class ShowcaseController : MonoBehaviour
     // 쇼케이스 내부에 배치할 위치 선택
     public void OnPlaceSelect(int idx)
     {
-        cakeUIController.OpenShowcaseUI(1, idx);
+        showcasePlaceIndex = idx;
+        cakeUIController.OpenShowcaseUI(1, currentShowcase.showcaseIndex);
         cakeUIController.CloseMenu(cakeUIController.showcasePlace);
     }
 
@@ -106,6 +109,7 @@ public class ShowcaseController : MonoBehaviour
     // 쇼케이스에 전시할 메뉴 선택
     public void OnMenuSelect(int idx)
     {
+        Debug.Log("333"+showcasePlaceIndex);
         // 선택한 케이크가 부족하거나 선택한 위치에 이미 케이크가 존재하는 경우
         if (cakeManager.cakeDataList[idx].cakeCount == 0) return;
         if (currentShowcase.isCakeSelected[showcasePlaceIndex]) return;

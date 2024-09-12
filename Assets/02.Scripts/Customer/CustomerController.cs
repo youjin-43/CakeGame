@@ -13,7 +13,7 @@ public class CustomerController : MonoBehaviour
     // Bool 값
     [Header("Bool")]
     [SerializeField]
-    private bool isSpawn = false; 
+    public bool isSpawn = false; 
 
 
 
@@ -93,10 +93,6 @@ public class CustomerController : MonoBehaviour
         {
             StartCoroutine(SpawnCustomers(spawnDelay));
             isSpawn = true;
-        } 
-        if (Routine.instance.routineState == RoutineState.Close && isSpawn)
-        {
-                isSpawn = false;
         }
 
 

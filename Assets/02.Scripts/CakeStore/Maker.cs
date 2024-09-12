@@ -28,7 +28,7 @@ public class Maker : MonoBehaviour
     }
     void OnMouseDown()
     {
-        if (/*!CakeManager.instance.IsPointerOverUI_Mobile(Input.touches[0])*/true)
+        if (!CakeManager.instance.IsPointerOverUI_Mobile(Input.touches[0]))
         {
             if (!isMakingCake) // 케이크 제작 중 아닐 시
             {

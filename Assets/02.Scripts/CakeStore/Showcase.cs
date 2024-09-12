@@ -16,7 +16,7 @@ public class Showcase : MonoBehaviour
         if (!cakeManager.IsPointerOverUI_Mobile(Input.touches[0]))
         {
             cakeManager.cakeUIController.OpenShowcaseUI(0, showcaseIndex);
-           cakeManager.CallOpenAudio();
+            cakeManager.CallOpenAudio();
         }
     }
 

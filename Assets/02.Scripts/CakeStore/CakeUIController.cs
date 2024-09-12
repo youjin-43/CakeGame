@@ -81,6 +81,7 @@ public class CakeUIController : MonoBehaviour
                 break;
         }
         showcaseController.ChangeCurrentShowcase(idx);
+        Debug.Log(idx);
         UpdateUI();
     }
 
@@ -147,7 +148,7 @@ public class CakeUIController : MonoBehaviour
     public void SetUpShowcaseButtons()
     {
         // 쇼케이스 내부의 위치 선택 버튼 설정
-        for (int i = 0; i < showcasePlace.transform.childCount; i++)
+        for (int i = 0; i < CakeManager.instance.CAKEPLACENUM; i++)
         {
             int idx = i; // 로컬 변수로 캡처
             SetupButton(showcasePlace.transform.GetChild(i).GetComponent<Button>(), () => showcaseController.OnPlaceSelect(idx));
