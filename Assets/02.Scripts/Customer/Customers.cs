@@ -5,177 +5,260 @@ using UnityEngine.AI;
 
 public class Customers : MonoBehaviour
 {
-    private int SHOWCASELOCATE = 11;
-    NavMeshAgent agent;
-    private float moveSpeed;
-    public int wantedCakeIndex;
-    private int randomShowcaseIndex;
-    private CustomerController customerController;
-    private Transform cashierPos, spawnPos;
-    private Transform[] showcasePoses;
-    public Vector2 targetLoc;
-    public Sprite[] sprites;
-    public int currentSpriteIndex;
-    public int moveState = 0;
-    public int animeState = 0;
-    public int MAXLiNENUM = 10;
+    // 객체 내부의 컴포넌트
     private Animator animator;
+    private NavMeshAgent agent;
+    private CakeManager cakeManager;
+    private CakeShowcaseController cakeShowcaseController;
 
-    public void Initialize(Transform spawnPos, Transform cashierPos, float moveSpeed, float scale, CustomerController customerController)
+
+
+    // 컨트롤러에서 받아오는 변수
+    private float speed;
+    private Transform spawnPos, cashierPos;
+    private int currentImgIndex;
+    private int wantedCakeIndex;
+    private Sprite heartImg;
+    private Vector2 targetLoc;
+    private Transform[] showcasePoses;
+
+    /// <summary>
+    /// 1,2: RandomMove, 3: TakeIt, 4: BuyIt, 5: Out
+    /// </summary>
+    private int moveState;
+
+    /// <summary>
+    /// 0: Idle, 1: Up, 2: Down
+    /// </summary>   
+    private int animeState;
+
+    /// <summary>
+    /// 0: Idle, 1: Up, 2: Down
+    /// </summary>
+    private Sprite[][] customerImgs;
+
+
+
+    /// <summary>
+    /// Customer의 초기값을 상속하고 초기화한다.
+    /// </summary>
+    /// <param name="speed">고객 이동 속도</param>
+    /// <param name="scale">고객 크기 비율</param>
+    /// <param name="heartImg">하트 이미지</param>
+    /// <param name="spawnPos">고객 스폰 위치</param>
+    /// <param name="cashierPos">계산대 위치</param>
+    /// <param name="idleImg">대기 상태 이미지</param>
+    /// <param name="upImgs">위쪽 방향 이미지</param>
+    /// <param name="downImgs">아래쪽 방향 이미지</param>
+    public void Initialize(
+        float speed,
+        float scale,
+        Sprite heartImg,
+        Transform spawnPos,
+        Transform cashierPos,
+        Sprite idleImg,
+        Sprite[] upImgs,
+        Sprite[] downImgs
+        )
     {
+        // 값 상속
+        this.speed = speed;
+        this.heartImg = heartImg;
         this.spawnPos = spawnPos;
         this.cashierPos = cashierPos;
-        this.moveSpeed = moveSpeed;
-        this.customerController = customerController;
-
-        timer = 0;
-        animeState = 1;
-        moveState = 1;
-        randTime = Random.Range(10, 15);
-        CakeManager cakeManager = CakeManager.instance;
-        CakeShowcaseController cakeShowcaseController = cakeManager.cakeShowcaseController;
-        animator = GetComponent<Animator>();
-        agent = GetComponent<NavMeshAgent>();
-        agent.updateRotation = false;
-        agent.updateUpAxis = false;
-        agent.speed = moveSpeed;
-        wantedCakeIndex = Random.Range(0, CakeManager.instance.TOTALCAKENUM);
-
-        transform.GetChild(0).gameObject.SetActive(false);
+        customerImgs = new Sprite[4][];
+        customerImgs[0] = new Sprite[1]; // Idle
+        customerImgs[1] = new Sprite[upImgs.Length]; // Up 배열
+        customerImgs[2] = new Sprite[downImgs.Length]; // Down 배열
+        customerImgs[0][0] = idleImg;
+        for (int i = 0; i < upImgs.Length; i++) customerImgs[1][i] = upImgs[i];
+        for (int i = 0; i < downImgs.Length; i++) customerImgs[2][i] = downImgs[i];
         transform.GetChild(1).GetComponent<Transform>().localScale = new Vector3(scale, scale, 1);
 
-        showcasePoses = new Transform[cakeShowcaseController.cakeShowcasePool.childCount];
-        for (int i = 0; i < cakeShowcaseController.cakeShowcasePool.childCount; i++) showcasePoses[i] = cakeShowcaseController.cakeShowcasePool.GetChild(i).GetChild(SHOWCASELOCATE).transform;
 
+        // 컴포넌트 할당
+        agent = GetComponent<NavMeshAgent>();
+        animator = GetComponent<Animator>();
+        cakeManager = CakeManager.instance;
+        cakeShowcaseController = cakeManager.cakeShowcaseController;
+
+
+        // 기본 값으로 초기화
+        timer = 0;
+        moveState = 1;
+        animeState = 1;
+        currentImgIndex = 0;
+        agent.speed = speed;
+        agent.updateUpAxis = false;
+        agent.updateRotation = false;
+        transform.GetChild(0).gameObject.SetActive(false);
+
+
+        // 무작위 값 할당
+        randTime = Random.Range(10, 15);
+        wantedCakeIndex = Random.Range(0, cakeManager.TOTALCAKENUM);
+
+
+        // 쇼케이스 앞 위치 가져오기
         targetLoc = showcasePoses[Random.Range(0, showcasePoses.Length)].position;
         StartCoroutine(UpdateAnimation());
     }
+
+
+
     void Update()
     {
-        MoveTo();
-        if (moveState != 5 && GameManager.instance.MaxRunTime -
-        GameManager.instance.runTime < 5)
+        // 영업 종료 5초전 moveState를 Out상태로 변경
+        if (moveState != 5 && GameManager.instance.MaxRunTime - GameManager.instance.runTime < 5)
         {
             if (moveState > 2) moveState = 5;
             else moveState = 5;
         }
 
+
+        // moveState에 따라 함수를 호출
         switch (moveState)
         {
             case 1:
-                RandomMove();
-                break;
             case 2:
                 RandomMove();
                 break;
+
             case 3:
                 TakeIt();
                 break;
+
             case 4:
                 BuyIt();
                 break;
+
             case 5:
-                Out();
-                break;
             default:
                 Out();
                 break;
         }
-    }
 
-    float delay = 0.5f;
-    int currentAnimeState;
-    IEnumerator UpdateAnimation()
-    {
-        while (true)
-        {
-            animator.SetInteger("animeState", animeState);
-            currentSpriteIndex = (currentSpriteIndex + 1) % 4; // 애니메이션 프레임 순환
-            switch (animeState)
-            {
-                case 0: // Idle 상태
-                    transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = sprites[0];
-                    break;
-                case 1: // 움직이는 상태 (위로 이동)
-                    transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = sprites[1 + currentSpriteIndex];
-                    break;
-                case 2: // 움직이는 상태 (아래로 이동)
-                    transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = sprites[5 + currentSpriteIndex];
-                    break;
-            }
-            for (float time = 0; time < delay; time += Time.deltaTime)
-            {
-                if (animeState != currentAnimeState)
-                {
-                    currentSpriteIndex = 0;  // currentSpriteIndex 초기화
-                    currentAnimeState = animeState;  // 현재 상태를 업데이트
-                    break;
-                }  // animState가 바뀌면 즉시 빠져나옴
-                yield return null;  // 딜레이 중에도 매 프레임마다 상태를 체크
-            }
-            yield return null;
-        }
+
+        MoveTo();
     }
 
 
+
+    /// <summary>
+    /// 오브젝트가 목표 지점으로 이동한다.
+    /// </summary>
     void MoveTo()
     {
+        // 속도가 0일 때 idle상태로 변경
         if (agent.speed == 0)
         {
             animeState = 0;
             return;
         }
-        
+
+
+        // 목표 지점으로 이동
         agent.SetDestination(targetLoc);
 
-        Vector3 direction = agent.velocity.normalized;
-        
-        if (direction.y > 0) animeState = 1;
-        else if (direction.y < 0) animeState = 2;
 
-        // 좌상 (x < 0, y > 0) 또는 우하 (x > 0, y < 0)일 때 flipX 설정
+        // 방향에 따라 오브젝트 모습 변경
+        Vector3 direction = agent.velocity.normalized; // 방향 추출
+        if (direction.y > 0) animeState = 1; // 위쪽을 바라 볼 때
+        else if (direction.y < 0) animeState = 2; // 아래쪽을 바라 볼 때
+
+
+        // 좌상 (x < 0, y > 0) 또는 우하 (x > 0, y < 0)일 때 flipX = true로 설정
         if ((direction.x < 0 && direction.y > 0) || (direction.x > 0 && direction.y < 0))
             transform.GetChild(1).GetComponent<SpriteRenderer>().flipX = true;
         else
             transform.GetChild(1).GetComponent<SpriteRenderer>().flipX = false;
     }
+
+
+
     int randTime;
     float timer;
+    /// <summary>
+    /// <para>무작위 쇼케이스의 앞으로 이동하고,</para>
+    /// 정해진 시간 동안 원하는 케이크가 없으면 나간다.
+    /// </summary>
     void RandomMove()
     {
         timer += Time.deltaTime;
+
+
+        // 목표 지점에 도달하면 정지 후 밑에 코드 진행
         if (Vector2.Distance(transform.position, targetLoc) <= 0.01f) StartCoroutine(StopForSeconds(1f));
         else return;
+
+
         targetLoc = showcasePoses[Random.Range(0, showcasePoses.Length)].position;
-        timer = 0;
-        if (moveState == 1)
+
+
+        switch (moveState)
         {
-            if (timer > randTime)
-            {
-                transform.GetChild(0).gameObject.SetActive(true);
+            // 무작위 쇼케이스 앞으로 이동
+            case 1: 
+                if (timer > randTime)
+                {
+                    transform.GetChild(0).gameObject.SetActive(true);
+                    CakeCheck();
+                    timer = 0;
+                }
+                break;
+            // 원하는 케이크가 있는지 감지, 있다면 moveState를 3(TakeIt)으로 없다면 moveState를 5(Out)로 변경
+            case 2:
                 CakeCheck();
-            }
+                transform.GetChild(0).GetChild(0).GetComponent<SpriteRenderer>().sprite = cakeManager.cakeSODataList[wantedCakeIndex].itemImage;
+                
+
+                if (timer > randTime)
+                {
+                    moveState = 5;
+                    timer = 0;
+                }
+                break;
         }
-        if (moveState == 2)
-        {
-            transform.GetChild(0).GetChild(0).GetComponent<SpriteRenderer>().sprite = CakeManager.instance.cakeSODataList[wantedCakeIndex].itemImage;
-            CakeCheck();
-            if (timer > randTime)
-            {
-                moveState = 5;
-            }
-        }
+
+
     }
+
+
+
+    int wantedShowcaseIndex;
+    /// <summary>
+    /// <para>
+    /// 원하는 케이크가 있다면 목표 지점을 설정 후, 
+    /// 케이크를 배열에서 제거하고,
+    /// moveState를 3(TakeIt)으로 변경한다.
+    /// </para>
+    /// 만약 없다면 moveState를 2(RandomMove)로 변경한다.
+    /// </summary>
     void CakeCheck()
     {
-        List<int> wantedCakeIndexes = CakeManager.instance.cakeShowcaseController.CakeFindIndex(wantedCakeIndex);
+        List<int> wantedCakeIndexes = cakeShowcaseController.CakeFindIndex(wantedCakeIndex);
+
+
+        // 원하는 케이크가 있는지 판별
         if (wantedCakeIndexes != null && wantedCakeIndexes.Count > 0)
         {
-            randomShowcaseIndex = wantedCakeIndexes[Random.Range(0, wantedCakeIndexes.Count)];
-            List<int> cakePlaces = CakeManager.instance.cakeShowcaseController.CakeFindPlace(randomShowcaseIndex, wantedCakeIndex);
-            CakeManager.instance.cakeShowcaseController.CakeSell(randomShowcaseIndex, cakePlaces[Random.Range(0, cakePlaces.Count)]);
-            targetLoc = showcasePoses[randomShowcaseIndex].position;
-            transform.GetChild(0).GetChild(0).GetComponent<SpriteRenderer>().sprite = customerController.heart;
+            // 원하는 케이크가 있는 쇼케이스 위치 번호 추출
+            wantedShowcaseIndex = wantedCakeIndexes[Random.Range(0, wantedCakeIndexes.Count)];
+            List<int> cakePlaces = cakeShowcaseController.CakeFindPlace(wantedShowcaseIndex, wantedCakeIndex);
+
+
+            // 쇼케이스에서 케이크 제거
+            cakeShowcaseController.CakeSell(wantedShowcaseIndex, cakePlaces[Random.Range(0, cakePlaces.Count)]);
+
+
+            // 하트 말풍선
+            transform.GetChild(0).GetChild(0).GetComponent<SpriteRenderer>().sprite = heartImg;
+
+            
+            // 목표 지점 변경 (원하는 케이크가 있는 쇼케이스 앞)
+            targetLoc = showcasePoses[wantedShowcaseIndex].position;
+            
+
             moveState = 3;
         }
         else
@@ -183,110 +266,144 @@ public class Customers : MonoBehaviour
             moveState = 2;
         }
     }
-    void GoToShop()
-    {
-        // switch (shopType)
-        // {
-        //     case CustomersMoveType.ShopType.Check:
-        //         List<int> wantedCakeIndexes = CakeManager.instance.cakeShowcaseController.CakeFindIndex(wantedCakeIndex);
-        //         if (CakeCheck())
-        //         {
-        //             int r = Random.Range(0, wantedCakeIndexes.Count);
-        //             randomShowcaseIndex = wantedCakeIndexes[r];
-        //             targetPosition = showcasePoses[randomShowcaseIndex].position;
-        //             shopType = CustomersMoveType.ShopType.Shop;
-        //         }
-        //         else
-        //         {
-        //             shopType = CustomersMoveType.ShopType.Out;
-        //         }
-        //         break;
-        //     case CustomersMoveType.ShopType.Shop:
-        //         Debug.Log("케이크 앞으로 가는중!");
-        //         MoveTo();
-        //         if (Vector2.Distance(transform.position, targetPosition) <= 0.01f)
-        //         {
-        //             Debug.Log("케이크 앞에 왔다!");
-        //             StartCoroutine(StopForSeconds(1f)); // 3초 멈춤
-        //             List<int> cakePlaces = CakeManager.instance.cakeShowcaseController.CakeFindPlace(randomShowcaseIndex, wantedCakeIndex);
-        //             int r = Random.Range(0, cakePlaces.Count);
-        //             CakeManager.instance.cakeShowcaseController.CakeSell(randomShowcaseIndex, cakePlaces[r]);
-        //             shopType = CustomersMoveType.ShopType.Pay;
-        //         }
-        //         break;
-        //     case CustomersMoveType.ShopType.Pay:
-        //         targetPosition = cashierPosition.position;
-        //         MoveTo();
-        //         if (Vector2.Distance(transform.position, targetPosition) <= 0.01f)
-        //         {
-        //             StartCoroutine(StopForSeconds(0.1f));
-        //             transform.GetChild(0).gameObject.SetActive(true);
-        //             transform.GetChild(0).GetChild(0).GetComponent<SpriteRenderer>().sprite = customerController.heart;
-        //             StartCoroutine(StopForSeconds(1f));
-        //             transform.GetChild(0).gameObject.SetActive(false);
-        //             shopType = CustomersMoveType.ShopType.Out;
-        //             GameManager.instance.getMoney(CakeManager.instance.cakeSODataList[wantedCakeIndex].cakePrice);
-        //             customerController.SellAudio();
-        //             CakeManager.instance.soldCakeCount[wantedCakeIndex]++;
-        //             CakeManager.instance.CallSellAudio();
-        //             UIManager.instance.RaiseUpCakeCntForEndBoard(wantedCakeIndex);
-        //             Debug.Log("케이크가 판매 되었습니다.");
-        //         }
-        //         break;
-        //     case CustomersMoveType.ShopType.Out:
-        //         targetPosition = spawnPoint.position;
-        //         MoveTo();
-        //         if (Vector2.Distance(transform.position, targetPosition) <= 0.01f)
-        //         {
-        //             CakeManager.instance.CallPortalAudio();
-        //             StopForSeconds(.7f);
-        //             Destroy(gameObject);
-        //         }
-        //         break;
-        // }
-    }
 
+
+
+    /// <summary>
+    /// <para>
+    /// *목표 지점 도달 시,
+    /// 말풍선을 없애고, 
+    /// 목표 지점을 계산대 앞으로 변경.
+    /// </para>
+    /// *목표 지점: 원하는 케이크가 있는 쇼케이스 앞
+    /// </summary>
     void TakeIt()
     {
         if (Vector2.Distance(transform.position, targetLoc) <= 0.01f)
         {
+            // 하트 말풍선 제거
             transform.GetChild(0).gameObject.SetActive(false);
             StartCoroutine(StopForSeconds(1f));
+
+
+            //목표 지점 변경 (계산대 앞)
+            targetLoc = cashierPos.position;
+
+
             moveState = 4;
         }
     }
+
+
+
+    /// <summary>
+    /// <para>
+    /// *목표 지점 도달 시, 
+    /// 1초 동안 하트 이미지를 띄운 뒤, 
+    /// 보유한 돈을 증가 시키고 동전 소리 재생, 
+    /// 목표 지점을 포탈 위치로 변경
+    /// </para>
+    /// *목표 지점: 계산대 앞
+    /// </summary>
     void BuyIt()
     {
-        targetLoc = cashierPos.position;
+        
         MoveTo();
         if (Vector2.Distance(transform.position, targetLoc) <= 0.01f)
         {
+            // 하트 말풍선
+            transform.GetChild(0).GetChild(0).GetComponent<SpriteRenderer>().sprite = heartImg;
             StartCoroutine(StopForSeconds(0.1f));
             transform.GetChild(0).gameObject.SetActive(true);
-            transform.GetChild(0).GetChild(0).GetComponent<SpriteRenderer>().sprite = customerController.heart;
-            StartCoroutine(StopForSeconds(1f));
+            StartCoroutine(StopForSeconds(1.0f));
             transform.GetChild(0).gameObject.SetActive(false);
-            GameManager.instance.getMoney(CakeManager.instance.cakeSODataList[wantedCakeIndex].cakePrice);
-            CakeManager.instance.CallSellAudio();
-            CakeManager.instance.soldCakeCount[wantedCakeIndex]++;
+
+
+            // 보유한 금액 증가, 동전 소리 재생
+            GameManager.instance.getMoney(cakeManager.cakeSODataList[wantedCakeIndex].cakePrice);
             UIManager.instance.RaiseUpCakeCntForEndBoard(wantedCakeIndex);
+            cakeManager.soldCakeCount[wantedCakeIndex]++;
+            cakeManager.CallSellAudio();
+
+
+            // 목표 지점을 포탈 위치로 변경
+            targetLoc = spawnPos.position;
         }
     }
+
+
+
+    /// <summary>
+    /// <para>
+    /// *목표 지점 도달 시,
+    /// 포탈음을 재생한 뒤,
+    /// 오브젝트를 삭제한다.
+    /// </para>
+    /// *목표 지점: 포탈
+    /// </summary>
     void Out()
     {
-        targetLoc = spawnPos.position;
         if (Vector2.Distance(transform.position, targetLoc) <= 0.01f)
         {
-            CakeManager.instance.CallPortalAudio();
-            StopForSeconds(.7f);
+            // 포탈음 재생
+            cakeManager.CallPortalAudio();
+
+            
+            // 오브젝트 삭제
             Destroy(gameObject);
         }
     }
 
+
+
+    /// <summary>
+    /// 속도를 0으로 설정한 뒤, 일정 시간 동안 정지한다.
+    /// </summary>
+    /// <param name="seconds">정지해 있을 시간</param>
+    /// <returns></returns>
     IEnumerator StopForSeconds(float seconds)
     {
-        agent.speed = 0f; // 이동을 멈추기 위해 속도를 0으로 설정
+        agent.speed = 0f;
         yield return new WaitForSeconds(seconds);
-        agent.speed = moveSpeed; // 이동을 재개하기 위해 원래 속도로 설정 (원래 속도로 변경)
+        agent.speed = speed;
+    }
+
+
+
+    float delay = 0.25f;
+    int currentAnimeState;
+    /// <summary>
+    /// <para>animeState값에 따라 애니메이션을 진행</para>
+    /// 0: Idle, 1: Up, 2: Down
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator UpdateAnimation()
+    {
+        while (true)
+        {
+            // animeState값을 animator에 전달
+            animator.SetInteger("animeState", animeState);
+
+
+            // 이미지 순환
+            transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = customerImgs[animeState][currentImgIndex];
+            if (animeState != 0) currentImgIndex = (currentImgIndex + 1) % 4;
+
+
+            // delay 동안 정지, animeState가 바뀌면 빠져나옴 
+            for (float time = 0; time < delay; time += Time.deltaTime)
+            {
+                if (animeState != currentAnimeState)
+                {
+                    currentAnimeState = animeState;
+                    currentImgIndex = 0;
+                    break;
+                }
+                yield return null;
+            }
+
+
+            yield return null;
+        }
     }
 }
