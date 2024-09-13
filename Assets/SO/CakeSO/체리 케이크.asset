@@ -23,9 +23,10 @@ MonoBehaviour:
   cakeCost: 300
   bakeTime: 3
   cakePrice: 3500
-  materialIdxs: 02000000
-  materialCounts: 01000000
+  materialIdx: 2
+  materialCount: 1
   exp: 400
   cakeCount: 0
-  isLocked: 0
+  isLock: 1
   cakeIdx: 3
+  imagePath: 
