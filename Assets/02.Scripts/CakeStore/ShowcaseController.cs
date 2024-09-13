@@ -128,7 +128,7 @@ public class ShowcaseController : MonoBehaviour
             quantity = 1,
         };
         UIInventoryManager.instance.MinusItem(tempItem);
-        cakeManager.MinusCakeCount(idx);
+        // cakeManager.MinusCakeCount(idx);
 
 
         cakeUIController.CloseMenu(cakeUIController.showcaseMenu);

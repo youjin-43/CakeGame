@@ -67,8 +67,8 @@ public class CustomerController : MonoBehaviour
                 cashierPos,
                 showcasePoses,
                 customerImgs[r].idleImg,
-                customerImgs[r].upImgs,
-                customerImgs[r].downImgs
+                customerImgs[r].downImgs,
+                customerImgs[r].upImgs
             );
 
 

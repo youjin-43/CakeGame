@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: cakeInventory
   m_EditorClassIdentifier: 
   inventoryItems:
-  - quantity: 1
-    item: {fileID: 0}
+  - quantity: 4
+    item: {fileID: 11400000, guid: 41609b44a39798740991e8e237a38960, type: 2}
   - quantity: 0
     item: {fileID: 0}
   - quantity: 0
