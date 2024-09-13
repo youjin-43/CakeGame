@@ -170,45 +170,48 @@ public class CakeManager : MonoBehaviour
     // CSV 파일을 읽어서 CakeData 리스트로 변환하는 함수
     public List<CakeData> LoadCakeData()
     {
-       var cakeDataList = new List<CakeData>();
-
-
         if (File.Exists(path))
         {
             string[] csvLines = File.ReadAllLines(path);
 
 
             // 첫 번째 라인은 헤더이므로 스킵
-            for (int i = 1; i < csvLines.Length; i++)
+            for (int i = 0; i < cakeDataList.Count; i++)
             {
                 // csv 파일의 데이터를 ,로 구분
-                string[] values = csvLines[i].Split(',');
+                string[] values = csvLines[i+1].Split(',');
 
-
+                CakeData cakeData = cakeDataList.Find(cake => cake.cakeIdx == i);
+                Debug.Log(cakeData.name);
+                Debug.Log(cakeData.isLock);
+                Debug.Log(values[11]);
+                Debug.Log(bool.Parse(values[11]));
+                cakeData.isLock = bool.Parse(values[11]);
+                cakeData.cakeCount = int.Parse(values[13]);
                 // cakeData에 데이터 넣기
-                var cakeData = new CakeData
-                {
-                    IsStackable = bool.Parse(values[0]),
-                    MaxStackSize = int.Parse(values[1]),
-                    name = values[2],
-                    Description = values[3],
-                    itemType = int.Parse(values[4]),
-                    cakeCost = int.Parse(values[5]),
-                    bakeTime = int.Parse(values[6]),
-                    cakePrice = int.Parse(values[7]),
-                    materialIdx = int.Parse(values[8]),
-                    materialCount = int.Parse(values[9]),
-                    exp = int.Parse(values[10]),
-                    isLock = bool.Parse(values[11]),
-                    cakeIdx = int.Parse(values[12]),
-                    cakeCount = int.Parse(values[13]),
-                    imagePath = values[14],
-                };
-                cakeData.itemImage = Resources.Load<Sprite>(values[14]);
+                // var cakeData = new CakeData
+                // {
+                //     IsStackable = bool.Parse(values[0]),
+                //     MaxStackSize = int.Parse(values[1]),
+                //     name = values[2],
+                //     Description = values[3],
+                //     itemType = int.Parse(values[4]),
+                //     cakeCost = int.Parse(values[5]),
+                //     bakeTime = int.Parse(values[6]),
+                //     cakePrice = int.Parse(values[7]),
+                //     materialIdx = int.Parse(values[8]),
+                //     materialCount = int.Parse(values[9]),
+                //     exp = int.Parse(values[10]),
+                //     isLock = bool.Parse(values[11]),
+                //     cakeIdx = int.Parse(values[12]),
+                //     cakeCount = int.Parse(values[13]),
+                //     imagePath = values[14],
+                // // };
+                // cakeData.itemImage = Resources.Load<Sprite>(values[14]);
 
 
-                // 배열에 추가
-                cakeDataList.Add(cakeData);
+                // // 배열에 추가
+                // cakeDataList.Add(cakeData);
             }
             Debug.Log("케이크 데이터 로드 완료");
         }

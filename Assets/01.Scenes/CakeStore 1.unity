@@ -18131,7 +18131,13 @@ MonoBehaviour:
   makerController: {fileID: 0}
   showcaseController: {fileID: 0}
   cakeUIController: {fileID: 0}
-  cakeDataList: []
+  cakeDataList:
+  - {fileID: 11400000, guid: 41609b44a39798740991e8e237a38960, type: 2}
+  - {fileID: 11400000, guid: 401cd712ebc92764db5fb2b866b82e01, type: 2}
+  - {fileID: 11400000, guid: 1c93ea79cf79a4840a8fc14139983aa6, type: 2}
+  - {fileID: 11400000, guid: 2712d6f1a0b35b8439ae500d5130aa7d, type: 2}
+  - {fileID: 11400000, guid: 35503add5371afe439fa332f57965f94, type: 2}
+  - {fileID: 11400000, guid: a7ba05b71e1a2b4479302c54b63d4f9b, type: 2}
   soldCakeCounts: 
   BakeSound:
   - {fileID: 8300000, guid: d5089677397de7143b8b159e0427d305, type: 3}
@@ -53924,19 +53930,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9011108925836840852, guid: 389e25e9a9fe01944a642cad5e6b0ee7, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9011108925836840852, guid: 389e25e9a9fe01944a642cad5e6b0ee7, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9011108925836840852, guid: 389e25e9a9fe01944a642cad5e6b0ee7, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 38.2117
       objectReference: {fileID: 0}
     - target: {fileID: 9011108925836840852, guid: 389e25e9a9fe01944a642cad5e6b0ee7, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -33.177902
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
