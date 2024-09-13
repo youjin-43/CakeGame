@@ -16,9 +16,8 @@ MonoBehaviour:
   <MaxStackSize>k__BackingField: 64
   <Name>k__BackingField: "\uCCB4\uB9AC\uC528\uC557"
   <Description>k__BackingField: "\uCCB4\uB9AC\uC528\uC557\uC774\uB2E4."
-  <itemImage>k__BackingField: {fileID: 21300000, guid: 6beca54a54d947b478fa6b2a655f4027, type: 3}
+  <itemImage>k__BackingField: {fileID: 21300000, guid: 0cb82eed97c662c418515d3cbbfaf0ca, type: 3}
   itemType: 0
-  seedPrice: 100
-  growTime: 0
+  seedPrice: 200
   seedIdx: 2
   growDay: 2

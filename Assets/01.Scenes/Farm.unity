@@ -30247,7 +30247,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4817e554ec000314cae2a85da3e17b11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  instance: {fileID: 0}
   returnText: {fileID: 923345283}
   returnPanel: {fileID: 601731332}
 --- !u!1 &1790643290
@@ -30786,17 +30785,17 @@ MonoBehaviour:
   farmButtonsParent: {fileID: 0}
   canvas: {fileID: 0}
   fruitItems:
-  - {fileID: 11400000, guid: cdec94432ad7f57499a766c32855dc47, type: 2}
-  - {fileID: 11400000, guid: 42a8cc1acabdbe94693fb926029b5507, type: 2}
-  - {fileID: 11400000, guid: a2576668bf4713841b2aa0870c71022a, type: 2}
-  - {fileID: 11400000, guid: db99d362f9e8fba42a202e19142bcd2a, type: 2}
-  - {fileID: 11400000, guid: aed95d68b3f35d4469a9490bb7118295, type: 2}
+  - {fileID: 11400000, guid: 813a1eb64247b4274a9f317ea4ddd848, type: 2}
+  - {fileID: 11400000, guid: f24620fa1ec964b04a6848049e176341, type: 2}
+  - {fileID: 11400000, guid: a017af18e4d8642769a36b9febeaa859, type: 2}
+  - {fileID: 11400000, guid: d377d164eb32f4edb9ca3bedd732e507, type: 2}
+  - {fileID: 11400000, guid: 513f591b7ee36477b8cc823bad486dba, type: 2}
   seedItems:
-  - {fileID: 11400000, guid: 4871f10de666419479baa0a8be8c45e1, type: 2}
-  - {fileID: 11400000, guid: 242c990bc45f1f842bd6c867fe46d043, type: 2}
-  - {fileID: 11400000, guid: e10815f91d3b6da47af1ca6e86110246, type: 2}
-  - {fileID: 11400000, guid: 25872284a8b6f914da5eb5a502e9f16d, type: 2}
-  - {fileID: 11400000, guid: 9b8b0c53ec9890b47a11ac0d3d5c8c4e, type: 2}
+  - {fileID: 11400000, guid: f7a0d16fdea6241d19b950089bd7e800, type: 2}
+  - {fileID: 11400000, guid: 7217bec460b2c43579b0316dec069401, type: 2}
+  - {fileID: 11400000, guid: 4b35d0c29e9724f0e866d5ad2471dbe0, type: 2}
+  - {fileID: 11400000, guid: fe404d71392954c14b9662c753ea5869, type: 2}
+  - {fileID: 11400000, guid: b20f1d6ad4e0f4f3c977c48e1be79f95, type: 2}
   borderTile: {fileID: 11400000, guid: 92e4018791d59b04cbd51a00fb77b2e6, type: 2}
   grassTile: {fileID: 11400000, guid: cc324a4af448af249845e4128c10f469, type: 2}
   farmTile: {fileID: 11400000, guid: 6aade89ff7c292f42aff2496c1c680a5, type: 2}
@@ -30831,8 +30830,6 @@ MonoBehaviour:
   curScareCrowLevelText: {fileID: 1922749055}
   nextScareCrowLevelText: {fileID: 169521620}
   audioManager: {fileID: 1956213682}
-  returnText: {fileID: 923345283}
-  returnPanel: {fileID: 601731332}
 --- !u!4 &1817601061
 Transform:
   m_ObjectHideFlags: 0
