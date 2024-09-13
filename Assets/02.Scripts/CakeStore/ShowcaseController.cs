@@ -118,7 +118,7 @@ public class ShowcaseController : MonoBehaviour
         }
         if (currentShowcase.isCakeSelected[showcasePlaceIndex])
         {
-            ReturnTextPanel.instance.SetInfoPanel("이미 해당 위치에 케이크가 존재합니다.");
+            ReturnTextPanel.instance.SetInfoPanel("이미 케이크가 존재합니다.");
             return;
         }
 

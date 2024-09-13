@@ -80,6 +80,7 @@ public class MakerController : MonoBehaviour
         var fruitCounts = UIInventoryManager.instance.fruitCount;
 
 
+        Debug.Log("재료 수 : "+fruitCounts[cakeData.materialIdx]);
         //재료와 돈이 부족한지 판단
         if (GameManager.instance.money < cakeData.cakeCost)
         {
@@ -89,8 +90,7 @@ public class MakerController : MonoBehaviour
         }
         else if (fruitCounts[cakeData.materialIdx] < cakeData.materialCount)
         {
-            string a = "재료가" +(cakeData.materialCount - fruitCounts[cakeData.materialIdx])+"개 부족합니다.";
-            ReturnTextPanel.instance.SetInfoPanel(a);
+            ReturnTextPanel.instance.SetInfoPanel("재료가 부족합니다.");
             Debug.Log($"재료가 {cakeData.materialCount - fruitCounts[cakeData.materialIdx]}개 부족합니다.");
             return;
         }
