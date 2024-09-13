@@ -1377,6 +1377,9 @@ public class FarmingManager : MonoBehaviour
 
         if (Random.Range(0, probability) == 0)
         {
+            // 버튼 활성화 꺼주기..
+            UIManager.instance.GoFarmButton.gameObject.SetActive(false);
+
             StartFarmAnimalBGM(); // 동물 게임 활성화 된거니까 그에 맞는 배경음 틀어주기..
             growTimePanelParent.SetActive(false); // 자라기 까지 남은 시간 활성화되면 방해되므로 일단 판넬의 부모 게임오브젝트 활성화 끈채로 시작..
 
@@ -1396,6 +1399,8 @@ public class FarmingManager : MonoBehaviour
         }
         else
         {
+            // 버튼 활성화 켜주기..
+            UIManager.instance.GoFarmButton.gameObject.SetActive(true);
             growTimePanelParent.SetActive(true); 
             animalInteractionManager.UICanvas.gameObject.SetActive(false);
             UIInventoryManager.instance.buttonParentGameObject.SetActive(true);
