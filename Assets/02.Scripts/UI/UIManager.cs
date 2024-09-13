@@ -87,12 +87,37 @@ public class UIManager : MonoBehaviour
         levelText = GameObject.Find("LevelText").GetComponent<Text>();
 
         RunStartButton = GameObject.Find("RunStartButoon");//가게 운영 스타트 버튼
-        if(RunStartButton != null && Routine.instance.routineState == RoutineState.Prepare)
+        if (RunStartButton != null)
         {
-            RunStartButton.SetActive(true);
-            RunStartButton.GetComponent<Button>().onClick.AddListener(GameManager.instance.StartRunning);//버튼 기능 세팅 -> 이렇게 코드로 하면 인스펙터에서 안보이네..?
+            if (Routine.instance.routineState == RoutineState.Close)
+            {
+                RunStartButton.SetActive(false);
+            }
+            else
+            {
+                RunStartButton.SetActive(true);
+                RunStartButton.GetComponent<Button>().onClick.AddListener(GameManager.instance.StartRunning);//버튼 기능 세팅 -> 이렇게 코드로 하면 인스펙터에서 안보이네..?
+            }
+            
         }
-        GoFarmButton = tmp.transform.GetChild(2).gameObject; // 농장으로 가는 버튼 
+
+        GoFarmButton = tmp.transform.GetChild(2).gameObject; // 농장으로 가는 버튼
+        if (GoFarmButton != null)
+        {
+            //버튼 기능 셋팅 
+            GoFarmButton gfb = GoFarmButton.GetComponent<GoFarmButton>();
+            GoFarmButton.GetComponent<Button>().onClick.AddListener(gfb.ChageSceneToFarm);//버튼 기능 세팅 -> 이렇게 코드로 하면 인스펙터에서 안보이네..?
+
+            if (Routine.instance.routineState == RoutineState.Close)
+            {
+                GoFarmButton.SetActive(true);
+            }
+            else
+            {
+                GoFarmButton.SetActive(false);
+            }
+        }
+
         ExpBar = GameObject.Find("ExpBar");
     }
 

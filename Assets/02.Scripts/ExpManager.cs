@@ -62,7 +62,6 @@ public class ExpManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.E))
         {
             ExpManager.instance.getExp(100);
-            UIManager.instance.SetExpBarUI();
         }
 
         //경험치 및 레벨 초기화
@@ -139,5 +138,8 @@ public class ExpManager : MonoBehaviour
             EventSceneManager.instance.SaveEventList();//추가된 이벤트 정보 json으로 저장 
 
         }
+
+        //UI 적용
+        UIManager.instance.SetExpBarUI();
     }
 }
