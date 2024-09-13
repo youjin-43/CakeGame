@@ -83,11 +83,14 @@ public class MakerController : MonoBehaviour
         //재료와 돈이 부족한지 판단
         if (GameManager.instance.money < cakeData.cakeCost)
         {
+            ReturnTextPanel.instance.SetInfoPanel("제작에 필요한 돈이 부족합니다.");
             Debug.Log("돈이 부족합니다.");
             return;
         }
         else if (fruitCounts[cakeData.materialIdx] < cakeData.materialCount)
         {
+            string a = "재료가" +(cakeData.materialCount - fruitCounts[cakeData.materialIdx])+"개 부족합니다.";
+            ReturnTextPanel.instance.SetInfoPanel(a);
             Debug.Log($"재료가 {cakeData.materialCount - fruitCounts[cakeData.materialIdx]}개 부족합니다.");
             return;
         }

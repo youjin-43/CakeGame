@@ -109,10 +109,18 @@ public class ShowcaseController : MonoBehaviour
     // 쇼케이스에 전시할 메뉴 선택
     public void OnMenuSelect(int idx)
     {
-        Debug.Log("333"+showcasePlaceIndex);
+        Debug.Log("333" + showcasePlaceIndex);
         // 선택한 케이크가 부족하거나 선택한 위치에 이미 케이크가 존재하는 경우
-        if (cakeManager.cakeDataList[idx].cakeCount == 0) return;
-        if (currentShowcase.isCakeSelected[showcasePlaceIndex]) return;
+        if (cakeManager.cakeDataList[idx].cakeCount == 0)
+        {
+            ReturnTextPanel.instance.SetInfoPanel("케이크가 없습니다.");
+            return;
+        }
+        if (currentShowcase.isCakeSelected[showcasePlaceIndex])
+        {
+            ReturnTextPanel.instance.SetInfoPanel("이미 해당 위치에 케이크가 존재합니다.");
+            return;
+        }
 
 
         // 쇼케이스 데이터 업데이트
