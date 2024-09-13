@@ -104,6 +104,32 @@ public class GameManager : MonoBehaviour
             QuestManager.instance.setBasicQuestUIs();//퀘스트 UI 세팅
 
             RuntimeBar = GameObject.Find("Background").gameObject;
+
+            //씬 이동 버튼 할당
+            if(scene.name == "CakeStore1")
+            {
+                if (UIManager.instance.GoFarmButton != null)
+                {
+                    //버튼 기능 셋팅 
+                    GoFarmButton gfb = UIManager.instance.GoFarmButton.GetComponent<GoFarmButton>();
+                    UIManager.instance.GoFarmButton.GetComponent<Button>().onClick.AddListener(gfb.ChageSceneToFarm);
+
+                    if (Routine.instance.routineState == RoutineState.Close)
+                    {
+                        UIManager.instance.GoFarmButton.SetActive(true);
+                    }
+                    else
+                    {
+                        UIManager.instance.GoFarmButton.SetActive(false);
+                    }
+                }
+            }
+            else
+            {
+                //버튼 기능 셋팅 
+                GoFarmButton gfb = UIManager.instance.GoFarmButton.GetComponent<GoFarmButton>();
+                UIManager.instance.GoFarmButton.GetComponent<Button>().onClick.AddListener(gfb.ChageSceneToStore);
+            }
         }
         else if(scene.name == "Event")
         {

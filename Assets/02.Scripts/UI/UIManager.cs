@@ -101,22 +101,8 @@ public class UIManager : MonoBehaviour
             
         }
 
-        GoFarmButton = tmp.transform.GetChild(2).gameObject; // 농장으로 가는 버튼
-        if (GoFarmButton != null)
-        {
-            //버튼 기능 셋팅 
-            GoFarmButton gfb = GoFarmButton.GetComponent<GoFarmButton>();
-            GoFarmButton.GetComponent<Button>().onClick.AddListener(gfb.ChageSceneToFarm);//버튼 기능 세팅 -> 이렇게 코드로 하면 인스펙터에서 안보이네..?
-
-            if (Routine.instance.routineState == RoutineState.Close)
-            {
-                GoFarmButton.SetActive(true);
-            }
-            else
-            {
-                GoFarmButton.SetActive(false);
-            }
-        }
+        GoFarmButton = tmp.transform.GetChild(2).gameObject; // 케이크씬에선 농장으로 가는 버튼, 팜씬에선 가게로 가는 버튼 
+        //기능 셋팅은 씬마다 달라져서 게임매니저에서 할당함 
 
         ExpBar = GameObject.Find("ExpBar");
     }
