@@ -113,10 +113,13 @@ public class Customers : MonoBehaviour
     void Update()
     {
         // 영업 종료 5초전 moveState를 Out상태로 변경
-        if (moveState != 5 && GameManager.instance.MaxRunTime - GameManager.instance.runTime < 2)
+        if (moveState != 5 && GameManager.instance.MaxRunTime - GameManager.instance.runTime < 3)
         {
-            if (moveState > 2) moveState = 5;
-            else moveState = 5;
+            if (moveState <= 2)
+            {
+                targetLoc = spawnPos.position;
+                moveState = 5;
+            }
         }
 
 
@@ -202,7 +205,7 @@ public class Customers : MonoBehaviour
         switch (moveState)
         {
             // 무작위 쇼케이스 앞으로 이동
-            case 1: 
+            case 1:
                 if (timer > randTime)
                 {
                     transform.GetChild(0).gameObject.SetActive(true);
@@ -214,10 +217,11 @@ public class Customers : MonoBehaviour
             case 2:
                 CakeCheck();
                 transform.GetChild(0).GetChild(0).GetComponent<SpriteRenderer>().sprite = cakeManager.cakeDataList[wantedCakeIndex].itemImage;
-                
+
 
                 if (timer > randTime)
                 {
+                    targetLoc = spawnPos.position;
                     moveState = 5;
                     timer = 0;
                 }
@@ -258,10 +262,10 @@ public class Customers : MonoBehaviour
             // 하트 말풍선
             transform.GetChild(0).GetChild(0).GetComponent<SpriteRenderer>().sprite = heartImg;
 
-            
+
             // 목표 지점 변경 (원하는 케이크가 있는 쇼케이스 앞)
             targetLoc = showcasePoses[wantedShowcaseIndex].position;
-            
+
 
             moveState = 3;
         }
@@ -311,13 +315,12 @@ public class Customers : MonoBehaviour
     /// </summary>
     void BuyIt()
     {
-        
+
         MoveTo();
         if (Vector2.Distance(transform.position, targetLoc) <= 0.01f)
         {
             // 하트 말풍선
             transform.GetChild(0).GetChild(0).GetComponent<SpriteRenderer>().sprite = heartImg;
-            StartCoroutine(StopForSeconds(0.1f));
             transform.GetChild(0).gameObject.SetActive(true);
             StartCoroutine(StopForSeconds(1.0f));
             transform.GetChild(0).gameObject.SetActive(false);
@@ -355,7 +358,7 @@ public class Customers : MonoBehaviour
             // 포탈음 재생
             cakeManager.CallPortalAudio();
 
-            
+
             // 오브젝트 삭제
             Destroy(gameObject);
         }
