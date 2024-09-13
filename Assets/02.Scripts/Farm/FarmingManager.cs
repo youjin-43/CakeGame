@@ -340,10 +340,10 @@ public class FarmingManager : MonoBehaviour
         CheckGrowedFruit(); // 과일이 다 자랐는지 확인하고, 다 자랐으면 그에 맞는 행동을 하도록 해주는 함수..
 
 
-        // 아래 코드들은 그냥 임시로 확인하기 위한 거... 나중에 없앨 것...
-        PlayerPrefs.SetInt("FarmLevel", farmLevel); // 농장 레벨 저장..
-        scarecrowLevel = 1;
-        PlayerPrefs.SetInt("ScareCrowLevel", scarecrowLevel); // 허수아비 레벨 저장..
+        // // 아래 코드들은 그냥 임시로 확인하기 위한 거... 나중에 없앨 것...
+        // PlayerPrefs.SetInt("FarmLevel", farmLevel); // 농장 레벨 저장..
+        // scarecrowLevel = 1;
+        // PlayerPrefs.SetInt("ScareCrowLevel", scarecrowLevel); // 허수아비 레벨 저장..
     }
 
 
