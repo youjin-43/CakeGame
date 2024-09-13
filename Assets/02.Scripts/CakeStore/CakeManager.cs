@@ -313,7 +313,7 @@ public class CakeManager : MonoBehaviour
         // 모든 요소의 값을 0으로 리셋해주기..
         for (int i = 0; i < TOTALCAKENUM; i++)
         {
-        //    cakeDataList[i].cakeCount = 0;
+            cakeDataList[i].cakeCount = 0;
         }
     }
     public void SetContainer(Dictionary<int, InventoryItem> curInventory)
