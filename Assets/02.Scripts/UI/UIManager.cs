@@ -151,7 +151,7 @@ public class UIManager : MonoBehaviour
                 content.gameObject.SetActive(true);
                 content.Find("ItemCnt").GetComponent<Text>().text = SelledCakeCnt[i].ToString();//팔린갯수 셋팅
 
-                int cost = SelledCakeCnt[i] * 100; //100은 케이크 가격. 나중에 수정 해야함 
+                int cost = SelledCakeCnt[i] * CakeManager.instance.cakeDataList[i].cakePrice; 
                 content.Find("sum").GetComponent<Text>().text = cost.ToString();//팔린갯수 셋팅
                 total += cost;
             }
