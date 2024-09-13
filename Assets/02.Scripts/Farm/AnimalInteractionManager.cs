@@ -279,6 +279,7 @@ public class AnimalInteractionManager : MonoBehaviour
 
     public void CloseAnimalGame()
     {
+        UIManager.instance.GoFarmButton.gameObject.SetActive(true); // 활성화 켜주기..
         backgroundButton.enabled = false;
         UICanvas.SetActive(false);
         UIInventoryManager.instance.buttonParentGameObject.SetActive(true); // 농사땅 버튼 이제 켜주기..

@@ -1,5 +1,5 @@
 IsStackable,MaxStackSize,name,Description,itemType,cakeCost,bakeTime,cakePrice,materialIdx,materialCount,exp,isLock,cakeIdx,cakeCount,imagePath
-True,64,파운드 케이크,가장 기본적인 케이크,3,100,3,500,0,0,100,False,0,1,
+True,64,파운드 케이크,가장 기본적인 케이크,3,100,3,500,0,0,100,False,0,0,
 True,64,사과 케이크,사과할 때 제격인 케이크,3,150,3,1000,0,1,200,False,1,0,
 True,64,바나나 케이크,부드럽고 촉촉한 바나나의 달콤함이 가득한 케이크,3,200,3,2000,1,1,300,True,2,0,
 True,64,체리 케이크,깊고 짙은 체리의 풍미가 크림과 어우러져 고귀한 달콤함을 선사하는 케이크,3,300,3,3500,2,1,400,True,3,0,
