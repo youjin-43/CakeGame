@@ -19,6 +19,7 @@ public class Customers : MonoBehaviour
     private Transform spawnPos;
     private Transform cashierPos;
     private int currentImgIndex;
+    [SerializeField]
     private int wantedCakeIndex;
     private Sprite heartImg;
     private Vector2 targetLoc;
@@ -101,6 +102,7 @@ public class Customers : MonoBehaviour
         // 무작위 값 할당
         randTime = Random.Range(5, 8);
         wantedCakeIndex = Random.Range(0, cakeManager.TOTALCAKENUM);
+                transform.GetChild(0).GetChild(0).GetComponent<SpriteRenderer>().sprite = cakeManager.cakeDataList[wantedCakeIndex].itemImage;
 
 
         // 쇼케이스 앞 위치 가져오기
@@ -292,6 +294,7 @@ public class Customers : MonoBehaviour
             // 하트 말풍선 제거
             transform.GetChild(0).gameObject.SetActive(false);
             StartCoroutine(StopForSeconds(1f));
+            showcaseController.showcases[wantedShowcaseIndex].GetComponent<Showcase>().UpdateShowcaseImg();
 
 
             //목표 지점 변경 (계산대 앞)

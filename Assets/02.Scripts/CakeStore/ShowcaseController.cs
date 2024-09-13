@@ -22,7 +22,7 @@ public class ShowcaseController : MonoBehaviour
     // 현재 쇼케이스 데이터
     [SerializeField]
     private Transform showcasePool;
-    private GameObject[] showcases;
+    public GameObject[] showcases;
     [SerializeField]
     private Showcase currentShowcase;
     public Showcase CurrentShowcase
@@ -227,7 +227,6 @@ public class ShowcaseController : MonoBehaviour
         //케이크 데이터를 쇼케이스에서 제거
         currentShowcase.isCakeSelected[ShowcasePlaceIdx] = false;
         currentShowcase.cakeType[ShowcasePlaceIdx] = -1;
-        currentShowcase.UpdateShowcaseImg();
     }
 
 

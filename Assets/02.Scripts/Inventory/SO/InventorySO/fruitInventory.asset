@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: fruitInventory
   m_EditorClassIdentifier: 
   inventoryItems:
-  - quantity: 63
-    item: {fileID: 11400000, guid: 813a1eb64247b4274a9f317ea4ddd848, type: 2}
+  - quantity: 0
+    item: {fileID: 0}
   - quantity: 0
     item: {fileID: 0}
   - quantity: 0

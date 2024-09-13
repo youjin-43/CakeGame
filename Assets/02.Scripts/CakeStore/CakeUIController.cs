@@ -26,7 +26,7 @@ public class CakeUIController : MonoBehaviour
     private enum PlacePanelElements { Text = 0, Plate = 1, Image = 2 }
     private enum MenuPanelElements { Image = 1, Name = 2, Count = 3, Price = 4, Locked = 6 }
     private enum CakePanelElements { Image = 1, Name = 2, Count = 3, Locked = 4, Clicked = 5 }
-    private enum CakeClickedPanelElements { Cost = 1, MaterialPanel = 4, BakeButton = 5 }
+    private enum CakeClickedPanelElements { Cost = 3, MaterialPanel = 4, BakeButton = 5 }
     private enum CakeMaterialPanelElements { MaterialImage = 0, MaterialCount = 1 }
 
 
@@ -114,7 +114,7 @@ public class CakeUIController : MonoBehaviour
     }
 
 
-    
+
     /// <summary>
     /// 메이커의 버튼 함수 연결
     /// </summary>
@@ -142,9 +142,9 @@ public class CakeUIController : MonoBehaviour
             makerScrollViewContent.GetChild(i).GetChild((int)CakePanelElements.Clicked).gameObject.SetActive(i == index); // 클릭된 패널만 활성화
         }
     }    // 버튼 초기화 (위치 선택 및 메뉴 선택 버튼)
-    
-    
-    
+
+
+
     public void SetUpShowcaseButtons()
     {
         // 쇼케이스 내부의 위치 선택 버튼 설정
@@ -184,8 +184,8 @@ public class CakeUIController : MonoBehaviour
     void UpdateShowcasePlaceUI()
     {
         Showcase currentShowcase = showcaseController.CurrentShowcase;
-        
-        
+
+
         for (int i = 0; i < cakeManager.CAKEPLACENUM; i++)
         {
             showcasePlace.transform.GetChild(i).GetChild((int)PlacePanelElements.Text).gameObject.SetActive(!currentShowcase.isCakeSelected[i]);
@@ -248,21 +248,31 @@ public class CakeUIController : MonoBehaviour
             clickedPanel.GetChild((int)CakeClickedPanelElements.Cost).GetComponent<Text>().text = $"{cakeSO.cakeCost}";
 
 
-            // 재료 표시 업데이트
+            
             Transform materialPanel = clickedPanel.GetChild((int)CakeClickedPanelElements.MaterialPanel);
-            materialPanel.gameObject.SetActive(true);
-            var material = materialPanel.GetChild(0);
-            material.gameObject.SetActive(true);
+            materialPanel.gameObject.SetActive(false);
+            clickedPanel.GetChild(0).GetComponent<Text>().text = " 재료 : ";
+            if (cakeSO.materialCount > 0)
+            {
+                // 재료 표시 업데이트
+                materialPanel.gameObject.SetActive(true);
+                var material = materialPanel.GetChild(0);
+                material.gameObject.SetActive(true);
 
 
-            // 재료 이미지 참조
-            material.GetChild((int)CakeMaterialPanelElements.MaterialImage).GetComponent<Image>().sprite =
-             UIInventoryManager.instance.fruitItems[cakeSO.materialIdx].itemImage;
+                // 재료 이미지 참조
+                material.GetChild((int)CakeMaterialPanelElements.MaterialImage).GetComponent<Image>().sprite =
+                 UIInventoryManager.instance.fruitItems[cakeSO.materialIdx].itemImage;
 
 
-            // 재료 갯수 참조
-            material.GetChild((int)CakeMaterialPanelElements.MaterialCount).GetComponent<Text>().text =
-             $"{UIInventoryManager.instance.fruitCount[cakeSO.materialIdx]}/{cakeSO.materialCount}";
+                // 재료 갯수 참조
+                material.GetChild((int)CakeMaterialPanelElements.MaterialCount).GetComponent<Text>().text =
+                 $"{UIInventoryManager.instance.fruitCount[cakeSO.materialIdx]}/{cakeSO.materialCount}";
+            }
+            else 
+            {
+                clickedPanel.GetChild(0).GetComponent<Text>().text = " 재료 :  X ";
+            }
         }
     }
 }
