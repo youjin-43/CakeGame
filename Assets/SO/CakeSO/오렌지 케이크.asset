@@ -21,7 +21,7 @@ MonoBehaviour:
   itemType: 3
   cakeCost: 400
   bakeTime: 3
-  cakePrice: 5000
+  cakePrice: 900
   materialIdx: 3
   materialCount: 1
   exp: 500

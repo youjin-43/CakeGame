@@ -20,11 +20,11 @@ MonoBehaviour:
   itemType: 3
   cakeCost: 150
   bakeTime: 3
-  cakePrice: 1000
+  cakePrice: 350
   materialIdx: 0
   materialCount: 1
   exp: 200
   cakeCount: 0
-  isLock: 1
+  isLock: 0
   cakeIdx: 1
   imagePath: 

@@ -21,9 +21,9 @@ MonoBehaviour:
     \uB2F4\uC544\uB0B8 \uCD5C\uC0C1\uC758 \uB514\uC800\uD2B8 \uCF00\uC774\uD06C"
   <itemImage>k__BackingField: {fileID: 21300000, guid: 4c65135bd76151c43a6f6afd5f3ec68e, type: 2}
   itemType: 3
-  cakeCost: 600
+  cakeCost: 500
   bakeTime: 3
-  cakePrice: 7000
+  cakePrice: 1100
   materialIdx: 4
   materialCount: 1
   exp: 500
