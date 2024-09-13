@@ -41,7 +41,7 @@ public class ShowcaseController : MonoBehaviour
 
     void Update()
     {
-        if (Routine.instance.routineState == RoutineState.Close) CakeBack();
+        // if (Routine.instance.routineState == RoutineState.Close) CakeBack();
     }
 
 
@@ -235,8 +235,8 @@ public class ShowcaseController : MonoBehaviour
     /// <summary>
     /// 쇼케이스 내의 케이크를 모두 인벤토리로 되돌린다.
     /// </summary>
-    public void CakeBack()
-    {
-        for (int i = 0; i < showcases.Length; i++) showcases[i].GetComponent<Showcase>().GetBack();
-    }
+    // public void CakeBack()
+    // {
+    //     for (int i = 0; i < showcases.Length; i++) showcases[i].GetComponent<Showcase>().GetBack();
+    // }
 }
