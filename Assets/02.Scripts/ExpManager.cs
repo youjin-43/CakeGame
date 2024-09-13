@@ -80,6 +80,18 @@ public class ExpManager : MonoBehaviour
 
             Debug.Log("경험치 초기화시킴 ");
             QuestManager.instance.EraseAllQuest();
+
+
+            GameManager.instance.date = 0;
+            PlayerPrefs.SetInt("date", GameManager.instance.date);
+
+            GameManager.instance.money = 500;
+            PlayerPrefs.SetInt("money", GameManager.instance.money);
+
+            UIManager.instance.SetDatainUI();
+
+            EventSceneManager.instance.toShowEvnetList.events.Clear();
+
         }
     }
 
